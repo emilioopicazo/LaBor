@@ -36,7 +36,7 @@ export const INTERACTION_RADIUS_DEFAULT = 110
 
 // --- Reveal de entrada ----------------------------------------
 export const ENTRANCE_GATE_MS = 950 // duración de la transición de portón
-export const REVEAL_FROM = { x: 1150, y: 800 } // la cámara arranca viendo el patio
+export const REVEAL_FROM = { x: 1300, y: 900 } // la cámara arranca viendo el patio
 
 // --- Sonido (arquitectura mínima, apagado por defecto) --------
 export const SOUND_ENABLED = false

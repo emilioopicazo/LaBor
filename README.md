@@ -26,10 +26,14 @@ juego, sin backend, sin rutas: todo vive en `/`.
 
 - Pantalla de entrada (`LA BOR / TALLERES / ENTRAR`) con transición de
   portón industrial.
-- Mundo SVG a pantalla completa (2400×1600) con la disposición real:
-  VETA + MANNINO (poniente), PABELLÓN 04 + CONTRASTE (norte), jardín con
-  árbol-hito, PABELLONES 01–03 (oriente), NAVES 01–03 (sur), patio
-  central y Calle Cobá.
+- Mundo SVG a pantalla completa (2400×1600) calibrado contra el plano
+  TRAMA (predio ~34.90 × 37.31 m): VETA + MANNINO al poniente (esquina
+  NW en diagonal), PABELLÓN 04 + CONTRASTE al norte, jardín con
+  árbol-hito, PABELLONES 01–03 al oriente (01 y 02 con terraza exterior
+  + interior), NAVES 01–03 al sur, patio central, **INGRESO por Calle
+  12 sur**, Calle Cobá al sur (con portón de servicio junto a NAVE 03)
+  y apertura norte hacia Mala Casa. El visitante llega por el INGRESO
+  real. La lógica del complejo: **7 talleres + 3 naves**.
 - Visitante con clic/tap-para-caminar, escala 2.5D por profundidad,
   sombra y animación de caminata. WASD/flechas como control secundario.
 - Ruteo por waypoints (grafo mínimo, no pathfinding complejo) para no
@@ -89,8 +93,9 @@ src/
   esos nodos, así que el mapa entero se puede reemplazar por una
   ilustración custom sin tocar el motor.
 
-Colocar el plano real en `public/assets/reference/labor-master-plan.png`
-para calibrar contra la referencia.
+Referencias en `public/assets/reference/`: el plano TRAMA con cotas
+(`260823_TRAMA-layout.pdf`, ya incluido) y la interpretación con diseño
+(`labor-master-plan.png`, pendiente de colocar).
 
 ## Cómo editar contenido de residentes / espacios
 

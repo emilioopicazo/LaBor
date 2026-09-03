@@ -16,6 +16,7 @@ const C = {
   roofOcc: "#d2cec3",
   front: "#a9a59a",
   frontOcc: "#9e9a8e",
+  slabTone: "#e3e0d7",
   ink: "#22211e",
   paper: "#f1efe9",
   skylight: "#eae8e0",
@@ -75,7 +76,7 @@ export function WorkshopSvg({
           <stop offset="100%" stopColor="#bcd6f5" stopOpacity="0" />
         </radialGradient>
         <clipPath id="slab-clip">
-          <rect x={370} y={455} width={1640} height={655} />
+          <rect x={370} y={455} width={1670} height={655} />
         </clipPath>
       </defs>
 
@@ -87,9 +88,9 @@ export function WorkshopSvg({
           [150, 60, 90, 26],
           [520, 50, 70, 20],
           [1560, 55, 110, 24],
-          [2120, 210, 70, 30],
-          [2200, 640, 90, 34],
-          [2140, 1120, 76, 28],
+          [2240, 210, 70, 30],
+          [2290, 640, 80, 34],
+          [2250, 1120, 76, 28],
           [40, 420, 60, 40],
           [40, 1000, 66, 36],
           [720, 48, 60, 18],
@@ -97,9 +98,33 @@ export function WorkshopSvg({
         ].map(([x, y, rx, ry], i) => (
           <ellipse key={i} cx={x} cy={y} rx={rx} ry={ry} fill={C.outsideVeg} opacity={0.5} />
         ))}
-        <text x={1160} y={78} fill={C.ink} opacity={0.28} fontSize={17} letterSpacing="0.4em" textAnchor="middle">
+        <text x={1076} y={80} fill={C.ink} opacity={0.28} fontSize={17} letterSpacing="0.4em" textAnchor="middle">
           ↑ MALA CASA
         </text>
+
+        {/* CALLE 12 SUR (oriente) — ingreso principal */}
+        <rect x={2060} y={96} width={66} height={1456} fill={C.street} />
+        <line x1={2056} y1={96} x2={2056} y2={1552} stroke={C.ink} strokeWidth={2} opacity={0.25} />
+        <line
+          x1={2093}
+          y1={120}
+          x2={2093}
+          y2={1530}
+          stroke={C.paper}
+          strokeWidth={3}
+          strokeDasharray="30 26"
+          opacity={0.35}
+        />
+        <g transform="translate(2098, 420) rotate(90)">
+          <text fill={C.paper} opacity={0.55} fontSize={19} letterSpacing="0.45em">
+            CALLE 12 SUR
+          </text>
+        </g>
+        <g transform="translate(2098, 1240) rotate(90)">
+          <text fill={C.paper} opacity={0.4} fontSize={19} letterSpacing="0.45em">
+            CALLE 12 SUR
+          </text>
+        </g>
 
         {/* CALLE COBÁ (sur) */}
         <rect x={0} y={1552} width={WORLD_WIDTH} height={48} fill={C.street} />
@@ -117,36 +142,57 @@ export function WorkshopSvg({
         <text x={250} y={1586} fill={C.paper} opacity={0.55} fontSize={19} letterSpacing="0.45em">
           CALLE COBÁ
         </text>
-        <text x={1930} y={1586} fill={C.paper} opacity={0.4} fontSize={19} letterSpacing="0.45em">
+        <text x={1690} y={1586} fill={C.paper} opacity={0.4} fontSize={19} letterSpacing="0.45em">
           CALLE COBÁ
         </text>
       </g>
 
       {/* ---------- PROPIEDAD ---------- */}
       <g id="property">
-        <rect x={90} y={110} width={1950} height={1435} fill={C.property} />
-        <rect
-          x={90}
-          y={110}
-          width={1950}
-          height={1435}
+        {/* predio con esquina noroeste en diagonal (como el plano) */}
+        <polygon points="90,320 300,110 2040,110 2040,1545 90,1545" fill={C.property} />
+        <polygon
+          points="90,320 300,110 2040,110 2040,1545 90,1545"
           fill="none"
           stroke={C.wall}
           strokeWidth={3.5}
           opacity={0.55}
         />
-        {/* acceso peatonal entre NAVE 02 y NAVE 01, desde Cobá */}
-        <rect x={1342} y={1100} width={36} height={452} fill="#cfccc3" />
-        {[1150, 1240, 1330, 1420, 1500].map((y) => (
-          <line key={y} x1={1344} y1={y} x2={1376} y2={y} stroke={C.ink} strokeWidth={1} opacity={0.06} />
+
+        {/* INGRESO principal — Calle 12 sur (doble puerta del plano) */}
+        <rect x={2032} y={1062} width={30} height={82} fill={C.property} />
+        <rect x={2040} y={1062} width={22} height={82} fill="#cfccc3" />
+        <line x1={2040} y1={1066} x2={2010} y2={1090} stroke={C.ink} strokeWidth={2} opacity={0.5} />
+        <line x1={2040} y1={1140} x2={2010} y2={1116} stroke={C.ink} strokeWidth={2} opacity={0.5} />
+        <text
+          x={1952}
+          y={1058}
+          textAnchor="middle"
+          fontSize={11}
+          letterSpacing="0.3em"
+          fill={C.ink}
+          opacity={0.35}
+        >
+          INGRESO
+        </text>
+
+        {/* portón de servicio a Cobá, junto a NAVE 03 */}
+        <rect x={372} y={1105} width={40} height={440} fill="#cfccc3" />
+        {[380, 388, 396, 404].map((x) => (
+          <line key={x} x1={x} y1={1112} x2={x} y2={1538} stroke={C.ink} strokeWidth={1} opacity={0.12} />
         ))}
-        <rect x={1332} y={1536} width={9} height={9} fill={C.wall} />
-        <rect x={1379} y={1536} width={9} height={9} fill={C.wall} />
+        <rect x={368} y={1536} width={9} height={9} fill={C.wall} />
+        <rect x={408} y={1536} width={9} height={9} fill={C.wall} />
+
+        {/* apertura norte hacia Mala Casa */}
+        <rect x={1046} y={104} width={60} height={14} fill={C.property} />
+        <rect x={1050} y={86} width={52} height={20} fill={C.outside} opacity={0.6} />
+        <line x1={1050} y1={110} x2={1078} y2={132} stroke={C.ink} strokeWidth={2} opacity={0.45} />
       </g>
 
       {/* ---------- PATIO / EXPLANADA ---------- */}
       <g id="ground">
-        <rect x={370} y={455} width={1640} height={655} fill={C.slab} />
+        <rect x={370} y={455} width={1670} height={655} fill={C.slab} />
         {/* juntas de dilatación */}
         <g clipPath="url(#slab-clip)" opacity={0.05} stroke={C.ink} strokeWidth={1.2}>
           {[534, 698, 862, 1026, 1190, 1354, 1518, 1682, 1846].map((x) => (
@@ -237,11 +283,18 @@ export function WorkshopSvg({
         <ellipse cx={1315} cy={276} rx={36} ry={10} fill="#000" opacity={0.08} />
         <circle cx={1305} cy={255} r={33} fill={C.green2} />
         <circle cx={1315} cy={244} r={19} fill={C.green3} opacity={0.9} />
+        {/* árbol de banqueta en Calle 12 sur, junto al INGRESO (plano) */}
+        <ellipse cx={2072} cy={700} rx={52} ry={16} fill="#000" opacity={0.09} />
+        <path d="M 2048 690 h 12 l -3 -34 h -6 Z" fill={C.trunk} />
+        <circle cx={2042} cy={640} r={40} fill={C.green2} />
+        <circle cx={2076} cy={622} r={34} fill={C.green1} />
+        <circle cx={2058} cy={600} r={26} fill={C.green3} opacity={0.9} />
       </g>
 
       {/* ---------- EDIFICIOS ---------- */}
       <g id="buildings">
-        {SPACES.filter((s) => s.buildingRect).map((space) => (
+        <VetaBuilding onActivate={() => onSpaceClick("veta")} />
+        {SPACES.filter((s) => s.buildingRect && s.id !== "veta").map((space) => (
           <Building
             key={space.id}
             space={space}
@@ -260,12 +313,12 @@ export function WorkshopSvg({
         </g>
 
         {/* tarima + huacales frente a las naves */}
-        <g transform="translate(838, 1102)" opacity={0.9}>
+        <g transform="translate(872, 1102)" opacity={0.9}>
           <rect x={0} y={0} width={48} height={16} fill="none" stroke={C.ink} strokeWidth={1} opacity={0.4} />
           <line x1={16} y1={0} x2={16} y2={16} stroke={C.ink} strokeWidth={1} opacity={0.35} />
           <line x1={32} y1={0} x2={32} y2={16} stroke={C.ink} strokeWidth={1} opacity={0.35} />
         </g>
-        <g transform="translate(1508, 1100)" opacity={0.9}>
+        <g transform="translate(1462, 1100)" opacity={0.9}>
           <rect x={0} y={0} width={20} height={18} fill="#c6c2b8" stroke={C.ink} strokeWidth={1} opacity={0.7} />
           <rect x={24} y={4} width={16} height={14} fill="#beb9ae" stroke={C.ink} strokeWidth={1} opacity={0.7} />
         </g>
@@ -296,8 +349,8 @@ export function WorkshopSvg({
           <rect x={34} y={-16} width={14} height={8} fill={C.ink} opacity={0.55} />
         </g>
 
-        {/* CONTACTO — tótem de información junto al acceso */}
-        <g className="object-hotspot" transform="translate(1330, 1052)">
+        {/* CONTACTO — tótem de información junto al INGRESO */}
+        <g className="object-hotspot" transform="translate(1660, 1035)">
           <ellipse cx={3} cy={4} rx={20} ry={5} fill="#000" opacity={0.1} />
           <rect x={-5} y={-46} width={10} height={50} fill={C.ink} />
           <rect x={-26} y={-72} width={52} height={26} fill={C.paper} stroke={C.ink} strokeWidth={1.6} />
@@ -307,8 +360,8 @@ export function WorkshopSvg({
         </g>
 
         {/* chispas de soldadura en NAVE 02 (vida ambiental) */}
-        <rect x={1066} y={1120} width={28} height={7} fill={C.door} />
-        <circle className="ambient-weld" cx={1080} cy={1124} r={11} fill="url(#weld-glow)" />
+        <rect x={1136} y={1120} width={28} height={7} fill={C.door} />
+        <circle className="ambient-weld" cx={1150} cy={1124} r={11} fill="url(#weld-glow)" />
 
         {/* polvo en suspensión */}
         <circle className="dust dust--1" cx={820} cy={760} r={2.2} fill="#ffffff" opacity={0.16} />
@@ -457,28 +510,71 @@ function BuildingDetail({
     )
   }
 
-  // PABELLONES — losa limpia con índice arquitectónico
+  // PABELLONES — losa limpia con índice arquitectónico.
+  // 01 y 02 tienen terraza exterior al poniente + interior techado
+  // (5.00 m + 6.85 m en el plano TRAMA).
   if (space.id.startsWith("pabellon")) {
     const num = space.number?.replace("P", "") ?? ""
+    const hasTerrace = space.id === "pabellon-01" || space.id === "pabellon-02"
+    const terraceW = 232
+    const textCx = hasTerrace ? r.x + terraceW + (r.width - terraceW) / 2 : cx
     return (
       <g>
+        {hasTerrace && (
+          <g>
+            <rect x={r.x + 2} y={r.y + 2} width={terraceW - 4} height={roofH - 4} fill={C.slabTone} />
+            {[0.28, 0.5, 0.72].map((t) => (
+              <line
+                key={t}
+                x1={r.x + 14}
+                y1={r.y + roofH * t}
+                x2={r.x + terraceW - 12}
+                y2={r.y + roofH * t}
+                stroke={C.ink}
+                strokeWidth={1}
+                opacity={0.07}
+              />
+            ))}
+            <line
+              x1={r.x + terraceW}
+              y1={r.y + 2}
+              x2={r.x + terraceW}
+              y2={r.y + roofH - 2}
+              stroke={C.ink}
+              strokeWidth={1}
+              strokeDasharray="6 5"
+              opacity={0.3}
+            />
+            <text
+              x={r.x + terraceW / 2}
+              y={midY + 4}
+              textAnchor="middle"
+              fontSize={11}
+              letterSpacing="0.3em"
+              fill={C.ink}
+              opacity={0.24}
+            >
+              TERRAZA
+            </text>
+          </g>
+        )}
         <rect
-          x={r.x + 12}
+          x={(hasTerrace ? r.x + terraceW : r.x) + 12}
           y={r.y + 12}
-          width={r.width - 24}
+          width={(hasTerrace ? r.width - terraceW : r.width) - 24}
           height={roofH - 24}
           fill="none"
           stroke={C.ink}
           strokeWidth={1}
           opacity={0.08}
         />
-        <text x={cx} y={midY - 22} textAnchor="middle" fontSize={21} letterSpacing="0.34em" fill={C.ink} opacity={0.3}>
+        <text x={textCx} y={midY - 22} textAnchor="middle" fontSize={21} letterSpacing="0.34em" fill={C.ink} opacity={0.3}>
           PABELLÓN
         </text>
-        <text x={cx} y={midY + 30} textAnchor="middle" fontSize={52} fontWeight={600} letterSpacing="0.1em" fill={C.ink} opacity={0.32}>
+        <text x={textCx} y={midY + 30} textAnchor="middle" fontSize={52} fontWeight={600} letterSpacing="0.1em" fill={C.ink} opacity={0.32}>
           {num}
         </text>
-        <text x={cx} y={midY + 62} textAnchor="middle" fontSize={16} letterSpacing="0.28em" fill={C.ink} opacity={0.26}>
+        <text x={textCx} y={midY + 62} textAnchor="middle" fontSize={16} letterSpacing="0.28em" fill={C.ink} opacity={0.26}>
           {space.areaM2} M²
         </text>
       </g>
@@ -517,40 +613,69 @@ function BuildingDetail({
     )
   }
 
-  if (space.id === "veta") {
-    const lines: number[] = []
-    for (let x = r.x + 38; x < r.x + r.width - 20; x += 38) lines.push(x)
-    return (
-      <g>
-        {lines.map((x) => (
-          <line key={x} x1={x} y1={r.y + 10} x2={x} y2={r.y + roofH - 10} stroke={C.ink} strokeWidth={1} opacity={0.035} />
-        ))}
-        <g transform={`translate(${cx}, ${midY}) rotate(-90)`}>
-          <text textAnchor="middle" fontSize={50} fontWeight={600} letterSpacing="0.4em" fill={C.ink} opacity={0.42}>
-            VETA
-          </text>
-          <text y={38} textAnchor="middle" fontSize={13} letterSpacing="0.3em" fill={C.ink} opacity={0.3}>
-            CARPINTERÍA
-          </text>
-        </g>
-        {/* puerta hacia el patio (oriente) */}
-        <rect x={r.x + r.width - 8} y={636} width={9} height={30} fill={C.door} />
-      </g>
-    )
-  }
-
+  // MANNINO — sección sur de la franja poniente, hasta la esquina
+  // con Cobá (12.31 m del plano). Placa negra como en el plano.
   if (space.id === "mannino") {
     return (
       <g>
-        <text x={cx} y={midY + 8} textAnchor="middle" fontSize={23} fontWeight={600} letterSpacing="0.3em" fill={C.ink} opacity={0.42}>
+        <rect x={cx - 76} y={r.y + 44} width={152} height={44} fill={C.ink} opacity={0.88} />
+        <text x={cx} y={r.y + 72} textAnchor="middle" fontSize={19} fontWeight={600} letterSpacing="0.26em" fill={C.paper}>
           MANNINO
         </text>
+        <line
+          x1={r.x + 14}
+          y1={r.y + 380}
+          x2={r.x + r.width - 14}
+          y2={r.y + 380}
+          stroke={C.ink}
+          strokeWidth={1}
+          strokeDasharray="7 6"
+          opacity={0.14}
+        />
         <rect x={r.x + r.width - 8} y={846} width={9} height={28} fill={C.door} />
       </g>
     )
   }
 
   return null
+}
+
+// VETA — franja poniente con el corte diagonal del predio (NW).
+// Se dibuja como polígono, por eso no usa el shell genérico.
+function VetaBuilding({ onActivate }: { onActivate: () => void }) {
+  const roof = "120,330 330,180 370,180 370,724 120,724"
+  const outline = "120,330 330,180 370,180 370,740 120,740"
+  const lines: number[] = []
+  for (let y = 280; y < 700; y += 44) lines.push(y)
+  return (
+    <g
+      className="building"
+      onPointerDown={(e) => {
+        e.stopPropagation()
+        onActivate()
+      }}
+      aria-label="VETA"
+    >
+      <polygon points="130,342 340,192 380,192 380,752 130,752" fill="#000" opacity={0.07} />
+      <polygon points={roof} fill={C.roofOcc} />
+      <rect x={120} y={724} width={250} height={16} fill={C.frontOcc} />
+      <polygon points={outline} fill="none" stroke={C.ink} strokeWidth={1.4} opacity={0.75} />
+      <line x1={120} y1={724} x2={370} y2={724} stroke={C.ink} strokeWidth={0.8} opacity={0.4} />
+      {lines.map((y) => (
+        <line key={y} x1={134} y1={y} x2={356} y2={y} stroke={C.ink} strokeWidth={1} opacity={0.035} />
+      ))}
+      <g transform="translate(245, 480) rotate(-90)">
+        <text textAnchor="middle" fontSize={50} fontWeight={600} letterSpacing="0.4em" fill={C.ink} opacity={0.42}>
+          VETA
+        </text>
+        <text y={38} textAnchor="middle" fontSize={13} letterSpacing="0.3em" fill={C.ink} opacity={0.3}>
+          CARPINTERÍA
+        </text>
+      </g>
+      {/* puerta hacia el patio (oriente) */}
+      <rect x={362} y={636} width={9} height={30} fill={C.door} />
+    </g>
+  )
 }
 
 // ============================================================

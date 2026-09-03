@@ -47,23 +47,35 @@ export function isSegmentWalkable(a: Point, b: Point, step = 14): boolean {
   return true
 }
 
+function clearOfObstacles(x: number, y: number, clearance: number): boolean {
+  for (const o of OBSTACLES) {
+    if (dist(x, y, o.x, o.y) < o.radius + clearance) return false
+  }
+  return true
+}
+
 /**
  * Punto caminable más cercano a p (búsqueda radial por anillos).
  * Se usa para acercarse a puntos de interacción que quedan justo
- * fuera del polígono (umbral de puerta, borde de edificio).
+ * fuera del polígono (umbral de puerta, borde de edificio) o
+ * dentro de un objeto físico. Se prefiere un punto con holgura
+ * respecto a los obstáculos para no dejar al visitante acuñado.
  */
 export function findNearestWalkablePoint(p: Point, maxRadius = 170): Point {
-  if (isPointInsideWalkableArea(p.x, p.y)) return p
+  if (isPointInsideWalkableArea(p.x, p.y) && clearOfObstacles(p.x, p.y, 8)) return p
   const directions = 24
+  let fallback: Point | null = null
   for (let r = 6; r <= maxRadius; r += 6) {
     for (let i = 0; i < directions; i++) {
       const a = (i / directions) * Math.PI * 2
       const x = p.x + Math.cos(a) * r
       const y = p.y + Math.sin(a) * r
-      if (isPointInsideWalkableArea(x, y)) return { x, y }
+      if (!isPointInsideWalkableArea(x, y)) continue
+      if (clearOfObstacles(x, y, 8)) return { x, y }
+      if (!fallback) fallback = { x, y }
     }
   }
-  return p
+  return fallback ?? p
 }
 
 /**
