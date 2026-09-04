@@ -3,10 +3,21 @@
 // Contenido editable: nombres, estados, descripciones, áreas,
 // CTAs y puntos de interacción. El motor de exploración lee
 // esta configuración; no hay contenido regado en la lógica.
+// Lógica del complejo: 7 talleres + 3 naves (11 estructuras con
+// el anexo de VETA). Residentes: CONTRASTE, VETA, MANNINO.
 // ============================================================
 
-export type SpaceType = "resident" | "available" | "event" | "navigation"
+export type SpaceType = "resident" | "available" | "event" | "navigation" | "installation"
 export type SpaceStatus = "active" | "coming-soon" | "available"
+
+export interface SpaceCta {
+  label: string
+  href?: string
+  /** Abre otro overlay (p. ej. INFORMACIÓN → CONTACTO) */
+  targetSpaceId?: string
+  /** Entra a la escena de taller (cuarto jugable) */
+  enterSceneId?: string
+}
 
 export interface WorkshopSpace {
   id: string
@@ -43,12 +54,7 @@ export interface WorkshopSpace {
 
   areaM2?: number
 
-  cta?: {
-    label: string
-    href?: string
-    /** Abre otro overlay (p. ej. INFORMACIÓN → CONTACTO) */
-    targetSpaceId?: string
-  }
+  cta?: SpaceCta
 
   image?: string
 }
@@ -67,7 +73,7 @@ export const SPACES: WorkshopSpace[] = [
     interactionRadius: 110,
     type: "resident",
     status: "active",
-    cta: { label: "VER TALLERES", targetSpaceId: "talleres" },
+    cta: { label: "VER AGENDA", targetSpaceId: "agenda" },
   },
   {
     id: "veta",
@@ -75,21 +81,23 @@ export const SPACES: WorkshopSpace[] = [
     number: "02",
     subtitle: "Carpintería / Diseño / Producción",
     description: "Taller de carpintería enfocado en diseño y producción en madera.",
+    details: ["Anexo sur — patio de material"],
     buildingRect: { x: 120, y: 180, width: 250, height: 560 },
     interactionPoint: { x: 390, y: 650 },
     interactionRadius: 110,
     type: "resident",
     status: "active",
+    cta: { label: "ENTRAR AL TALLER", enterSceneId: "veta-room" },
   },
   {
     id: "mannino",
     name: "MANNINO",
     number: "03",
-    subtitle: "Taller residente",
-    description: "Espacio residente dentro del complejo. Información próximamente.",
-    // Sección sur de la franja poniente (12.31 m del plano)
-    buildingRect: { x: 120, y: 760, width: 250, height: 760 },
-    interactionPoint: { x: 390, y: 860 },
+    subtitle: "Herrería / Metal",
+    description: "Taller de herrería y trabajo en metal. Información próximamente.",
+    // Franja poniente, sección media (5.85 m del plano)
+    buildingRect: { x: 120, y: 760, width: 250, height: 232 },
+    interactionPoint: { x: 392, y: 880 },
     interactionRadius: 110,
     type: "resident",
     status: "active",
@@ -151,8 +159,8 @@ export const SPACES: WorkshopSpace[] = [
     name: "NAVE 03",
     number: "N03",
     // Proporciones del plano: 7.85 / 9.70 / 9.70 de ancho
-    buildingRect: { x: 415, y: 1120, width: 440, height: 400 },
-    interactionPoint: { x: 635, y: 1090 },
+    buildingRect: { x: 462, y: 1120, width: 398, height: 400 },
+    interactionPoint: { x: 661, y: 1090 },
     interactionRadius: 110,
     type: "available",
     status: "available",
@@ -186,21 +194,20 @@ export const SPACES: WorkshopSpace[] = [
 
   // ---- PATIO / PROGRAMA ------------------------------------
   {
+    id: "pieza",
+    name: "LA PIEZA CENTRAL",
+    subtitle: "Instalación colaborativa",
+    interactionPoint: { x: 860, y: 690 },
+    interactionRadius: 120,
+    type: "installation",
+    status: "active",
+  },
+  {
     id: "eventos",
     name: "EVENTOS",
     subtitle: "Programa del patio",
     details: ["Bazares", "Exhibiciones", "Activaciones", "Encuentros"],
-    interactionPoint: { x: 1100, y: 780 },
-    interactionRadius: 110,
-    type: "event",
-    status: "coming-soon",
-  },
-  {
-    id: "talleres",
-    name: "TALLERES",
-    subtitle: "Cursos y experiencias",
-    description: "Cursos y experiencias impartidas por los talleres residentes.",
-    interactionPoint: { x: 760, y: 940 },
+    interactionPoint: { x: 1100, y: 750 },
     interactionRadius: 110,
     type: "event",
     status: "coming-soon",
@@ -209,11 +216,10 @@ export const SPACES: WorkshopSpace[] = [
     id: "contacto",
     name: "CONTACTO",
     subtitle: "La Bor — Talleres",
-    description: "Ingreso por Calle 12 sur · Calle Cobá, Tulum, Quintana Roo.",
+    description: "Calle Cobá · Tulum, Quintana Roo, México.",
     details: ["Instagram —", "WhatsApp —", "Email —"],
-    // Caseta de información junto al INGRESO (Calle 12 sur)
-    interactionPoint: { x: 1660, y: 1035 },
-    interactionRadius: 90,
+    interactionPoint: { x: 640, y: 888 },
+    interactionRadius: 100,
     type: "navigation",
     status: "coming-soon",
   },
@@ -221,11 +227,15 @@ export const SPACES: WorkshopSpace[] = [
     id: "agenda",
     name: "AGENDA",
     subtitle: "Calendario de talleres y eventos",
+    description: "Cursos, experiencias y eventos impartidos por los talleres residentes.",
     interactionRadius: 110,
     type: "navigation",
     status: "coming-soon",
   },
 ]
+
+/** Anexo sur de VETA (patio de material). Visual + clic → VETA. */
+export const VETA_ANNEX_RECT = { x: 120, y: 1012, width: 250, height: 508 }
 
 export function getSpace(id: string): WorkshopSpace | undefined {
   return SPACES.find((s) => s.id === id)
@@ -245,5 +255,21 @@ export function spaceKindLabel(space: WorkshopSpace): string {
       return "PATIO"
     case "navigation":
       return "LA BOR"
+    case "installation":
+      return "INSTALACIÓN"
+  }
+}
+
+/** Color de acento por residente (sistema de diseño). */
+export function spaceAccent(space: WorkshopSpace): string | undefined {
+  switch (space.id) {
+    case "veta":
+      return "#c98f42"
+    case "contraste":
+      return "#3f9c96"
+    case "mannino":
+      return "#8e9299"
+    default:
+      return undefined
   }
 }

@@ -1,19 +1,18 @@
 import type { RefObject } from "react"
-import type { WorkshopSpace } from "../../data/spaces"
 
 interface HotspotLabelProps {
-  space: WorkshopSpace
+  name: string
+  action: string
   labelRef: RefObject<HTMLDivElement>
-  onOpen: (id: string) => void
+  onOpen: () => void
 }
 
 /**
- * Etiqueta editorial que aparece al acercarse a un hotspot.
- * El motor la posiciona en pantalla cada frame (ref), por lo que
- * aquí solo vive el contenido.
+ * Etiqueta editorial que aparece al acercarse a un punto de interés
+ * (espacio, estación o salida). El motor la posiciona en pantalla
+ * cada frame (ref), por lo que aquí solo vive el contenido.
  */
-export function HotspotLabel({ space, labelRef, onOpen }: HotspotLabelProps) {
-  const action = space.type === "available" ? "DISPONIBLE" : "VER"
+export function HotspotLabel({ name, action, labelRef, onOpen }: HotspotLabelProps) {
   return (
     <div ref={labelRef} className="hotspot-label">
       <button
@@ -22,10 +21,10 @@ export function HotspotLabel({ space, labelRef, onOpen }: HotspotLabelProps) {
         onPointerDown={(e) => e.stopPropagation()}
         onClick={(e) => {
           e.stopPropagation()
-          onOpen(space.id)
+          onOpen()
         }}
       >
-        <span className="hotspot-label__name">{space.name}</span>
+        <span className="hotspot-label__name">{name}</span>
         <span className="hotspot-label__action">{action} ↗</span>
       </button>
     </div>

@@ -2,6 +2,7 @@ import { LOCATION } from "../../config/world"
 
 interface EntranceProps {
   opening: boolean
+  ready: boolean
   onEnter: () => void
 }
 
@@ -10,7 +11,7 @@ interface EntranceProps {
  * Al presionar ENTRAR, los dos portones industriales se abren
  * y revelan el patio (la transición vive en CSS).
  */
-export function Entrance({ opening, onEnter }: EntranceProps) {
+export function Entrance({ opening, ready, onEnter }: EntranceProps) {
   return (
     <div className={`entrance${opening ? " entrance--opening" : ""}`} aria-hidden={opening}>
       <div className="entrance__panel entrance__panel--left" />
@@ -19,16 +20,9 @@ export function Entrance({ opening, onEnter }: EntranceProps) {
 
       <div className="entrance__content">
         <p className="entrance__kicker">TALLERES</p>
-        <h1 className="entrance__title">
-          LA&nbsp;BOR
-        </h1>
-        <button
-          type="button"
-          className="entrance__button"
-          onClick={onEnter}
-          disabled={opening}
-        >
-          ENTRAR
+        <h1 className="entrance__title">LA&nbsp;BOR</h1>
+        <button type="button" className="entrance__button" onClick={onEnter} disabled={opening || !ready}>
+          {ready ? "ENTRAR" : "• • •"}
         </button>
         <p className="entrance__place">TULUM, QROO.</p>
       </div>

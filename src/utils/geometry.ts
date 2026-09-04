@@ -1,4 +1,4 @@
-import { OBSTACLES, WALKABLE_AREA, WAYPOINTS, type Point } from "../data/map"
+import type { Point, SceneGeometry } from "../data/map"
 
 export function dist(ax: number, ay: number, bx: number, by: number): number {
   const dx = bx - ax
@@ -22,33 +22,33 @@ export function pointInPolygon(x: number, y: number, polygon: Array<[number, num
   return inside
 }
 
-export function insideObstacle(x: number, y: number): boolean {
-  for (const o of OBSTACLES) {
+export function insideObstacle(x: number, y: number, geo: SceneGeometry): boolean {
+  for (const o of geo.obstacles) {
     if (dist(x, y, o.x, o.y) < o.radius) return true
   }
   return false
 }
 
-/** Validación principal: dentro del patio y fuera de obstáculos. */
-export function isPointInsideWalkableArea(x: number, y: number): boolean {
-  return pointInPolygon(x, y, WALKABLE_AREA) && !insideObstacle(x, y)
+/** Validación principal: dentro del área caminable y fuera de obstáculos. */
+export function isPointInsideWalkableArea(x: number, y: number, geo: SceneGeometry): boolean {
+  return pointInPolygon(x, y, geo.walkable) && !insideObstacle(x, y, geo)
 }
 
 /** Un segmento es caminable si todos sus muestreos lo son. */
-export function isSegmentWalkable(a: Point, b: Point, step = 14): boolean {
+export function isSegmentWalkable(a: Point, b: Point, geo: SceneGeometry, step = 14): boolean {
   const d = dist(a.x, a.y, b.x, b.y)
   const n = Math.max(1, Math.ceil(d / step))
   for (let i = 0; i <= n; i++) {
     const t = i / n
     const x = a.x + (b.x - a.x) * t
     const y = a.y + (b.y - a.y) * t
-    if (!isPointInsideWalkableArea(x, y)) return false
+    if (!isPointInsideWalkableArea(x, y, geo)) return false
   }
   return true
 }
 
-function clearOfObstacles(x: number, y: number, clearance: number): boolean {
-  for (const o of OBSTACLES) {
+function clearOfObstacles(x: number, y: number, clearance: number, geo: SceneGeometry): boolean {
+  for (const o of geo.obstacles) {
     if (dist(x, y, o.x, o.y) < o.radius + clearance) return false
   }
   return true
@@ -61,8 +61,8 @@ function clearOfObstacles(x: number, y: number, clearance: number): boolean {
  * dentro de un objeto físico. Se prefiere un punto con holgura
  * respecto a los obstáculos para no dejar al visitante acuñado.
  */
-export function findNearestWalkablePoint(p: Point, maxRadius = 170): Point {
-  if (isPointInsideWalkableArea(p.x, p.y) && clearOfObstacles(p.x, p.y, 8)) return p
+export function findNearestWalkablePoint(p: Point, geo: SceneGeometry, maxRadius = 200): Point {
+  if (isPointInsideWalkableArea(p.x, p.y, geo) && clearOfObstacles(p.x, p.y, 8, geo)) return p
   const directions = 24
   let fallback: Point | null = null
   for (let r = 6; r <= maxRadius; r += 6) {
@@ -70,8 +70,8 @@ export function findNearestWalkablePoint(p: Point, maxRadius = 170): Point {
       const a = (i / directions) * Math.PI * 2
       const x = p.x + Math.cos(a) * r
       const y = p.y + Math.sin(a) * r
-      if (!isPointInsideWalkableArea(x, y)) continue
-      if (clearOfObstacles(x, y, 8)) return { x, y }
+      if (!isPointInsideWalkableArea(x, y, geo)) continue
+      if (clearOfObstacles(x, y, 8, geo)) return { x, y }
       if (!fallback) fallback = { x, y }
     }
   }
@@ -81,22 +81,21 @@ export function findNearestWalkablePoint(p: Point, maxRadius = 170): Point {
 /**
  * Ruta de start a target. Si la línea recta es caminable, la ruta
  * es directa. Si no, se busca la ruta más corta a través del grafo
- * de WAYPOINTS (Dijkstra sobre ~8 nodos). Si nada conecta, se
+ * de waypoints (Dijkstra sobre ~10 nodos). Si nada conecta, se
  * devuelve la recta como último recurso.
  */
-export function findPath(start: Point, target: Point): Point[] {
-  if (isSegmentWalkable(start, target)) return [target]
+export function findPath(start: Point, target: Point, geo: SceneGeometry): Point[] {
+  if (isSegmentWalkable(start, target, geo)) return [target]
 
-  const nodes: Point[] = [start, ...WAYPOINTS, target]
+  const nodes: Point[] = [start, ...geo.waypoints, target]
   const n = nodes.length
   const START = 0
   const TARGET = n - 1
 
-  // Matriz de adyacencia con distancias (Infinity = no conectado)
   const edges: number[][] = Array.from({ length: n }, () => Array(n).fill(Infinity))
   for (let i = 0; i < n; i++) {
     for (let j = i + 1; j < n; j++) {
-      if (isSegmentWalkable(nodes[i], nodes[j])) {
+      if (isSegmentWalkable(nodes[i], nodes[j], geo)) {
         const d = dist(nodes[i].x, nodes[i].y, nodes[j].x, nodes[j].y)
         edges[i][j] = d
         edges[j][i] = d

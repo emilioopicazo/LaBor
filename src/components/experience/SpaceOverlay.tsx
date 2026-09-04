@@ -5,6 +5,7 @@ interface SpaceOverlayProps {
   space: WorkshopSpace
   onClose: () => void
   onNavigate: (id: string) => void
+  onEnterScene: (sceneId: string) => void
 }
 
 /**
@@ -12,41 +13,29 @@ interface SpaceOverlayProps {
  * sobre el mundo, que permanece visible detrás. Cierra con ×, ESC
  * o clic en el fondo.
  */
-export function SpaceOverlay({ space, onClose, onNavigate }: SpaceOverlayProps) {
+export function SpaceOverlay({ space, onClose, onNavigate, onEnterScene }: SpaceOverlayProps) {
   const closeRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
     closeRef.current?.focus()
   }, [space.id])
 
-  const kicker = space.number
-    ? `${space.number} / ${spaceKindLabel(space)}`
-    : spaceKindLabel(space)
-
+  const kicker = space.number ? `${space.number} / ${spaceKindLabel(space)}` : spaceKindLabel(space)
   const nameLines = space.name.split(" ")
   const subtitleLines = space.subtitle?.split(" / ") ?? []
 
   return (
     <div className="overlay" role="dialog" aria-modal="true" aria-label={space.name}>
-      <button
-        type="button"
-        className="overlay__backdrop"
-        aria-label="Cerrar"
-        onClick={onClose}
-      />
+      <button type="button" className="overlay__backdrop" aria-label="Cerrar" onClick={onClose} />
       <article className="overlay__panel">
         <header className="overlay__header">
           <p className="overlay__kicker">{kicker}</p>
-          <button
-            ref={closeRef}
-            type="button"
-            className="overlay__close"
-            onClick={onClose}
-            aria-label="Cerrar"
-          >
+          <button ref={closeRef} type="button" className="overlay__close" onClick={onClose} aria-label="Cerrar">
             ×
           </button>
         </header>
+
+        {space.status === "available" && <p className="overlay__lead">ESTE ESPACIO PODRÍA SER TUYO…</p>}
 
         <h2 className="overlay__name">
           {nameLines.map((line) => (
@@ -64,9 +53,7 @@ export function SpaceOverlay({ space, onClose, onNavigate }: SpaceOverlayProps) 
           </ul>
         )}
 
-        {space.status === "available" && (
-          <p className="overlay__status">ESPACIO DISPONIBLE</p>
-        )}
+        {space.status === "available" && <p className="overlay__status">ESPACIO DISPONIBLE</p>}
 
         {space.description && <p className="overlay__description">{space.description}</p>}
 
@@ -78,18 +65,20 @@ export function SpaceOverlay({ space, onClose, onNavigate }: SpaceOverlayProps) 
           </ul>
         )}
 
-        {space.status === "coming-soon" && (
-          <p className="overlay__soon">PRÓXIMAMENTE</p>
-        )}
+        {space.status === "coming-soon" && <p className="overlay__soon">PRÓXIMAMENTE</p>}
 
         {space.cta && (
           <div className="overlay__cta-row">
-            {space.cta.targetSpaceId ? (
+            {space.cta.enterSceneId ? (
               <button
                 type="button"
-                className="overlay__cta"
-                onClick={() => onNavigate(space.cta!.targetSpaceId!)}
+                className="overlay__cta overlay__cta--primary"
+                onClick={() => onEnterScene(space.cta!.enterSceneId!)}
               >
+                {space.cta.label} ↗
+              </button>
+            ) : space.cta.targetSpaceId ? (
+              <button type="button" className="overlay__cta" onClick={() => onNavigate(space.cta!.targetSpaceId!)}>
                 {space.cta.label} ↗
               </button>
             ) : space.cta.href ? (
