@@ -39,11 +39,10 @@ export function WorldHUD({ hasMoved, oficio, sceneName, coarse, onReset }: World
 
       {!hasMoved && (
         <p className="hud__hint">
-          {coarse ? "TOCA EL PISO O ARRASTRA PARA CAMINAR" : "CLICK PARA CAMINAR · WASD / FLECHAS"}
+          {coarse ? "TOCA EL PISO O ARRASTRA PARA CAMINAR" : "CLIC PARA CAMINAR · WASD / FLECHAS"}
         </p>
       )}
 
-      <p className="hud__orientation">MEJOR EN HORIZONTAL</p>
     </>
   )
 }

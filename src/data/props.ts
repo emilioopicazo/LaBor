@@ -23,6 +23,8 @@ export interface WorldProp {
   h: number
   /** obstáculo circular (centro relativo al ancla: dy negativo = arriba) */
   obstacle?: { radius: number; dy?: number }
+  /** huella rectangular bloqueada (mundo) para objetos grandes */
+  blockRect?: { x: number; y: number; width: number; height: number }
   /** copa separada (árboles): se dibuja encima con vaivén */
   canopy?: { asset: SpriteAsset; dy: number; sway: "slow" | "fast" }
   /** clase CSS opcional para vida ambiental */
@@ -76,6 +78,7 @@ export const OVERWORLD_PROPS: WorldProp[] = [
     w: 44 * 10,
     h: 44 * 10,
     obstacle: { radius: 130, dy: -218 },
+    blockRect: { x: 1680, y: 1030, width: 280, height: 290 },
   },
 
   // ---- objetos del patio --------------------------------------

@@ -36,17 +36,13 @@ export const ASSETS = {
     "pabellon-04": sprite("world/roofs/roof-pabellon-04-v1.png", 46, 38),
     contraste: sprite("world/roofs/roof-contraste-v1.png", 39, 39),
     veta: sprite("world/roofs/roof-veta-v1.png", 32, 72),
-    "veta-sur": sprite("world/roofs/roof-veta-sur-v1.png", 36, 80),
     mannino: sprite("world/roofs/roof-mannino-v1.png", 32, 80),
   } as Record<string, SpriteAsset>,
 
-  // --- vegetación (separada en base / copa para profundidad) ----
+  // --- vegetación (solo la del plano: árbol principal + 2 plantas;
+  //     palmas y árbol de banqueta quedan en public/ sin cargarse) ----
   treeMainBase: sprite("world/vegetation/tree-main-base-v1.png", 40, 40),
   treeMainCanopy: sprite("world/vegetation/tree-main-canopy-v1.png", 40, 40),
-  treeSidewalkBase: sprite("world/vegetation/tree-sidewalk-base-v1.png", 30, 30),
-  treeSidewalkCanopy: sprite("world/vegetation/tree-sidewalk-canopy-v1.png", 30, 30),
-  palmBase: sprite("world/vegetation/palm-base-v1.png", 30, 30),
-  palmCanopy: sprite("world/vegetation/palm-canopy-v1.png", 30, 30),
   shrub01: sprite("world/vegetation/shrub-01-v1.png", 16, 14),
   shrub02: sprite("world/vegetation/shrub-02-v1.png", 16, 14),
 

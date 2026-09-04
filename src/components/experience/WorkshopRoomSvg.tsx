@@ -57,7 +57,7 @@ export function WorkshopRoomSvg({
       </defs>
 
       {/* vacío exterior + muro de fondo */}
-      <rect x={0} y={0} width={W} height={H} fill="#14120f" />
+      <rect x={0} y={0} width={W} height={H} fill="#181411" />
       <rect x={40} y={0} width={W - 80} height={200} fill={scene.style === "concrete-light" ? "#3a3631" : "#2b2723"} />
       <rect x={40} y={180} width={W - 80} height={22} fill="#1f1c18" />
       {[0.22, 0.5, 0.78].map((f) => (

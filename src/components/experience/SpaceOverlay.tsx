@@ -6,6 +6,8 @@ interface SpaceOverlayProps {
   onClose: () => void
   onNavigate: (id: string) => void
   onEnterScene: (sceneId: string) => void
+  /** escena actual: se omite el CTA de entrar si ya estamos dentro */
+  currentSceneId?: string
 }
 
 /**
@@ -13,7 +15,7 @@ interface SpaceOverlayProps {
  * sobre el mundo, que permanece visible detrás. Cierra con ×, ESC
  * o clic en el fondo.
  */
-export function SpaceOverlay({ space, onClose, onNavigate, onEnterScene }: SpaceOverlayProps) {
+export function SpaceOverlay({ space, onClose, onNavigate, onEnterScene, currentSceneId }: SpaceOverlayProps) {
   const closeRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
@@ -27,6 +29,7 @@ export function SpaceOverlay({ space, onClose, onNavigate, onEnterScene }: Space
   const renderCta = (cta: SpaceCta, primary: boolean) => {
     const cls = `overlay__cta${primary ? " overlay__cta--primary" : ""}`
     if (cta.enterSceneId) {
+      if (cta.enterSceneId === currentSceneId) return null
       return (
         <button key={cta.label} type="button" className={cls} onClick={() => onEnterScene(cta.enterSceneId!)}>
           {cta.label} ↗

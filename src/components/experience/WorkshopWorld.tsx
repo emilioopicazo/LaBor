@@ -134,6 +134,7 @@ export function WorkshopWorld() {
           onClose={engine.closeOverlay}
           onNavigate={engine.openSpace}
           onEnterScene={(sceneId) => engine.enterScene(sceneId)}
+          currentSceneId={engine.sceneId}
         />
       )}
 

@@ -13,7 +13,7 @@ export const WORLD_HEIGHT = 2900
 export const WALL = 100 // espesor del muro perimetral
 
 // --- Movimiento del visitante ---------------------------------
-export const PLAYER_SPEED = 340 // world px / segundo
+export const PLAYER_SPEED = 480 // world px / segundo (mundo 3200×2900)
 export const FAST_TRAVEL_MULT = 3 // multiplicador al usar el menú (fast travel)
 export const ARRIVE_EPSILON = 3 // distancia para considerar "llegó"
 
@@ -60,7 +60,7 @@ export const SCENE_FADE_MS = 320
 
 // --- Intro -----------------------------------------------------
 export const INTRO_TITLE_MS = 2400
-export const INTRO_TEXT_MS = 6200
+export const INTRO_TEXT_MS = 9500
 export const ENTRANCE_GATE_MS = 950
 
 // --- Sonido (arquitectura mínima, apagado por defecto) --------

@@ -143,7 +143,10 @@ function polygonBounds(poly: Array<[number, number]>) {
 }
 
 function buildOverworld(): SceneRuntime {
-  const blocked = BUILDINGS.map((s) => s.buildingRect!)
+  const blocked = [
+    ...BUILDINGS.map((s) => s.buildingRect!),
+    ...OVERWORLD_PROPS.filter((p) => p.blockRect).map((p) => p.blockRect!),
+  ]
   const geo: SceneGeometry = {
     walkable: WALKABLE_AREA,
     blocked,
@@ -467,7 +470,9 @@ export function useExperienceEngine(refs: EngineRefs) {
         return
       }
       if (S.current.scene.id !== OVERWORLD_ID) {
-        enterScene(OVERWORLD_ID, undefined, () => goToPoi(id, opts))
+        const def = S.current.scene.def
+        const door = def ? getSpace(def.spaceId)?.interactionPoint : undefined
+        enterScene(OVERWORLD_ID, door, () => goToPoi(id, opts))
         return
       }
       goToPoi(id, opts)

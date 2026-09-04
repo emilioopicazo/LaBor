@@ -40,7 +40,7 @@ export function FastMenu({ open, setOpen, onTravel, onDirect }: FastMenuProps) {
         }}
         aria-expanded={open}
       >
-        MENU&nbsp;+
+        MENÚ&nbsp;+
       </button>
 
       {open && (

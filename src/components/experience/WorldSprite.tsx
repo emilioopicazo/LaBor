@@ -18,7 +18,7 @@ export const T = {
   steel: "#8e9299",
   steel2: "#b6bcbd",
   rust: "#c47a3f",
-  outside: "#4a463f",
+  outside: "#262119",
   street: "#2b2824",
 }
 
