@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useRef } from "react"
+import { useCallback, useEffect, useMemo, useRef } from "react"
+import { isCoarsePointer } from "../../config/world"
 import { SCENES, type WorkshopStation } from "../../data/scenes"
 import { getSpace } from "../../data/spaces"
-import { discoverPieza, onBaseCrafted } from "../../game/quests"
+import { discoverPieza, onComponentCrafted } from "../../game/quests"
 import { game, useGameState } from "../../game/state"
 import { OVERWORLD_ID, useExperienceEngine } from "../../hooks/useExperienceEngine"
 import { DebugPanel } from "./DebugPanel"
@@ -12,6 +13,7 @@ import { ClickMarker, Player } from "./Player"
 import { SpaceOverlay } from "./SpaceOverlay"
 import { StationPanel } from "./StationPanel"
 import { Toasts } from "./Toasts"
+import { TouchControls } from "./TouchControls"
 import { WorkshopRoomSvg } from "./WorkshopRoomSvg"
 import { WorkshopSvg } from "./WorkshopSvg"
 import { WorldHUD } from "./WorldHUD"
@@ -27,9 +29,12 @@ export function WorkshopWorld() {
   const figureRef = useRef<SVGGElement>(null)
   const labelRef = useRef<HTMLDivElement>(null)
   const markerRef = useRef<SVGGElement>(null)
+  const stickRingRef = useRef<HTMLDivElement>(null)
+  const stickKnobRef = useRef<HTMLDivElement>(null)
 
-  const engine = useExperienceEngine({ worldRef, playerRef, figureRef, labelRef, markerRef })
+  const engine = useExperienceEngine({ worldRef, playerRef, figureRef, labelRef, markerRef, stickRingRef, stickKnobRef })
   const save = useGameState()
+  const coarse = useMemo(() => isCoarsePointer(), [])
 
   const inRoom = engine.sceneId !== OVERWORLD_ID
   const roomDef = inRoom ? SCENES[engine.sceneId] : undefined
@@ -37,20 +42,12 @@ export function WorkshopWorld() {
   const activeStation = roomDef && engine.activeStationId ? roomDef.stations.find((s) => s.id === engine.activeStationId) : undefined
   const labelVisible = engine.nearbyPoi && !activeSpace && !activeStation && !engine.menuOpen && !engine.transitioning
 
-  // Descubrir el sitio de la instalación al acercarse por primera vez
   useEffect(() => {
     if (engine.nearbyPoiId === "pieza") discoverPieza()
   }, [engine.nearbyPoiId])
 
   const handleCraft = useCallback((station: WorkshopStation) => {
-    if (station.craft.componentId === "base-madera") {
-      onBaseCrafted()
-      return
-    }
-    game.grantComponent(station.craft.componentId)
-    game.toast(`+ ${station.craft.label}`, "material")
-    game.addOficio(station.craft.oficio)
-    game.toast(`+${station.craft.oficio} OFICIO`, "oficio")
+    onComponentCrafted(station.craft.componentId, station.craft.label, station.craft.oficio)
   }, [])
 
   const player = <Player playerRef={playerRef} figureRef={figureRef} />
@@ -61,6 +58,8 @@ export function WorkshopWorld() {
       className={`viewport${inRoom ? " viewport--room" : ""}`}
       onPointerDown={engine.onWorldPointerDown}
       onPointerMove={engine.onWorldPointerMove}
+      onPointerUp={engine.onWorldPointerUp}
+      onPointerCancel={engine.onWorldPointerCancel}
       onContextMenu={engine.onWorldContextMenu}
     >
       <div ref={worldRef} className="world" style={{ width: engine.runtime.width, height: engine.runtime.height }}>
@@ -103,7 +102,20 @@ export function WorkshopWorld() {
         />
       )}
 
-      <WorldHUD hasMoved={engine.hasMoved} oficio={save.oficio} sceneName={roomDef?.name ?? null} onReset={engine.resetToSpawn} />
+      <WorldHUD
+        hasMoved={engine.hasMoved}
+        oficio={save.oficio}
+        sceneName={roomDef?.name ?? null}
+        coarse={coarse}
+        onReset={engine.resetToSpawn}
+      />
+
+      <TouchControls
+        ringRef={stickRingRef}
+        knobRef={stickKnobRef}
+        onEnter={engine.goToNearest}
+        visible={coarse && !activeSpace && !activeStation && !engine.menuOpen && !engine.transitioning}
+      />
 
       <FastMenu
         open={engine.menuOpen}

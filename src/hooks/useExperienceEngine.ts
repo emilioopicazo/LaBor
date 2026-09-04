@@ -3,17 +3,22 @@ import type { RefObject } from "react"
 import {
   ARRIVE_EPSILON,
   CAMERA_LERP,
+  ENTER_ZOOM,
+  EXIT_ZOOM,
   FAST_TRAVEL_MULT,
   FOCUS_BIAS,
-  FOCUS_ZOOM_OVERLAY,
   FOCUS_ZOOM_STATION,
   INTERACTION_RADIUS_DEFAULT,
   MOBILE_BREAKPOINT,
   PLAYER_SCALE_MAX,
   PLAYER_SCALE_MIN,
   PLAYER_SPEED,
-  REVEAL_FROM,
+  ROOM_ZOOM_DESKTOP_MIN,
+  ROOM_ZOOM_MOBILE_MIN,
   SCENE_FADE_MS,
+  STICK_RADIUS,
+  TAP_MAX_MOVE,
+  TAP_MAX_MS,
   WORLD_HEIGHT,
   WORLD_WIDTH,
   ZOOM_DESKTOP_MIN,
@@ -23,16 +28,17 @@ import {
   prefersReducedMotion,
 } from "../config/world"
 import {
+  EXTRA_WAYPOINTS,
+  PROPERTY_INNER,
   SPAWN_POINT,
-  STATIC_OBSTACLES,
   WALKABLE_AREA,
-  WAYPOINTS,
+  cornerWaypoints,
   type Point,
   type SceneGeometry,
 } from "../data/map"
 import { OVERWORLD_PROPS, propObstacles } from "../data/props"
 import { SCENES, sceneObstacles, type WorkshopSceneDef } from "../data/scenes"
-import { WORLD_SPACES, getSpace, type WorkshopSpace } from "../data/spaces"
+import { BUILDINGS, WORLD_SPACES, getSpace, type WorkshopSpace } from "../data/spaces"
 import { game } from "../game/state"
 import {
   cameraTransform,
@@ -53,9 +59,9 @@ import { damp, lerp } from "../utils/interpolation"
 // Tipos públicos
 // ============================================================
 
-export type PoiKind = "space" | "station" | "exit"
+export type PoiKind = "space" | "station" | "exit" | "info"
 
-/** Punto de interés genérico: espacio del patio, estación o salida. */
+/** Punto de interés genérico: espacio, estación, salida o ficha. */
 export interface Poi {
   id: string
   kind: PoiKind
@@ -64,6 +70,8 @@ export interface Poi {
   radius: number
   name: string
   action: string
+  /** espacio asociado (kind info) */
+  spaceId?: string
 }
 
 export interface SceneRuntime {
@@ -72,7 +80,6 @@ export interface SceneRuntime {
   height: number
   geo: SceneGeometry
   pois: Poi[]
-  /** anclas de profundidad (y) de los props, ordenadas */
   depthAnchors: number[]
   spawn: Point
   depthRange: { far: number; near: number }
@@ -88,6 +95,7 @@ export interface DebugInfo {
   fps: number
   depthIndex: number
   nearby: string | null
+  stick: Point | null
   lastLogged: Point | null
 }
 
@@ -97,6 +105,8 @@ export interface EngineRefs {
   figureRef: RefObject<SVGGElement>
   labelRef: RefObject<HTMLDivElement>
   markerRef: RefObject<SVGGElement>
+  stickRingRef: RefObject<HTMLDivElement>
+  stickKnobRef: RefObject<HTMLDivElement>
 }
 
 export const OVERWORLD_ID = "overworld"
@@ -118,8 +128,7 @@ const MOVE_KEYS: Record<string, [number, number]> = {
 
 function spaceAction(space: WorkshopSpace): string {
   if (space.type === "available") return "DISPONIBLE"
-  if (space.type === "installation") return "VER"
-  if (space.cta?.enterSceneId) return "VER"
+  if (space.cta?.enterSceneId) return "ENTRAR"
   return "VER"
 }
 
@@ -134,10 +143,12 @@ function polygonBounds(poly: Array<[number, number]>) {
 }
 
 function buildOverworld(): SceneRuntime {
+  const blocked = BUILDINGS.map((s) => s.buildingRect!)
   const geo: SceneGeometry = {
     walkable: WALKABLE_AREA,
-    obstacles: [...STATIC_OBSTACLES, ...propObstacles(OVERWORLD_PROPS)],
-    waypoints: WAYPOINTS,
+    blocked,
+    obstacles: propObstacles(OVERWORLD_PROPS),
+    waypoints: [...EXTRA_WAYPOINTS, ...cornerWaypoints(blocked, 90, PROPERTY_INNER)],
   }
   const pois: Poi[] = WORLD_SPACES.map((s) => ({
     id: s.id,
@@ -164,6 +175,7 @@ function buildOverworld(): SceneRuntime {
 function buildRoom(def: WorkshopSceneDef): SceneRuntime {
   const geo: SceneGeometry = {
     walkable: def.walkable,
+    blocked: def.blocked,
     obstacles: sceneObstacles(def),
     waypoints: def.waypoints,
   }
@@ -187,6 +199,18 @@ function buildRoom(def: WorkshopSceneDef): SceneRuntime {
       action: "SALIR",
     },
   ]
+  if (def.info) {
+    pois.push({
+      id: `${def.id}-info`,
+      kind: "info",
+      x: def.info.position.x,
+      y: def.info.position.y,
+      radius: def.info.radius,
+      name: def.info.label,
+      action: "INFORMACIÓN",
+      spaceId: def.spaceId,
+    })
+  }
   const b = polygonBounds(def.walkable)
   return {
     id: def.id,
@@ -205,7 +229,15 @@ const OVERWORLD = buildOverworld()
 
 function computeBaseZoom(vw: number, vh: number, scene: SceneRuntime): number {
   const cover = Math.max(vw / scene.width, vh / scene.height)
-  const floor = vw < MOBILE_BREAKPOINT ? ZOOM_MOBILE_MIN : ZOOM_DESKTOP_MIN
+  const mobile = vw < MOBILE_BREAKPOINT
+  const floor =
+    scene.id === OVERWORLD_ID
+      ? mobile
+        ? ZOOM_MOBILE_MIN
+        : ZOOM_DESKTOP_MIN
+      : mobile
+        ? ROOM_ZOOM_MOBILE_MIN
+        : ROOM_ZOOM_DESKTOP_MIN
   return Math.max(cover, floor)
 }
 
@@ -237,8 +269,10 @@ export function useExperienceEngine(refs: EngineRefs) {
     facing: 1,
     walking: false,
     keys: new Set<string>(),
-    camera: { x: REVEAL_FROM.x, y: REVEAL_FROM.y, zoom: 0.8 },
-    baseZoom: 0.8,
+    stick: null as Point | null,
+    pointer: null as { id: number; x: number; y: number; t: number; stick: boolean } | null,
+    camera: { x: SPAWN_POINT.x, y: SPAWN_POINT.y, zoom: 0.7 },
+    baseZoom: 0.7,
     focus: null as { x: number; y: number; mult: number } | null,
     viewport: { width: 1280, height: 720 },
     mouseScreen: null as Point | null,
@@ -250,7 +284,6 @@ export function useExperienceEngine(refs: EngineRefs) {
     lastTime: 0,
   })
 
-  // Espejos para leer estado de React dentro del loop
   const pausedRef = useRef(false)
   pausedRef.current = activeSpaceId !== null || activeStationId !== null || menuOpen || transitioning
   const nearbyRef = useRef<string | null>(null)
@@ -282,36 +315,34 @@ export function useExperienceEngine(refs: EngineRefs) {
 
   const findPoi = useCallback((id: string) => S.current.scene.pois.find((p) => p.id === id), [])
 
-  // ---- Foco de cámara (zoom in / out sutil) ---------------------
-  const setFocus = useCallback((poi: { x: number; y: number } | null, mult = 1) => {
-    S.current.focus = poi && !reducedMotion ? { x: poi.x, y: poi.y, mult } : null
-  }, [reducedMotion])
+  const setFocus = useCallback(
+    (poi: { x: number; y: number } | null, mult = 1) => {
+      S.current.focus = poi && !reducedMotion ? { x: poi.x, y: poi.y, mult } : null
+    },
+    [reducedMotion],
+  )
 
   // ---- Overlays / estaciones ------------------------------------
-  const openSpace = useCallback(
-    (id: string) => {
-      const st = S.current
-      st.path = []
-      st.pendingActivateId = null
-      setMenuOpen(false)
-      setActiveStationId(null)
-      setActiveSpaceId(id)
-      const space = getSpace(id)
-      setFocus(space?.interactionPoint ?? null, FOCUS_ZOOM_OVERLAY)
-    },
-    [setFocus],
-  )
+  const openSpace = useCallback((id: string) => {
+    const st = S.current
+    st.path = []
+    st.pendingActivateId = null
+    st.stick = null
+    setMenuOpen(false)
+    setActiveStationId(null)
+    setActiveSpaceId(id)
+  }, [])
 
   const closeOverlay = useCallback(() => {
     setActiveSpaceId(null)
-    setFocus(null)
-  }, [setFocus])
+  }, [])
 
   const openStation = useCallback(
     (id: string) => {
       const st = S.current
       st.path = []
       st.pendingActivateId = null
+      st.stick = null
       setActiveSpaceId(null)
       setActiveStationId(id)
       const poi = findPoi(id)
@@ -327,32 +358,44 @@ export function useExperienceEngine(refs: EngineRefs) {
 
   // ---- Escenas ----------------------------------------------------
   /**
-   * Cambia de escena con un fundido corto. `arriveAt` coloca al
-   * visitante en un punto concreto (p. ej. la puerta del taller al
-   * volver al patio); si no se da, usa el spawn de la escena.
+   * Cambia de escena con un fundido corto y zoom de énfasis: al
+   * entrar a un taller la cámara se acerca a su puerta; al volver al
+   * patio aparece un poco cerrada y se abre. `arriveAt` coloca al
+   * visitante en un punto concreto (la puerta del taller al volver).
    */
   const enterScene = useCallback(
     (targetId: string, arriveAt?: Point, after?: () => void) => {
       const st = S.current
       if (st.scene.id === targetId && !arriveAt) return
-      const next = targetId === OVERWORLD_ID ? OVERWORLD : SCENES[targetId] ? buildRoom(SCENES[targetId]) : null
+      const next =
+        targetId === OVERWORLD_ID ? OVERWORLD : SCENES[targetId] ? buildRoom(SCENES[targetId]) : null
       if (!next) return
       setActiveSpaceId(null)
       setActiveStationId(null)
       setMenuOpen(false)
-      setFocus(null)
+      st.stick = null
+      st.path = []
+      // zoom hacia la puerta del taller mientras funde
+      if (targetId !== OVERWORLD_ID) {
+        const def = SCENES[targetId]
+        const door = getSpace(def.spaceId)?.interactionPoint ?? st.pos
+        setFocus(door, ENTER_ZOOM)
+      } else {
+        setFocus(null)
+      }
       setTransitioning(true)
       st.afterTransition = after ?? null
       const fade = reducedMotion ? 60 : SCENE_FADE_MS
       window.setTimeout(() => {
         st.scene = next
+        st.focus = null
         const point = arriveAt ? findNearestWalkablePoint(arriveAt, next.geo) : next.spawn
         st.pos = { ...point }
         st.path = []
         st.pendingActivateId = null
         st.baseZoom = computeBaseZoom(st.viewport.width, st.viewport.height, next)
-        st.camera.zoom = st.baseZoom
-        const c = clampCamera(st.pos.x, st.pos.y, st.baseZoom, st.viewport, next.width, next.height)
+        st.camera.zoom = targetId === OVERWORLD_ID && !reducedMotion ? st.baseZoom * EXIT_ZOOM : st.baseZoom
+        const c = clampCamera(st.pos.x, st.pos.y, st.camera.zoom, st.viewport, next.width, next.height)
         st.camera.x = c.x
         st.camera.y = c.y
         st.depthIndex = -1
@@ -385,14 +428,11 @@ export function useExperienceEngine(refs: EngineRefs) {
       if (poi.kind === "space") openSpace(id)
       else if (poi.kind === "station") openStation(id)
       else if (poi.kind === "exit") exitScene()
+      else if (poi.kind === "info" && poi.spaceId) openSpace(poi.spaceId)
     },
     [exitScene, findPoi, openSpace, openStation],
   )
 
-  /**
-   * Camina hacia un punto de interés y lo activa al llegar.
-   * `fast` = fast travel del menú (más veloz).
-   */
   const goToPoi = useCallback(
     (id: string, opts?: { fast?: boolean }) => {
       const st = S.current
@@ -401,7 +441,7 @@ export function useExperienceEngine(refs: EngineRefs) {
       setMenuOpen(false)
       setActiveSpaceId(null)
       setActiveStationId(null)
-      setFocus(null)
+      st.stick = null
       if (dist(st.pos.x, st.pos.y, poi.x, poi.y) <= poi.radius) {
         activatePoi(id)
         return
@@ -413,10 +453,9 @@ export function useExperienceEngine(refs: EngineRefs) {
       markCommandIssued()
       showMarker(target.x, target.y)
     },
-    [activatePoi, findPoi, markCommandIssued, setFocus, showMarker],
+    [activatePoi, findPoi, markCommandIssued, showMarker],
   )
 
-  /** Compatibilidad: ir a un espacio del patio (desde cualquier escena). */
   const goToSpace = useCallback(
     (id: string, opts?: { fast?: boolean }) => {
       const space = getSpace(id)
@@ -425,7 +464,6 @@ export function useExperienceEngine(refs: EngineRefs) {
         setMenuOpen(false)
         setActiveStationId(null)
         setActiveSpaceId(id)
-        setFocus(null)
         return
       }
       if (S.current.scene.id !== OVERWORLD_ID) {
@@ -434,8 +472,23 @@ export function useExperienceEngine(refs: EngineRefs) {
       }
       goToPoi(id, opts)
     },
-    [enterScene, goToPoi, setFocus],
+    [enterScene, goToPoi],
   )
+
+  /** Botón ENTRAR (táctil): va al punto de interés más cercano. */
+  const goToNearest = useCallback(() => {
+    const st = S.current
+    let best: Poi | null = null
+    let bestD = Infinity
+    for (const poi of st.scene.pois) {
+      const d = dist(st.pos.x, st.pos.y, poi.x, poi.y)
+      if (d < bestD) {
+        bestD = d
+        best = poi
+      }
+    }
+    if (best) goToPoi(best.id)
+  }, [goToPoi])
 
   const resetToSpawn = useCallback(() => {
     const st = S.current
@@ -446,18 +499,68 @@ export function useExperienceEngine(refs: EngineRefs) {
     setActiveSpaceId(null)
     setActiveStationId(null)
     setMenuOpen(false)
-    setFocus(null)
+    st.stick = null
     st.pendingActivateId = null
     st.path = findPath(st.pos, SPAWN_POINT, st.scene.geo)
     st.speedMult = FAST_TRAVEL_MULT
-  }, [enterScene, setFocus])
+  }, [enterScene])
 
-  // ---- Entrada por puntero -----------------------------------------
-  const onWorldPointerDown = useCallback(
+  // ---- Puntero: tap = caminar · arrastrar = stick flotante ----------
+  const hideStick = useCallback(() => {
+    const ring = refs.stickRingRef.current
+    if (ring) ring.classList.remove("is-active")
+    S.current.stick = null
+  }, [refs.stickRingRef])
+
+  const onWorldPointerDown = useCallback((e: React.PointerEvent) => {
+    if (e.button !== 0) return
+    if (pausedRef.current) return
+    S.current.pointer = { id: e.pointerId, x: e.clientX, y: e.clientY, t: performance.now(), stick: false }
+  }, [])
+
+  const onWorldPointerMove = useCallback(
     (e: React.PointerEvent) => {
-      if (e.button !== 0) return
-      if (pausedRef.current) return
       const st = S.current
+      st.mouseScreen = { x: e.clientX, y: e.clientY }
+      const p = st.pointer
+      if (!p || p.id !== e.pointerId) return
+      const dx = e.clientX - p.x
+      const dy = e.clientY - p.y
+      if (!p.stick) {
+        if (Math.hypot(dx, dy) < TAP_MAX_MOVE) return
+        p.stick = true
+        st.path = []
+        st.pendingActivateId = null
+        const ring = refs.stickRingRef.current
+        if (ring) {
+          ring.style.transform = `translate3d(${p.x}px, ${p.y}px, 0)`
+          ring.classList.add("is-active")
+        }
+        markCommandIssued()
+      }
+      const len = Math.hypot(dx, dy)
+      const k = len > STICK_RADIUS ? STICK_RADIUS / len : 1
+      const kx = dx * k
+      const ky = dy * k
+      st.stick = { x: kx / STICK_RADIUS, y: ky / STICK_RADIUS }
+      const knob = refs.stickKnobRef.current
+      if (knob) knob.style.transform = `translate3d(${kx}px, ${ky}px, 0)`
+    },
+    [markCommandIssued, refs.stickKnobRef, refs.stickRingRef],
+  )
+
+  const onWorldPointerUp = useCallback(
+    (e: React.PointerEvent) => {
+      const st = S.current
+      const p = st.pointer
+      if (!p || p.id !== e.pointerId) return
+      st.pointer = null
+      if (p.stick) {
+        hideStick()
+        return
+      }
+      if (performance.now() - p.t > TAP_MAX_MS) return
+      if (pausedRef.current) return
       const world = screenToWorldCoordinates(e.clientX, e.clientY, st.camera, st.viewport)
       if (!isPointInsideWalkableArea(world.x, world.y, st.scene.geo)) return
       st.path = findPath(st.pos, world, st.scene.geo)
@@ -466,12 +569,13 @@ export function useExperienceEngine(refs: EngineRefs) {
       markCommandIssued()
       showMarker(world.x, world.y)
     },
-    [markCommandIssued, showMarker],
+    [hideStick, markCommandIssued, showMarker],
   )
 
-  const onWorldPointerMove = useCallback((e: React.PointerEvent) => {
-    S.current.mouseScreen = { x: e.clientX, y: e.clientY }
-  }, [])
+  const onWorldPointerCancel = useCallback(() => {
+    S.current.pointer = null
+    hideStick()
+  }, [hideStick])
 
   const onWorldContextMenu = useCallback(
     (e: React.MouseEvent) => {
@@ -497,7 +601,7 @@ export function useExperienceEngine(refs: EngineRefs) {
         else setMenuOpen(false)
         return
       }
-      if (key === "e") {
+      if (key === "e" || key === "enter") {
         if (!pausedRef.current && nearbyRef.current) activatePoi(nearbyRef.current)
         return
       }
@@ -525,18 +629,8 @@ export function useExperienceEngine(refs: EngineRefs) {
       st.baseZoom = computeBaseZoom(st.viewport.width, st.viewport.height, st.scene)
     }
     measure()
-    if (reducedMotion) {
-      st.camera = { x: st.pos.x, y: st.pos.y, zoom: st.baseZoom }
-    } else {
-      st.camera = {
-        x: REVEAL_FROM.x,
-        y: REVEAL_FROM.y,
-        zoom: Math.max(
-          st.baseZoom * 0.92,
-          Math.max(st.viewport.width / WORLD_WIDTH, st.viewport.height / WORLD_HEIGHT),
-        ),
-      }
-    }
+    // llegada: la cámara arranca un poco cerrada sobre el portón y se abre
+    st.camera = { x: st.pos.x, y: st.pos.y, zoom: reducedMotion ? st.baseZoom : st.baseZoom * 1.18 }
     window.addEventListener("resize", measure)
     window.addEventListener("orientationchange", measure)
     return () => {
@@ -565,7 +659,7 @@ export function useExperienceEngine(refs: EngineRefs) {
       let walkedThisFrame = false
 
       if (!pausedRef.current) {
-        // 1) Teclado (secundario): anula la ruta activa
+        // 1) Entrada directa: teclado o stick flotante (anulan la ruta)
         let kx = 0
         let ky = 0
         st.keys.forEach((k) => {
@@ -575,9 +669,15 @@ export function useExperienceEngine(refs: EngineRefs) {
             ky += v[1]
           }
         })
+        let mag = 1
+        if (kx === 0 && ky === 0 && st.stick) {
+          kx = st.stick.x
+          ky = st.stick.y
+          mag = Math.min(1, Math.hypot(kx, ky))
+        }
         if (kx !== 0 || ky !== 0) {
           const len = Math.hypot(kx, ky)
-          const step = PLAYER_SPEED * dt
+          const step = PLAYER_SPEED * dt * (mag < 0.25 ? 0.25 : mag)
           const nx = st.pos.x + (kx / len) * step
           const ny = st.pos.y + (ky / len) * step
           st.path = []
@@ -592,10 +692,10 @@ export function useExperienceEngine(refs: EngineRefs) {
             st.pos = { x: st.pos.x, y: ny }
             walkedThisFrame = true
           }
-          if (kx !== 0) st.facing = kx > 0 ? 1 : -1
+          if (Math.abs(kx) > 0.05) st.facing = kx > 0 ? 1 : -1
           if (walkedThisFrame) markCommandIssued()
         } else if (st.path.length > 0) {
-          // 2) Ruta activa (clic / tap / fast travel)
+          // 2) Ruta activa (tap / clic / fast travel)
           const wp = st.path[0]
           const d = dist(st.pos.x, st.pos.y, wp.x, wp.y)
           const step = PLAYER_SPEED * st.speedMult * dt
@@ -643,7 +743,7 @@ export function useExperienceEngine(refs: EngineRefs) {
         refs.figureRef.current?.classList.toggle("is-walking", walkedThisFrame)
       }
 
-      // 4) Profundidad: índice del visitante entre las anclas de props
+      // 4) Profundidad
       let idx = 0
       const anchors = scene.depthAnchors
       while (idx < anchors.length && anchors[idx] <= st.pos.y) idx++
@@ -652,7 +752,7 @@ export function useExperienceEngine(refs: EngineRefs) {
         setPlayerDepthIndex(idx)
       }
 
-      // 5) Cámara: sigue al visitante (o al foco) con amortiguación
+      // 5) Cámara
       const focus = st.focus
       const targetX = focus ? lerp(st.pos.x, focus.x, FOCUS_BIAS) : st.pos.x
       const targetY = focus ? lerp(st.pos.y, focus.y, FOCUS_BIAS) : st.pos.y
@@ -662,7 +762,7 @@ export function useExperienceEngine(refs: EngineRefs) {
       st.camera.y = damp(st.camera.y, clamped.y, Math.min(CAMERA_LERP * lerpBoost, 0.5), dt)
       st.camera.zoom = damp(st.camera.zoom, targetZoom, Math.min(ZOOM_LERP * lerpBoost, 0.5), dt)
 
-      // 6) Escritura al DOM (sin re-render de React)
+      // 6) DOM
       if (refs.worldRef.current) {
         refs.worldRef.current.style.transform = cameraTransform(st.camera, st.viewport)
       }
@@ -679,11 +779,11 @@ export function useExperienceEngine(refs: EngineRefs) {
         const poi = scene.pois.find((p) => p.id === nearbyRef.current)
         if (poi) {
           const s = worldToScreenCoordinates(poi.x, poi.y, st.camera, st.viewport)
-          refs.labelRef.current.style.transform = `translate3d(${s.x}px, ${s.y - 40 * st.camera.zoom}px, 0)`
+          refs.labelRef.current.style.transform = `translate3d(${s.x}px, ${s.y - 36 * st.camera.zoom}px, 0)`
         }
       }
 
-      // 7) Debug (throttled)
+      // 7) Debug
       if (debugEnabled && time - st.lastDebugPush > 150) {
         st.lastDebugPush = time
         setDebug({
@@ -706,6 +806,7 @@ export function useExperienceEngine(refs: EngineRefs) {
           fps: Math.round(st.fps),
           depthIndex: st.depthIndex,
           nearby: nearbyRef.current,
+          stick: st.stick ? { x: Math.round(st.stick.x * 100) / 100, y: Math.round(st.stick.y * 100) / 100 } : null,
           lastLogged: st.lastLogged,
         })
       }
@@ -718,7 +819,6 @@ export function useExperienceEngine(refs: EngineRefs) {
     }
   }, [activatePoi, debugEnabled, markCommandIssued, reducedMotion, refs.figureRef, refs.labelRef, refs.playerRef, refs.worldRef])
 
-  // Acceso para pruebas automatizadas / calibración
   useEffect(() => {
     const st = S.current
     ;(window as unknown as Record<string, unknown>).__LABOR__ = {
@@ -726,6 +826,7 @@ export function useExperienceEngine(refs: EngineRefs) {
       getCamera: () => ({ ...st.camera }),
       getScene: () => st.scene.id,
       getSave: () => game.get(),
+      getStick: () => st.stick,
       isWalkable: (x: number, y: number) => isPointInsideWalkableArea(x, y, st.scene.geo),
     }
   }, [])
@@ -750,11 +851,14 @@ export function useExperienceEngine(refs: EngineRefs) {
     activatePoi,
     goToPoi,
     goToSpace,
+    goToNearest,
     enterScene,
     exitScene,
     resetToSpawn,
     onWorldPointerDown,
     onWorldPointerMove,
+    onWorldPointerUp,
+    onWorldPointerCancel,
     onWorldContextMenu,
   }
 }

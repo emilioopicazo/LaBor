@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useState } from "react"
-import { Entrance } from "./components/experience/Entrance"
+import { Intro } from "./components/experience/Intro"
 import { WorkshopWorld } from "./components/experience/WorkshopWorld"
 import { ENTRANCE_GATE_MS, prefersReducedMotion } from "./config/world"
 import { allSpriteSrcs } from "./data/assets"
 
-type Phase = "entrance" | "entering" | "world"
+type Phase = "intro" | "entering" | "world"
 
-/** Precarga los sprites del mundo antes de habilitar ENTRAR (§61). */
+/** Precarga los sprites del mundo durante la intro (§61). */
 function preloadSprites(): Promise<void> {
   const srcs = allSpriteSrcs()
   return new Promise((resolve) => {
@@ -27,7 +27,7 @@ function preloadSprites(): Promise<void> {
 }
 
 export default function App() {
-  const [phase, setPhase] = useState<Phase>("entrance")
+  const [phase, setPhase] = useState<Phase>("intro")
   const [ready, setReady] = useState(false)
 
   useEffect(() => {
@@ -38,8 +38,8 @@ export default function App() {
     }
   }, [])
 
-  const handleEnter = useCallback(() => {
-    setPhase((p) => (p === "entrance" ? "entering" : p))
+  const handleIntroDone = useCallback(() => {
+    setPhase((p) => (p === "intro" ? "entering" : p))
   }, [])
 
   useEffect(() => {
@@ -51,8 +51,8 @@ export default function App() {
 
   return (
     <div className="app">
-      {phase !== "entrance" && <WorkshopWorld />}
-      {phase !== "world" && <Entrance opening={phase === "entering"} ready={ready} onEnter={handleEnter} />}
+      {phase !== "intro" && <WorkshopWorld />}
+      {phase !== "world" && <Intro ready={ready} opening={phase === "entering"} onDone={handleIntroDone} />}
     </div>
   )
 }

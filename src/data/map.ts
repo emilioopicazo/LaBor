@@ -1,17 +1,23 @@
 // ============================================================
 // LA BOR — geometría del patio (overworld)
-// Referencias maestras (public/assets/reference/):
-//   · labor-master-plan.png    (plano medido, base del mundo)
-//   · 260823_TRAMA-layout.pdf  (plano TRAMA con cotas)
-// Predio ~34.90 × 37.31 m. Portón principal por CALLE COBÁ (sur),
-// Calle 12 sur al oriente, Mala Casa al norte, esquina NW en
-// diagonal. Aquí se define qué zonas son caminables, los
-// obstáculos fijos y los waypoints que evitan cruzar edificios.
-// Los obstáculos de props (árbol, tablero, pedestal…) se derivan
-// de src/data/props.ts y se suman en el motor.
+// Interpretación del plano medido (public/assets/reference/
+// labor-master-plan.png) con la geometría del prototipo de diseño
+// (docs/LABOR_MOBILE_WORLD_DESIGN_HANDOFF.md §2) escalada ×2.5.
+// Regla: TODO el terreno dentro del muro es caminable, salvo las
+// huellas de los edificios y los obstáculos de props. Los waypoints
+// se generan en las esquinas de los edificios.
 // ============================================================
 
+import { WALL, WORLD_HEIGHT, WORLD_WIDTH } from "../config/world"
+
 export type Point = { x: number; y: number }
+
+export interface Rect {
+  x: number
+  y: number
+  width: number
+  height: number
+}
 
 export interface Obstacle {
   id: string
@@ -22,50 +28,70 @@ export interface Obstacle {
 
 /** Geometría que el motor necesita de cualquier escena. */
 export interface SceneGeometry {
+  /** región caminable (interior del muro / del cuarto) */
   walkable: Array<[number, number]>
+  /** huellas bloqueadas (edificios, muebles grandes) */
+  blocked: Rect[]
   obstacles: Obstacle[]
   waypoints: Point[]
 }
 
-// Polígono caminable del patio central (coordenadas de mundo).
-// - banqueta frente a PABELLÓN 04 / CONTRASTE (norte)
-// - el jardín central es transitable: se puede pasar detrás del
-//   árbol (profundidad) rodeando su tronco
-// - corredor entre el jardín y PABELLÓN 01
-// - franja frente a PABELLÓN 02 / 03
-// - explanada frente a las naves (sur), con el portón de Cobá
+// Interior del muro perimetral
+export const PROPERTY_INNER: Rect = {
+  x: WALL,
+  y: WALL,
+  width: WORLD_WIDTH - WALL * 2,
+  height: WORLD_HEIGHT - WALL * 2,
+}
+
 export const WALKABLE_AREA: Array<[number, number]> = [
-  [380, 470],
-  [1030, 470],
-  [1030, 310],
-  [1355, 310],
-  [1355, 465],
-  [1445, 465],
-  [1445, 790],
-  [1680, 790],
-  [1680, 1100],
-  [380, 1100],
+  [PROPERTY_INNER.x, PROPERTY_INNER.y],
+  [PROPERTY_INNER.x + PROPERTY_INNER.width, PROPERTY_INNER.y],
+  [PROPERTY_INNER.x + PROPERTY_INNER.width, PROPERTY_INNER.y + PROPERTY_INNER.height],
+  [PROPERTY_INNER.x, PROPERTY_INNER.y + PROPERTY_INNER.height],
 ]
 
-// Obstáculos fijos que no son props (vacío hoy; los props aportan
-// los suyos). Se conserva para muros interiores o zonas cerradas.
-export const STATIC_OBSTACLES: Obstacle[] = []
+/** Portón principal: apertura en el muro sur (Calle Cobá). */
+export const GATE = { x: 465, width: 310, y: WORLD_HEIGHT - WALL }
 
-// Waypoints interiores para rodear esquinas cóncavas del patio.
-export const WAYPOINTS: Point[] = [
-  { x: 990, y: 615 }, // bajo la esquina izquierda del jardín
-  { x: 1400, y: 615 }, // boca del corredor junto al jardín
-  { x: 1400, y: 845 }, // esquina inferior-izquierda de PABELLÓN 02
-  { x: 1620, y: 1040 }, // junto a PABELLÓN 03
-  { x: 1240, y: 1000 }, // centro-abajo del patio (hub general)
-  { x: 700, y: 1000 }, // explanada frente a NAVE 03
-  { x: 1080, y: 400 }, // jardín: lado poniente del árbol
-  { x: 1310, y: 400 }, // jardín: lado oriente del árbol
-  { x: 960, y: 820 }, // junto al pedestal (sur)
+/** El visitante entra por el portón de Cobá. */
+export const SPAWN_POINT: Point = { x: 620, y: 2700 }
+
+/** Waypoints fijos además de los generados por edificios. */
+export const EXTRA_WAYPOINTS: Point[] = [
+  { x: 620, y: 2350 }, // corredor de entrada
+  { x: 1500, y: 1600 }, // centro del patio
+  { x: 2350, y: 1850 }, // frente a las naves (oriente)
+  { x: 1750, y: 980 }, // bajo el árbol
+  { x: 1560, y: 720 }, // costado poniente del tronco (para pasar detrás)
+  { x: 1870, y: 720 }, // costado oriente del tronco
+  { x: 1712, y: 480 }, // detrás del árbol
 ]
 
-// El visitante entra por el portón de CALLE COBÁ (sur-poniente).
-export const SPAWN_POINT: Point = { x: 470, y: 1060 }
-
-/** Portón principal (apertura en el muro sur). */
-export const GATE = { x: 372, width: 88, y: 1512 }
+/**
+ * Genera waypoints en las esquinas exteriores de cada rectángulo
+ * bloqueado (con margen), descartando los que caen dentro de otro
+ * bloqueado o fuera de la región caminable.
+ */
+export function cornerWaypoints(blocked: Rect[], margin: number, bounds: Rect): Point[] {
+  const out: Point[] = []
+  const inside = (p: Point) =>
+    p.x >= bounds.x + 8 &&
+    p.x <= bounds.x + bounds.width - 8 &&
+    p.y >= bounds.y + 8 &&
+    p.y <= bounds.y + bounds.height - 8
+  const inBlocked = (p: Point) =>
+    blocked.some((r) => p.x > r.x && p.x < r.x + r.width && p.y > r.y && p.y < r.y + r.height)
+  for (const r of blocked) {
+    const corners: Point[] = [
+      { x: r.x - margin, y: r.y - margin },
+      { x: r.x + r.width + margin, y: r.y - margin },
+      { x: r.x - margin, y: r.y + r.height + margin },
+      { x: r.x + r.width + margin, y: r.y + r.height + margin },
+    ]
+    for (const c of corners) {
+      if (inside(c) && !inBlocked(c)) out.push(c)
+    }
+  }
+  return out
+}

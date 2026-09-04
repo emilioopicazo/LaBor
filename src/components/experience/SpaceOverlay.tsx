@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react"
-import { spaceKindLabel, type WorkshopSpace } from "../../data/spaces"
+import { spaceKindLabel, type SpaceCta, type WorkshopSpace } from "../../data/spaces"
 
 interface SpaceOverlayProps {
   space: WorkshopSpace
@@ -23,6 +23,36 @@ export function SpaceOverlay({ space, onClose, onNavigate, onEnterScene }: Space
   const kicker = space.number ? `${space.number} / ${spaceKindLabel(space)}` : spaceKindLabel(space)
   const nameLines = space.name.split(" ")
   const subtitleLines = space.subtitle?.split(" / ") ?? []
+
+  const renderCta = (cta: SpaceCta, primary: boolean) => {
+    const cls = `overlay__cta${primary ? " overlay__cta--primary" : ""}`
+    if (cta.enterSceneId) {
+      return (
+        <button key={cta.label} type="button" className={cls} onClick={() => onEnterScene(cta.enterSceneId!)}>
+          {cta.label} ↗
+        </button>
+      )
+    }
+    if (cta.targetSpaceId) {
+      return (
+        <button key={cta.label} type="button" className={cls} onClick={() => onNavigate(cta.targetSpaceId!)}>
+          {cta.label} ↗
+        </button>
+      )
+    }
+    if (cta.href) {
+      return (
+        <a key={cta.label} className={cls} href={cta.href} target="_blank" rel="noreferrer">
+          {cta.label} ↗
+        </a>
+      )
+    }
+    return (
+      <span key={cta.label} className="overlay__cta overlay__cta--soon">
+        {cta.label} ↗
+      </span>
+    )
+  }
 
   return (
     <div className="overlay" role="dialog" aria-modal="true" aria-label={space.name}>
@@ -67,27 +97,10 @@ export function SpaceOverlay({ space, onClose, onNavigate, onEnterScene }: Space
 
         {space.status === "coming-soon" && <p className="overlay__soon">PRÓXIMAMENTE</p>}
 
-        {space.cta && (
+        {(space.cta || space.cta2) && (
           <div className="overlay__cta-row">
-            {space.cta.enterSceneId ? (
-              <button
-                type="button"
-                className="overlay__cta overlay__cta--primary"
-                onClick={() => onEnterScene(space.cta!.enterSceneId!)}
-              >
-                {space.cta.label} ↗
-              </button>
-            ) : space.cta.targetSpaceId ? (
-              <button type="button" className="overlay__cta" onClick={() => onNavigate(space.cta!.targetSpaceId!)}>
-                {space.cta.label} ↗
-              </button>
-            ) : space.cta.href ? (
-              <a className="overlay__cta" href={space.cta.href} target="_blank" rel="noreferrer">
-                {space.cta.label} ↗
-              </a>
-            ) : (
-              <span className="overlay__cta overlay__cta--soon">{space.cta.label} ↗</span>
-            )}
+            {space.cta && renderCta(space.cta, true)}
+            {space.cta2 && renderCta(space.cta2, false)}
           </div>
         )}
       </article>

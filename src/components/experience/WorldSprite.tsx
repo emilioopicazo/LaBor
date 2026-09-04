@@ -16,6 +16,7 @@ export const T = {
   ochre2: "#e08a3c",
   teal: "#3f9c96",
   steel: "#8e9299",
+  steel2: "#b6bcbd",
   rust: "#c47a3f",
   outside: "#4a463f",
   street: "#2b2824",
@@ -89,7 +90,7 @@ export function WorldLabel({
   y,
   text,
   accent,
-  size = 15,
+  size = 18,
 }: {
   x: number
   y: number
@@ -97,12 +98,12 @@ export function WorldLabel({
   accent?: string
   size?: number
 }) {
-  const padX = 11
+  const padX = 13
   const width = Math.round(text.length * size * 0.66 + padX * 2)
   const height = Math.round(size * 1.9)
   return (
     <g transform={`translate(${x}, ${y})`} className="world-label">
-      <rect width={width} height={height} fill="rgba(24,20,17,0.86)" stroke={accent ?? "#6f6b63"} strokeWidth={1.4} />
+      <rect width={width} height={height} fill="rgba(24,20,17,0.86)" stroke={accent ?? "#6f6b63"} strokeWidth={1.6} />
       <text
         x={padX}
         y={height / 2 + size * 0.36}
@@ -117,11 +118,42 @@ export function WorldLabel({
   )
 }
 
+/** Formas vectoriales para componentes de la pieza (sin sprite aún). */
+function ShapeProp({ prop }: { prop: WorldProp }) {
+  const x = prop.x
+  const y = prop.y + (prop.dyDraw ?? 0)
+  if (prop.shape === "metal-frame") {
+    const w = prop.w
+    const h = prop.h
+    return (
+      <g>
+        <rect x={x - w / 2} y={y - h} width={w} height={h} fill="none" stroke={T.steel} strokeWidth={14} />
+        <line x1={x - w / 2} y1={y} x2={x + w / 2} y2={y - h} stroke={T.steel2} strokeWidth={10} />
+        <rect x={x - w / 2 - 6} y={y - 8} width={w + 12} height={12} fill={T.steel} />
+      </g>
+    )
+  }
+  if (prop.shape === "silver-detail") {
+    const r = prop.w / 2
+    return (
+      <g className="ambient-glow">
+        <circle cx={x} cy={y - r} r={r} fill={T.steel2} stroke={T.paper} strokeWidth={6} />
+        <circle cx={x - r * 0.3} cy={y - r * 1.3} r={r * 0.22} fill={T.paper} />
+      </g>
+    )
+  }
+  return null
+}
+
 /** Un prop con su ancla; la copa (si existe) se dibuja encima con vaivén. */
 export function PropNode({ prop }: { prop: WorldProp }) {
   return (
     <g className={`prop${prop.className ? ` ${prop.className}` : ""}`} data-prop={prop.id}>
-      <Sprite asset={prop.asset} x={prop.x} y={prop.y + (prop.dyDraw ?? 0)} w={prop.w} h={prop.h} />
+      {prop.asset ? (
+        <Sprite asset={prop.asset} x={prop.x} y={prop.y + (prop.dyDraw ?? 0)} w={prop.w} h={prop.h} />
+      ) : (
+        <ShapeProp prop={prop} />
+      )}
       {prop.canopy && (
         <Sprite
           asset={prop.canopy.asset}
@@ -189,26 +221,27 @@ export function PoiMarkers({
               e.stopPropagation()
               onPoiClick(poi.id)
             }}
+            onPointerUp={(e) => e.stopPropagation()}
             role="button"
             aria-label={`Ir a ${poi.name}`}
           >
-            <circle r={44} fill="rgba(0,0,0,0)" />
+            <circle r={54} fill="rgba(0,0,0,0)" />
             {available ? (
               <>
-                <circle className="pulse" r={9} fill={T.ochre2} style={{ animationDelay: `${(i % 5) * 0.4}s` }} />
-                <circle r={7} fill={T.ochre2} />
+                <circle className="pulse" r={11} fill={T.ochre2} style={{ animationDelay: `${(i % 5) * 0.4}s` }} />
+                <circle r={9} fill={T.ochre2} />
               </>
-            ) : poi.kind === "station" ? (
+            ) : poi.kind === "station" || poi.kind === "info" ? (
               <>
-                <circle className="pulse" r={10} fill={T.ochre} />
-                <circle r={7} fill={T.ochre} stroke={T.ink} strokeWidth={1.5} />
+                <circle className="pulse" r={12} fill={T.ochre} />
+                <circle r={9} fill={T.ochre} stroke={T.ink} strokeWidth={1.5} />
               </>
             ) : poi.kind === "exit" ? (
-              <rect x={-9} y={-9} width={18} height={18} fill={T.paper} stroke={T.ink} strokeWidth={1.5} />
+              <rect x={-11} y={-11} width={22} height={22} fill={T.paper} stroke={T.ink} strokeWidth={1.5} />
             ) : (
               <>
-                <circle r={7} fill={T.paper} stroke={T.ink} strokeWidth={1.5} />
-                <circle r={2.2} fill={T.ink} />
+                <circle r={9} fill={T.paper} stroke={T.ink} strokeWidth={1.5} />
+                <circle r={2.8} fill={T.ink} />
               </>
             )}
           </g>

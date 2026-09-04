@@ -76,8 +76,8 @@ export function StationPanel({ station, sceneName, onCraft, onClose, onExit }: S
           <>
             <p className="station__hint">
               {alreadyDone
-                ? "La base ya está lista. Llévala al pedestal del patio para instalarla."
-                : "Lista. Llévala al pedestal del patio para instalarla."}
+                ? `${station.craft.label} ya está lista. Llévala al pedestal del patio para instalarla.`
+                : "Listo. Llévalo al pedestal del patio para instalarlo."}
             </p>
             <div className="station__bar">
               <span style={{ transform: "scaleX(1)" }} />

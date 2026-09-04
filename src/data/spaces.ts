@@ -3,8 +3,10 @@
 // Contenido editable: nombres, estados, descripciones, áreas,
 // CTAs y puntos de interacción. El motor de exploración lee
 // esta configuración; no hay contenido regado en la lógica.
-// Lógica del complejo: 7 talleres + 3 naves (11 estructuras con
-// el anexo de VETA). Residentes: CONTRASTE, VETA, MANNINO.
+// Lógica del complejo: 7 talleres + 3 naves. Residentes:
+// CONTRASTE (joyería), VETA (carpintería), MANNINO (herrería).
+// Huellas: geometría del prototipo de diseño ×2.5 (ver map.ts).
+// Todos los talleres se pueden recorrer por dentro (escenas).
 // ============================================================
 
 export type SpaceType = "resident" | "available" | "event" | "navigation" | "installation"
@@ -38,7 +40,7 @@ export interface WorkshopSpace {
   }
 
   /**
-   * Punto de interacción frente al edificio / objeto.
+   * Punto de interacción frente al edificio / objeto (puerta).
    * Los espacios sin punto (p. ej. AGENDA) solo existen en el
    * menú y abren su overlay directamente.
    */
@@ -54,10 +56,15 @@ export interface WorkshopSpace {
 
   areaM2?: number
 
+  /** acción principal del overlay */
   cta?: SpaceCta
+  /** acción secundaria del overlay */
+  cta2?: SpaceCta
 
   image?: string
 }
+
+const R = 160
 
 export const SPACES: WorkshopSpace[] = [
   // ---- RESIDENTES ------------------------------------------
@@ -68,12 +75,13 @@ export const SPACES: WorkshopSpace[] = [
     subtitle: "Joyería / Producción / Talleres",
     description:
       "Taller dedicado a la joyería, el trabajo en plata, la producción y talleres presenciales.",
-    buildingRect: { x: 730, y: 150, width: 300, height: 300 },
-    interactionPoint: { x: 880, y: 495 },
-    interactionRadius: 110,
+    buildingRect: { x: 965, y: 332, width: 425, height: 508 },
+    interactionPoint: { x: 1178, y: 890 },
+    interactionRadius: R,
     type: "resident",
     status: "active",
-    cta: { label: "VER AGENDA", targetSpaceId: "agenda" },
+    cta: { label: "ENTRAR AL TALLER", enterSceneId: "contraste-room" },
+    cta2: { label: "VER AGENDA", targetSpaceId: "agenda" },
   },
   {
     id: "veta",
@@ -81,10 +89,9 @@ export const SPACES: WorkshopSpace[] = [
     number: "02",
     subtitle: "Carpintería / Diseño / Producción",
     description: "Taller de carpintería enfocado en diseño y producción en madera.",
-    details: ["Anexo sur — patio de material"],
-    buildingRect: { x: 120, y: 180, width: 250, height: 560 },
-    interactionPoint: { x: 390, y: 650 },
-    interactionRadius: 110,
+    buildingRect: { x: 100, y: 100, width: 365, height: 1195 },
+    interactionPoint: { x: 512, y: 700 },
+    interactionRadius: R,
     type: "resident",
     status: "active",
     cta: { label: "ENTRAR AL TALLER", enterSceneId: "veta-room" },
@@ -95,12 +102,12 @@ export const SPACES: WorkshopSpace[] = [
     number: "03",
     subtitle: "Herrería / Metal",
     description: "Taller de herrería y trabajo en metal. Información próximamente.",
-    // Franja poniente, sección media (5.85 m del plano)
-    buildingRect: { x: 120, y: 760, width: 250, height: 232 },
-    interactionPoint: { x: 392, y: 880 },
-    interactionRadius: 110,
+    buildingRect: { x: 100, y: 1295, width: 365, height: 695 },
+    interactionPoint: { x: 512, y: 1640 },
+    interactionRadius: R,
     type: "resident",
     status: "active",
+    cta: { label: "ENTRAR AL TALLER", enterSceneId: "mannino-room" },
   },
 
   // ---- ESPACIOS DISPONIBLES --------------------------------
@@ -108,88 +115,94 @@ export const SPACES: WorkshopSpace[] = [
     id: "pabellon-04",
     name: "PABELLÓN 04",
     number: "P04",
-    buildingRect: { x: 360, y: 150, width: 350, height: 300 },
-    interactionPoint: { x: 540, y: 500 },
-    interactionRadius: 110,
+    buildingRect: { x: 465, y: 332, width: 492, height: 508 },
+    interactionPoint: { x: 711, y: 890 },
+    interactionRadius: R,
     type: "available",
     status: "available",
     areaM2: 42,
-    cta: { label: "INFORMACIÓN", targetSpaceId: "contacto" },
+    cta: { label: "RECORRER EL ESPACIO", enterSceneId: "pabellon-04-room" },
+    cta2: { label: "INFORMACIÓN", targetSpaceId: "contacto" },
   },
   {
     id: "pabellon-01",
     name: "PABELLÓN 01",
     number: "P01",
     details: ["Interior — 45.6 m²", "Terraza exterior — 33.3 m²"],
-    buildingRect: { x: 1450, y: 150, width: 550, height: 300 },
-    interactionPoint: { x: 1450, y: 450 },
-    interactionRadius: 110,
+    buildingRect: { x: 2148, y: 332, width: 852, height: 452 },
+    interactionPoint: { x: 2100, y: 560 },
+    interactionRadius: R,
     type: "available",
     status: "available",
     areaM2: 80,
-    cta: { label: "INFORMACIÓN", targetSpaceId: "contacto" },
+    cta: { label: "RECORRER EL ESPACIO", enterSceneId: "pabellon-01-room" },
+    cta2: { label: "INFORMACIÓN", targetSpaceId: "contacto" },
   },
   {
     id: "pabellon-02",
     name: "PABELLÓN 02",
     number: "P02",
     details: ["Interior — 45.7 m²", "Terraza exterior — 33.3 m²"],
-    buildingRect: { x: 1450, y: 470, width: 550, height: 300 },
-    interactionPoint: { x: 1450, y: 660 },
-    interactionRadius: 110,
+    buildingRect: { x: 2148, y: 785, width: 852, height: 488 },
+    interactionPoint: { x: 2100, y: 1030 },
+    interactionRadius: R,
     type: "available",
     status: "available",
     areaM2: 80,
-    cta: { label: "INFORMACIÓN", targetSpaceId: "contacto" },
+    cta: { label: "RECORRER EL ESPACIO", enterSceneId: "pabellon-02-room" },
+    cta2: { label: "INFORMACIÓN", targetSpaceId: "contacto" },
   },
   {
     id: "pabellon-03",
     name: "PABELLÓN 03",
     number: "P03",
-    buildingRect: { x: 1700, y: 790, width: 300, height: 270 },
-    interactionPoint: { x: 1660, y: 910 },
-    interactionRadius: 110,
+    buildingRect: { x: 2512, y: 1272, width: 488, height: 465 },
+    interactionPoint: { x: 2462, y: 1500 },
+    interactionRadius: R,
     type: "available",
     status: "available",
     areaM2: 46,
-    cta: { label: "INFORMACIÓN", targetSpaceId: "contacto" },
+    cta: { label: "RECORRER EL ESPACIO", enterSceneId: "pabellon-03-room" },
+    cta2: { label: "INFORMACIÓN", targetSpaceId: "contacto" },
   },
   {
     id: "nave-03",
     name: "NAVE 03",
     number: "N03",
-    // Proporciones del plano: 7.85 / 9.70 / 9.70 de ancho
-    buildingRect: { x: 462, y: 1120, width: 398, height: 400 },
-    interactionPoint: { x: 661, y: 1090 },
-    interactionRadius: 110,
+    buildingRect: { x: 775, y: 1990, width: 670, height: 798 },
+    interactionPoint: { x: 1110, y: 1940 },
+    interactionRadius: R,
     type: "available",
     status: "available",
     areaM2: 95,
-    cta: { label: "INFORMACIÓN", targetSpaceId: "contacto" },
+    cta: { label: "RECORRER EL ESPACIO", enterSceneId: "nave-03-room" },
+    cta2: { label: "INFORMACIÓN", targetSpaceId: "contacto" },
   },
   {
     id: "nave-02",
     name: "NAVE 02",
     number: "N02",
-    buildingRect: { x: 875, y: 1120, width: 550, height: 400 },
-    interactionPoint: { x: 1150, y: 1090 },
-    interactionRadius: 110,
+    buildingRect: { x: 1445, y: 1990, width: 828, height: 798 },
+    interactionPoint: { x: 1859, y: 1940 },
+    interactionRadius: R,
     type: "available",
     status: "available",
     areaM2: 117,
-    cta: { label: "INFORMACIÓN", targetSpaceId: "contacto" },
+    cta: { label: "RECORRER EL ESPACIO", enterSceneId: "nave-02-room" },
+    cta2: { label: "INFORMACIÓN", targetSpaceId: "contacto" },
   },
   {
     id: "nave-01",
     name: "NAVE 01",
     number: "N01",
-    buildingRect: { x: 1445, y: 1120, width: 555, height: 400 },
-    interactionPoint: { x: 1722, y: 1090 },
-    interactionRadius: 110,
+    buildingRect: { x: 2272, y: 1990, width: 828, height: 798 },
+    interactionPoint: { x: 2686, y: 1940 },
+    interactionRadius: R,
     type: "available",
     status: "available",
     areaM2: 117,
-    cta: { label: "INFORMACIÓN", targetSpaceId: "contacto" },
+    cta: { label: "RECORRER EL ESPACIO", enterSceneId: "nave-01-room" },
+    cta2: { label: "INFORMACIÓN", targetSpaceId: "contacto" },
   },
 
   // ---- PATIO / PROGRAMA ------------------------------------
@@ -197,8 +210,8 @@ export const SPACES: WorkshopSpace[] = [
     id: "pieza",
     name: "LA PIEZA CENTRAL",
     subtitle: "Instalación colaborativa",
-    interactionPoint: { x: 860, y: 690 },
-    interactionRadius: 120,
+    interactionPoint: { x: 1820, y: 1440 },
+    interactionRadius: 200,
     type: "installation",
     status: "active",
   },
@@ -207,8 +220,8 @@ export const SPACES: WorkshopSpace[] = [
     name: "EVENTOS",
     subtitle: "Programa del patio",
     details: ["Bazares", "Exhibiciones", "Activaciones", "Encuentros"],
-    interactionPoint: { x: 1100, y: 750 },
-    interactionRadius: 110,
+    interactionPoint: { x: 2330, y: 1760 },
+    interactionRadius: R,
     type: "event",
     status: "coming-soon",
   },
@@ -218,8 +231,8 @@ export const SPACES: WorkshopSpace[] = [
     subtitle: "La Bor — Talleres",
     description: "Calle Cobá · Tulum, Quintana Roo, México.",
     details: ["Instagram —", "WhatsApp —", "Email —"],
-    interactionPoint: { x: 640, y: 888 },
-    interactionRadius: 100,
+    interactionPoint: { x: 900, y: 1740 },
+    interactionRadius: 150,
     type: "navigation",
     status: "coming-soon",
   },
@@ -228,14 +241,11 @@ export const SPACES: WorkshopSpace[] = [
     name: "AGENDA",
     subtitle: "Calendario de talleres y eventos",
     description: "Cursos, experiencias y eventos impartidos por los talleres residentes.",
-    interactionRadius: 110,
+    interactionRadius: R,
     type: "navigation",
     status: "coming-soon",
   },
 ]
-
-/** Anexo sur de VETA (patio de material). Visual + clic → VETA. */
-export const VETA_ANNEX_RECT = { x: 120, y: 1012, width: 250, height: 508 }
 
 export function getSpace(id: string): WorkshopSpace | undefined {
   return SPACES.find((s) => s.id === id)
@@ -243,6 +253,9 @@ export function getSpace(id: string): WorkshopSpace | undefined {
 
 /** Espacios que existen físicamente en el mundo (con punto de interacción). */
 export const WORLD_SPACES = SPACES.filter((s) => s.interactionPoint)
+
+/** Espacios con edificio (huella bloqueada en el patio). */
+export const BUILDINGS = SPACES.filter((s) => s.buildingRect)
 
 /** Etiqueta corta del tipo, para kickers de overlay y etiquetas. */
 export function spaceKindLabel(space: WorkshopSpace): string {

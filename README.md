@@ -7,10 +7,11 @@ Mundo 2D explorable del complejo de talleres La Bor (Tulum, Q.R.).
 > V0: *puedo caminar por La Bor.* · V1: *puedo hacer cosas dentro de La Bor.*
 
 No es un sitio web convencional ni un videojuego complejo: la
-arquitectura física de La Bor es la interfaz. El visitante entra por
-el portón de Calle Cobá, camina por el patio, descubre los talleres
-residentes y los espacios disponibles, entra a un taller, crea un
-componente y lo instala en **LA PIEZA CENTRAL** — y el patio cambia.
+arquitectura física de La Bor es la interfaz. Una intro breve dice qué
+es La Bor y se desvanece sola; el visitante aparece en el portón de
+Calle Cobá, camina por el patio, entra a cualquiera de los diez
+talleres y naves, crea componentes en los talleres residentes y los
+instala en **LA PIEZA CENTRAL** — y el patio cambia.
 
 ---
 
@@ -26,140 +27,128 @@ npm run preview    # sirve el build de producción
 Stack: **React + TypeScript + Vite + SVG + sprites pixel-art**. Sin
 dependencias de juego, sin backend, sin rutas: todo vive en `/`.
 
-## Qué hay (V1.1)
+## Qué hay (V1.2)
+
+**Llegada**
+- Intro automática: LA BOR → qué es La Bor → el portón se abre. No hay
+  que picar (tocar adelanta). Los sprites se precargan durante la intro.
+- El visitante aparece en el portón de Cobá y la cámara se abre.
 
 **Mundo**
-- Patio con los sprites del sistema de diseño (docs/LABOR_ART_DIRECTION_
-  ASSETS.md): piso de concreto, muro perimetral con portón a Cobá,
-  techumbres de las 11 estructuras, árbol principal (base + copa),
-  palmas, arbustos, tablero de eventos, tótem, mesa, madera, tarimas,
-  macetas, tanque de agua y pedestal de la instalación.
-- Etiquetas físicas sobre cada estructura (`NAVE 01 · 117 M²`), pulso
-  ocre en los 7 espacios disponibles, acentos por residente (VETA ocre,
-  CONTRASTE teal, MANNINO acero).
-- Vida ambiental: copas con viento, tragaluz de Contraste que parpadea,
-  polvo, un gato que recorre el patio y pájaros que cruzan el cielo.
-- Lógica del complejo: **7 talleres + 3 naves** (11 estructuras con el
-  anexo de VETA). Residentes: CONTRASTE (joyería), VETA (carpintería),
-  MANNINO (herrería).
+- El mundo es el predio completo con su muro (3200×2900, geometría del
+  prototipo de diseño ×2.5): todo el terreno es caminable salvo las
+  huellas de los edificios y los objetos. Mucho aire entre estructuras.
+- Sprites del sistema de diseño: piso, muro, portón, las 10 techumbres,
+  árbol principal (base + copa) y sus dos plantas — la única vegetación
+  del plano —, tablero de eventos, tótem, mesa, madera, tarimas,
+  macetas, tanque y pedestal.
+- Etiquetas físicas sobre cada estructura, pulso ocre en los 7
+  disponibles, acentos por residente (VETA ocre, CONTRASTE teal,
+  MANNINO acero). Gato en loop, pájaros, viento en la copa, tragaluz.
+- Lógica del complejo: **7 talleres + 3 naves**. Residentes: CONTRASTE
+  (joyería), VETA (carpintería), MANNINO (herrería).
 
-**Exploración**
-- Clic/tap-para-caminar, WASD/flechas, ruteo por waypoints, obstáculos
-  circulares, cámara suave con límites y zoom de énfasis al interactuar.
-- **Profundidad por ancla Y**: el visitante pasa detrás y delante del
-  árbol, macetas, tablero, pedestal, etc.
-- Hotspots por proximidad, overlays editoriales (tema oscuro), menú de
-  viaje rápido, sello LA BOR que regresa al portón.
+**Controles**
+- Escritorio: clic para caminar, WASD / flechas, `E` o `Enter` para
+  activar lo cercano, `ESC` para cerrar.
+- Táctil: tocar el piso para caminar; **arrastrar en cualquier parte
+  levanta un stick flotante** centrado en el dedo; botón **ENTRAR** va
+  al espacio más cercano.
+- Zoom: el patio se ve siempre al mismo zoom; al entrar a un taller la
+  cámara se acerca a su puerta y dentro se ve más cerca; al salir se
+  abre de nuevo.
 
-**Gameplay**
-- Escena de taller jugable: **VETA** (entrar desde su overlay, caminar
-  dentro, salir por la puerta).
-- Estación **BANCO DE TRABAJO**: mantener presionado para lijar → produce
-  `BASE DE MADERA` + 10 OFICIO.
-- Quest **LA PIEZA CENTRAL**: descubrir el pedestal → crear la base en
-  VETA → instalarla. Al instalar, la base aparece físicamente sobre el
-  pedestal (+20 OFICIO). Los pasos de herrería (MANNINO) y plata
-  (CONTRASTE) quedan marcados como próximamente.
-- Inventario mínimo + oficio persistidos en `localStorage`
-  (`labor.save.v1`). Feedback con toasts editoriales.
+**Talleres**
+- Los 10 se pueden recorrer por dentro. VETA, MANNINO y CONTRASTE
+  tienen una estación de oficio (LIJAR / FORJAR / PULIR: mantener
+  presionado). Los 7 disponibles son cuartos vacíos con su ficha,
+  el letrero "ESPACIO DISPONIBLE · m²" y acceso a INFORMACIÓN.
+
+**Quest LA PIEZA CENTRAL**
+- Descubrir el pedestal → base de madera (VETA) → componente de metal
+  (MANNINO) → detalle en plata (CONTRASTE). Cada componente se instala
+  en orden y aparece sobre el pedestal; al completar, +50 OFICIO.
+- Inventario, oficio y banderas en `localStorage` (`labor.save.v1`).
 
 ## Archivos clave
 
 ```
 src/
-  config/world.ts          ← dimensiones, velocidad, cámara, zoom de foco, debug
-  data/map.ts              ← polígono caminable, waypoints, spawn, portón
-  data/spaces.ts           ← contenido de espacios (nombres, m², CTAs, puntos)
-  data/props.ts            ← props del patio con ancla de profundidad + obstáculo
-  data/scenes.ts           ← cuartos de taller: geometría, estaciones, props
-  data/assets.ts           ← manifiesto de sprites (ruta + tamaño lógico)
+  config/world.ts          ← dimensiones, velocidad, zooms (patio / taller), stick, intro
+  data/map.ts              ← interior del muro, portón, spawn, waypoints de esquinas
+  data/spaces.ts           ← contenido y huellas de los espacios, CTAs (entrar / info)
+  data/props.ts            ← props del patio con ancla de profundidad + cambios de mundo
+  data/scenes.ts           ← los 10 cuartos: estilo, estaciones, props, salida, ficha
+  data/assets.ts           ← manifiesto de sprites
   game/state.ts            ← inventario / oficio / banderas + localStorage
-  game/quests.ts           ← LA PIEZA CENTRAL (pasos derivados de banderas)
-  hooks/useExperienceEngine.ts ← motor: escenas, movimiento, cámara, foco,
-                               proximidad, profundidad, fast travel, teclado
-  utils/geometry.ts        ← punto-en-polígono, ruteo, punto caminable cercano
+  game/quests.ts           ← LA PIEZA CENTRAL (3 componentes en orden)
+  hooks/useExperienceEngine.ts ← motor: escenas, tap/stick/teclado, cámara y zoom,
+                               proximidad, profundidad, fast travel
+  utils/geometry.ts        ← caminable = polígono − huellas − obstáculos; ruteo
   components/experience/
+    Intro.tsx              ← intro automática + portón
     WorkshopSvg.tsx        ← patio (capas + sprites)
-    WorkshopRoomSvg.tsx    ← interior de taller (placeholder con sprites)
+    WorkshopRoomSvg.tsx    ← interiores (duela / concreto / losa) según estilo
+    TouchControls.tsx      ← stick flotante + ENTRAR
     WorldSprite.tsx        ← Sprite, WorldLabel, DepthLayer, PoiMarkers
-    Player.tsx             ← visitante (idle + 2 frames) y marcador de clic
-    Fauna.tsx              ← gato y pájaros (CSS)
-    StationPanel.tsx       ← interacción "mantén para…"
-    PiezaOverlay.tsx       ← estado de la quest + acciones
+    Player.tsx · Fauna.tsx · StationPanel.tsx · PiezaOverlay.tsx
     SpaceOverlay / FastMenu / WorldHUD / HotspotLabel / Toasts / DebugPanel
-  styles/experience.css    ← sistema visual (tokens, animaciones, UI)
+  styles/experience.css    ← sistema visual (tokens, animaciones, UI, stick)
 public/assets/             ← sprites (ver "Assets")
-docs/                      ← handoffs (experiencia V2, gameplay, arte, móvil)
+docs/                      ← handoffs (experiencia V2, gameplay, arte, móvil) + tareas
 ```
-
-## Cómo funciona
-
-**Profundidad.** Cada prop tiene un ancla de suelo `y`. `DepthLayer`
-dibuja los props ordenados por `y` e inserta al visitante en el índice
-que el motor calcula (`playerDepthIndex`, solo cambia cuando cruza un
-ancla). El árbol es un prop con base + copa separada; al estar más al
-norte que su ancla, el visitante queda debajo de la copa.
-
-**Zoom de interacción.** El motor tiene un "foco" opcional
-(`FOCUS_ZOOM_OVERLAY`, `FOCUS_ZOOM_STATION`, `FOCUS_BIAS` en world.ts).
-Al abrir un overlay o una estación, la cámara se acerca un poco y se
-desplaza hacia el objeto; al cerrar, vuelve al zoom base. Todo con
-amortiguación, sin saltos.
-
-**Animación ambiental.** Clases CSS con un solo reloj de frames (340 ms):
-`.canopy--slow/--fast` (viento), `.ambient-glow` (parpadeo),
-`.dust`, `.fauna-cat`, `.fauna-bird--n`, `.pulse` (disponibles),
-`.player__frame--*` (caminata). `prefers-reduced-motion` las apaga.
-
-**Escenas.** `enterScene(id)` funde a negro, cambia la geometría
-(polígono, obstáculos, waypoints, puntos de interés) y coloca al
-visitante en el spawn del cuarto; `exitScene()` regresa al patio en la
-puerta del taller. Agregar un taller = una entrada en `data/scenes.ts`.
-
-**Quest.** Los pasos se derivan de banderas (`pieza.discovered`,
-`pieza.baseCrafted`, `pieza.baseInstalled`) e inventario; el estado
-guardado es mínimo. `worldChangeProps()` en `data/props.ts` agrega los
-props que aparecen cuando la quest avanza.
 
 ## Cómo editar
 
-- **Mapa**: `data/map.ts` (polígono, waypoints, spawn), `data/spaces.ts`
-  (`buildingRect`, `interactionPoint`), `data/props.ts` (posición,
-  tamaño, obstáculo, copa).
-- **Contenido**: `data/spaces.ts` (nombres, descripciones, m², CTAs).
-- **Taller / estación**: `data/scenes.ts`.
-- **Movimiento y cámara**: `config/world.ts`.
-- **Arte**: sustituir PNG en `public/assets/` (mismo nombre). Si cambia
-  el tamaño lógico, actualizar `data/assets.ts`.
+- **Mapa**: huellas y puertas en `data/spaces.ts`; portón, spawn y
+  waypoints extra en `data/map.ts`; objetos en `data/props.ts`.
+- **Contenido**: `data/spaces.ts`.
+- **Talleres / estaciones**: `data/scenes.ts` (`emptyRoom()` para
+  disponibles; los residentes tienen su bloque).
+- **Movimiento, cámara y zoom**: `config/world.ts`.
+- **Arte**: sustituir PNG en `public/assets/` (mismo nombre).
+
+## Cómo funciona
+
+**Caminable.** Un punto es caminable si está dentro del interior del
+muro, fuera de toda huella de edificio y fuera de todo obstáculo. Los
+waypoints se generan en las esquinas de las huellas (+90 px) y el
+ruteo usa Dijkstra sobre ese grafo.
+
+**Profundidad.** `DepthLayer` dibuja props por ancla `y` e inserta al
+visitante donde toca (el motor solo actualiza el índice al cruzar un
+ancla). El árbol es base + copa: al norte del tronco, el visitante
+queda bajo la copa.
+
+**Zoom.** Patio: fijo (`ZOOM_DESKTOP_MIN` / `ZOOM_MOBILE_MIN`). Al
+entrar a un taller: foco hacia la puerta con `ENTER_ZOOM` durante el
+fundido; dentro: `ROOM_ZOOM_*`; al salir la cámara arranca a
+`EXIT_ZOOM` y se abre. Estación: `FOCUS_ZOOM_STATION`.
+
+**Escenas.** `enterScene(id)` funde, cambia geometría y puntos de
+interés (estación / salida / ficha) y coloca al visitante; `exitScene()`
+regresa a la puerta del taller en el patio.
 
 ## Assets
 
-Sprites pixel-art extraídos del paquete de diseño (transparentes, a
-resolución lógica; el mundo los escala con `image-rendering: pixelated`):
+Sprites pixel-art extraídos del paquete de diseño:
 
 ```
 public/assets/
   world/floor/world-floor-patio-v1.png
   world/walls/wall-h-v1.png · wall-v-v1.png
-  world/roofs/roof-{nave-01,nave-02,nave-03,pabellon-01..04,contraste,veta,veta-sur,mannino}-v1.png
-  world/vegetation/tree-main-{base,canopy} · tree-sidewalk-{base,canopy} · palm-{base,canopy} · shrub-01/02
+  world/roofs/roof-{nave-01,nave-02,nave-03,pabellon-01..04,contraste,veta,mannino}-v1.png
+  world/vegetation/tree-main-{base,canopy} · shrub-01/02 · (palm/sidewalk: no usados)
   world/props/prop-{events-board,info-totem,worktable,wood-stack,pallet-stack,gate-main,planter,water-tank}-v1.png
   world/installations/installation-base-v1.png
   characters/visitor/visitor-{idle-front,walk-01,walk-02}-v1.png
   characters/fauna/cat-walk-01/02 · bird-fly-01/02
   reference/labor-master-plan.png · 260823_TRAMA-layout.pdf
-  overlays/residents/ · overlays/spaces/ · logos/ · ui/ · audio/   (vacíos, listos)
 ```
 
 ## Modo debug
 
-`?debug` en la URL (o `DEBUG_WORLD = true`): dibuja polígono caminable,
-obstáculos, waypoints, radios y spawn de la escena actual; panel con
-escena, posición, cámara, índice de profundidad, punto cercano,
-inventario, banderas y FPS; clic derecho imprime la coordenada; botón
-`RESET SAVE` borra el progreso.
-
-## Metadata de ubicación
-
-Punto oficial de Google Maps (20.2061954, -87.4752482) en `LOCATION`
-(`config/world.ts`) y como meta `geo.position`. Solo metadata.
+`?debug` en la URL: polígono caminable, huellas, obstáculos, waypoints,
+radios y spawn de la escena actual; panel con escena, posición,
+cámara, profundidad, stick, inventario y banderas; clic derecho imprime
+la coordenada; `RESET SAVE` borra el progreso.

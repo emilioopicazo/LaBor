@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react"
-import { BASE_COMPONENT, installBase, piezaCentral } from "../../game/quests"
+import { getSpace } from "../../data/spaces"
+import { installNext, piezaCentral } from "../../game/quests"
 import { useGameState } from "../../game/state"
 
 interface PiezaOverlayProps {
@@ -9,22 +10,20 @@ interface PiezaOverlayProps {
 
 /**
  * Overlay de LA PIEZA CENTRAL: estado de la quest y la acción
- * disponible (ir a VETA / instalar la base). Al instalar, el mundo
- * cambia: la base aparece sobre el pedestal.
+ * disponible (ir al siguiente taller / instalar el componente).
+ * Al instalar, el mundo cambia: el componente aparece sobre el pedestal.
  */
 export function PiezaOverlay({ onClose, onGoTo }: PiezaOverlayProps) {
   const save = useGameState()
   const quest = piezaCentral(save)
-  const hasBase = save.inventory.components.includes(BASE_COMPONENT)
-  const installStep = quest.steps.find((s) => s.id === "install-base")
-  const craftStep = quest.steps.find((s) => s.id === "craft-base")
   const closeRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
     closeRef.current?.focus()
   }, [])
 
-  const mark = (status: string) => (status === "done" ? "✓" : status === "active" ? "→" : status === "soon" ? "·" : "—")
+  const mark = (status: string) => (status === "done" ? "✓" : status === "active" ? "→" : "—")
+  const nextName = quest.nextSpaceId ? getSpace(quest.nextSpaceId)?.name.split(" ")[0] : null
 
   return (
     <div className="overlay" role="dialog" aria-modal="true" aria-label={quest.title}>
@@ -49,28 +48,21 @@ export function PiezaOverlay({ onClose, onGoTo }: PiezaOverlayProps) {
             <li key={step.id} className={`overlay__step overlay__step--${step.status}`}>
               <span className="overlay__step-mark">{mark(step.status)}</span>
               <span className="overlay__step-text">{step.text}</span>
-              {step.status === "soon" && <span className="overlay__step-soon">PRÓXIMAMENTE</span>}
             </li>
           ))}
         </ul>
 
         <div className="overlay__cta-row">
-          {installStep?.status === "active" && hasBase ? (
-            <button
-              type="button"
-              className="overlay__cta overlay__cta--primary"
-              onClick={() => {
-                installBase()
-              }}
-            >
-              INSTALAR LA BASE ↗
-            </button>
-          ) : craftStep?.status === "active" ? (
-            <button type="button" className="overlay__cta overlay__cta--primary" onClick={() => onGoTo("veta")}>
-              IR A VETA ↗
+          {quest.installable ? (
+            <button type="button" className="overlay__cta overlay__cta--primary" onClick={() => installNext()}>
+              INSTALAR {quest.installable.label} ↗
             </button>
           ) : quest.complete ? (
-            <span className="overlay__cta overlay__cta--soon">SIGUIENTE: HERRERÍA · PRÓXIMAMENTE</span>
+            <span className="overlay__cta overlay__cta--soon">PIEZA COMPLETA · GRACIAS</span>
+          ) : quest.nextSpaceId && nextName ? (
+            <button type="button" className="overlay__cta overlay__cta--primary" onClick={() => onGoTo(quest.nextSpaceId!)}>
+              IR A {nextName} ↗
+            </button>
           ) : null}
         </div>
       </article>
