@@ -6,6 +6,8 @@ interface IntroProps {
   ready: boolean
   /** portón abriéndose (fase de entrada) */
   opening: boolean
+  /** contenido oculto (el selector de personaje va encima) */
+  hidden?: boolean
   onDone: () => void
 }
 
@@ -16,7 +18,7 @@ type Stage = "title" | "text"
  * No hay que picar: cada pantalla se desvanece sola después de
  * unos segundos (suficiente para leerla). Tocar / clic adelanta.
  */
-export function Intro({ ready, opening, onDone }: IntroProps) {
+export function Intro({ ready, opening, hidden = false, onDone }: IntroProps) {
   const [stage, setStage] = useState<Stage>("title")
 
   useEffect(() => {
@@ -38,7 +40,7 @@ export function Intro({ ready, opening, onDone }: IntroProps) {
 
   return (
     <div
-      className={`entrance${opening ? " entrance--opening" : ""}`}
+      className={`entrance${opening ? " entrance--opening" : ""}${hidden ? " entrance--hidden" : ""}`}
       aria-hidden={opening}
       onPointerDown={skip}
       role="presentation"

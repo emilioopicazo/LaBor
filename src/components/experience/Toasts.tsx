@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react"
-import { subscribeToasts, type Toast } from "../../game/state"
+import { subscribeToasts, type Toast } from "../../game/mission"
 
-/** Feedback editorial mínimo (+ MADERA, +10 OFICIO, PIEZA 1/3). */
+/** Feedback breve (+ MADERA · PIEZA 2/4 · COMPLETA). Desaparece solo. */
 export function Toasts() {
   const [items, setItems] = useState<Toast[]>([])
 
   useEffect(() => {
     return subscribeToasts((t) => {
-      setItems((prev) => [...prev.slice(-3), t])
+      setItems((prev) => [...prev.slice(-2), t])
       window.setTimeout(() => {
         setItems((prev) => prev.filter((x) => x.id !== t.id))
       }, 2800)

@@ -279,92 +279,6 @@ button {
   transition: opacity 200ms ease;
 }
 
-/* ============================================================
-   MUNDO — viewport espacial a pantalla completa
-   ============================================================ */
-
-.viewport {
-  position: fixed;
-  inset: 0;
-  overflow: hidden;
-  background: var(--terrain);
-  touch-action: none;
-  cursor: crosshair;
-  user-select: none;
-  -webkit-user-select: none;
-}
-
-.viewport--room {
-  background: #181411;
-}
-
-.world {
-  position: absolute;
-  top: 0;
-  left: 0;
-  transform-origin: 0 0;
-  will-change: transform;
-}
-
-.world-svg {
-  display: block;
-}
-
-.world-svg text {
-  font-family: var(--font);
-  pointer-events: none;
-}
-
-/* sprites pixel-art: escalado sin suavizado */
-.px {
-  image-rendering: pixelated;
-  image-rendering: crisp-edges;
-}
-
-.scene-fade {
-  position: fixed;
-  inset: 0;
-  z-index: 45;
-  background: #181411;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 280ms ease;
-}
-
-.scene-fade.is-active {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-/* ---------- edificios / puntos de interés ---------- */
-
-.building {
-  cursor: pointer;
-}
-
-.world-label {
-  pointer-events: none;
-}
-
-.hotspot-marker {
-  cursor: pointer;
-}
-
-.hotspot-marker circle,
-.hotspot-marker rect {
-  transition: r 150ms ease;
-}
-
-.hotspot-marker.is-near circle:not(.pulse) {
-  r: 10;
-}
-
-.pulse {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: pulse 2.6s ease-out infinite;
-}
-
 @keyframes pulse {
   0% {
     transform: scale(1);
@@ -374,29 +288,6 @@ button {
     transform: scale(2.1);
     opacity: 0.05;
   }
-}
-
-/* ---------- visitante ---------- */
-
-.player {
-  pointer-events: none;
-}
-
-.player__frame--walk1,
-.player__frame--walk2 {
-  opacity: 0;
-}
-
-.player__figure.is-walking .player__frame--idle {
-  opacity: 0;
-}
-
-.player__figure.is-walking .player__frame--walk1 {
-  animation: frame-a 340ms steps(1) infinite;
-}
-
-.player__figure.is-walking .player__frame--walk2 {
-  animation: frame-b 340ms steps(1) infinite;
 }
 
 @keyframes frame-a {
@@ -417,26 +308,6 @@ button {
   }
 }
 
-.click-marker__inner {
-  transform-box: fill-box;
-  transform-origin: center;
-}
-
-/* ---------- vida ambiental ---------- */
-
-.canopy {
-  transform-box: fill-box;
-  transform-origin: 50% 82%;
-}
-
-.canopy--slow {
-  animation: sway-slow 7s ease-in-out infinite alternate;
-}
-
-.canopy--fast {
-  animation: sway-fast 6s ease-in-out infinite alternate;
-}
-
 @keyframes sway-slow {
   from {
     transform: rotate(-0.5deg) translateY(0);
@@ -453,10 +324,6 @@ button {
   to {
     transform: rotate(1.4deg);
   }
-}
-
-.ambient-glow {
-  animation: skylight-flicker 4.2s ease-in-out infinite;
 }
 
 @keyframes skylight-flicker {
@@ -477,12 +344,6 @@ button {
   }
 }
 
-.cable-sway {
-  transform-box: fill-box;
-  transform-origin: 50% 0%;
-  animation: cable 5s ease-in-out infinite alternate;
-}
-
 @keyframes cable {
   from {
     transform: translateY(0);
@@ -490,21 +351,6 @@ button {
   to {
     transform: translateY(4px);
   }
-}
-
-.dust {
-  transform-box: fill-box;
-  animation: dust-drift 12s linear infinite;
-}
-
-.dust--2 {
-  animation-duration: 15s;
-  animation-delay: -6s;
-}
-
-.dust--3 {
-  animation-duration: 13s;
-  animation-delay: -3s;
 }
 
 @keyframes dust-drift {
@@ -524,23 +370,6 @@ button {
   }
 }
 
-/* fauna: un solo reloj de frames de 340 ms */
-.fauna {
-  pointer-events: none;
-}
-
-.fauna-frame--a {
-  animation: frame-a 340ms steps(1) infinite;
-}
-
-.fauna-frame--b {
-  animation: frame-b 340ms steps(1) infinite;
-}
-
-.fauna-cat {
-  animation: cat-walk 26s linear infinite;
-}
-
 @keyframes cat-walk {
   0% {
     transform: translate(1000px, 1880px) scaleX(1);
@@ -557,34 +386,6 @@ button {
   100% {
     transform: translate(1000px, 1880px) scaleX(1);
   }
-}
-
-.fauna-bird {
-  opacity: 0;
-  animation-fill-mode: both;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
-}
-
-.fauna-bird--1 {
-  animation-name: bird-east;
-  animation-duration: 21s;
-}
-
-.fauna-bird--2 {
-  animation-name: bird-east-2;
-  animation-duration: 21s;
-  animation-delay: 1.4s;
-}
-
-.fauna-bird--3 {
-  animation-name: bird-west;
-  animation-duration: 34s;
-  animation-delay: 9s;
-}
-
-.fauna-bird--3 .fauna-bird__flip {
-  transform: scaleX(-1);
 }
 
 @keyframes bird-east {
@@ -638,134 +439,6 @@ button {
   }
 }
 
-/* ============================================================
-   CONTROL TÁCTIL — stick flotante + ENTRAR
-   ============================================================ */
-
-.stick {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 24;
-  width: 132px;
-  height: 132px;
-  margin: -66px 0 0 -66px;
-  border-radius: 50%;
-  border: 1px solid rgba(233, 220, 198, 0.5);
-  background: rgba(24, 20, 17, 0.42);
-  opacity: 0;
-  pointer-events: none;
-  will-change: transform;
-  transition: opacity 120ms ease;
-}
-
-.stick.is-active {
-  opacity: 1;
-}
-
-.stick__knob {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 48px;
-  height: 48px;
-  margin: -24px 0 0 -24px;
-  border-radius: 50%;
-  background: #e9dcc6;
-  border: 2px solid #12100e;
-  will-change: transform;
-}
-
-.touch-enter {
-  position: fixed;
-  right: 18px;
-  bottom: calc(22px + env(safe-area-inset-bottom, 0px));
-  z-index: 25;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-}
-
-.touch-enter__button {
-  width: 76px;
-  height: 76px;
-  border-radius: 50%;
-  border: 1px solid var(--ochre-2);
-  background: rgba(224, 138, 60, 0.24);
-  color: var(--paper);
-  font-size: 10px;
-  font-weight: 900;
-  letter-spacing: 0.22em;
-  text-indent: 0.22em;
-  cursor: pointer;
-  touch-action: manipulation;
-}
-
-.touch-enter__button:active {
-  background: rgba(224, 138, 60, 0.55);
-}
-
-.touch-enter__caption {
-  font-size: 7px;
-  font-weight: 800;
-  letter-spacing: 0.24em;
-  color: var(--muted);
-}
-
-/* ============================================================
-   ETIQUETA DE PROXIMIDAD
-   ============================================================ */
-
-.hotspot-label {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 20;
-  pointer-events: none;
-  will-change: transform;
-}
-
-.hotspot-label__button {
-  pointer-events: auto;
-  transform: translate(-50%, -100%);
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  align-items: flex-start;
-  background: rgba(24, 20, 17, 0.92);
-  border: 1px solid var(--ochre);
-  padding: 10px 14px 9px;
-  cursor: pointer;
-  text-align: left;
-  color: var(--paper);
-  animation: label-in 150ms ease-out;
-  transition:
-    background 140ms ease,
-    color 140ms ease;
-}
-
-.hotspot-label__button:hover,
-.hotspot-label__button:focus-visible {
-  background: var(--ochre-2);
-  color: var(--ink);
-  outline: none;
-}
-
-.hotspot-label__name {
-  font-size: 11.5px;
-  font-weight: 800;
-  letter-spacing: 0.16em;
-  white-space: nowrap;
-}
-
-.hotspot-label__action {
-  font-size: 8.5px;
-  font-weight: 700;
-  letter-spacing: 0.32em;
-  opacity: 0.7;
-}
-
 @keyframes label-in {
   from {
     opacity: 0;
@@ -775,59 +448,6 @@ button {
     opacity: 1;
     translate: 0 0;
   }
-}
-
-/* ============================================================
-   HUD — identidad mínima persistente
-   ============================================================ */
-
-.hud__scrim {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 120px;
-  z-index: 21;
-  background: linear-gradient(rgba(18, 16, 14, 0.9), rgba(18, 16, 14, 0));
-  pointer-events: none;
-}
-
-.hud__brand {
-  position: fixed;
-  top: 20px;
-  left: 24px;
-  z-index: 25;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 5px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  text-align: left;
-  padding: 4px;
-  color: var(--paper);
-}
-
-.hud__brand-name {
-  font-size: 16px;
-  font-weight: 900;
-  letter-spacing: 0.14em;
-}
-
-.hud__brand-sub {
-  font-size: 8px;
-  font-weight: 700;
-  letter-spacing: 0.3em;
-  color: var(--muted);
-}
-
-.hud__brand-scene {
-  margin-top: 4px;
-  font-size: 8.5px;
-  font-weight: 800;
-  letter-spacing: 0.24em;
-  color: var(--ochre-2);
 }
 
 .hud__menu-button {
@@ -854,53 +474,6 @@ button {
 .hud__menu-button:focus-visible {
   border-color: var(--ochre);
   outline: none;
-}
-
-.hud__oficio {
-  position: fixed;
-  right: 24px;
-  bottom: calc(26px + env(safe-area-inset-bottom, 0px));
-  z-index: 25;
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-  background: rgba(24, 20, 17, 0.84);
-  border: 1px solid var(--ochre);
-  padding: 9px 14px;
-  pointer-events: none;
-}
-
-.hud__oficio-label {
-  font-size: 8px;
-  font-weight: 800;
-  letter-spacing: 0.3em;
-  color: var(--muted);
-}
-
-.hud__oficio-value {
-  font-size: 14px;
-  font-weight: 900;
-  letter-spacing: 0.08em;
-  color: var(--ochre-2);
-}
-
-.hud__hint {
-  position: fixed;
-  bottom: calc(28px + env(safe-area-inset-bottom, 0px));
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 25;
-  background: rgba(24, 20, 17, 0.84);
-  border: 1px solid #3a352e;
-  padding: 11px 20px;
-  font-size: 9px;
-  font-weight: 800;
-  letter-spacing: 0.24em;
-  text-indent: 0.24em;
-  color: var(--muted);
-  white-space: nowrap;
-  animation: hint-pulse 2.4s ease-in-out infinite;
-  pointer-events: none;
 }
 
 @keyframes hint-pulse {
@@ -967,8 +540,7 @@ button {
    OVERLAY EDITORIAL
    ============================================================ */
 
-.overlay,
-.station {
+.overlay {
   position: fixed;
   inset: 0;
   z-index: 30;
@@ -977,8 +549,7 @@ button {
 }
 
 .overlay__backdrop,
-.menu__backdrop,
-.station__backdrop {
+.menu__backdrop {
   position: absolute;
   inset: 0;
   background: rgba(14, 12, 10, 0.55);
@@ -1243,112 +814,6 @@ button {
 }
 
 /* ============================================================
-   ESTACIÓN — interacción de taller
-   ============================================================ */
-
-.station {
-  align-items: flex-end;
-  justify-content: center;
-}
-
-.station__panel {
-  position: relative;
-  width: min(560px, 100vw);
-  margin-bottom: 0;
-  background: var(--charcoal);
-  border-top: 1px solid var(--ochre);
-  padding: 24px 28px calc(28px + env(safe-area-inset-bottom, 0px));
-  color: var(--paper);
-  animation: panel-up 240ms cubic-bezier(0.3, 0.9, 0.3, 1);
-}
-
-.station__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 14px;
-}
-
-.station__kicker {
-  font-size: 9.5px;
-  font-weight: 800;
-  letter-spacing: 0.26em;
-  color: var(--muted-2);
-}
-
-.station__title {
-  font-size: 30px;
-  font-weight: 900;
-  letter-spacing: -0.01em;
-  line-height: 1;
-}
-
-.station__hint {
-  margin-top: 12px;
-  font-size: 13px;
-  line-height: 1.6;
-  color: var(--body);
-  max-width: 44ch;
-}
-
-.station__bar {
-  margin-top: 18px;
-  height: 3px;
-  background: var(--line);
-  overflow: hidden;
-}
-
-.station__bar span {
-  display: block;
-  height: 100%;
-  background: var(--ochre-2);
-  transform-origin: left center;
-  transform: scaleX(0);
-  transition: transform 60ms linear;
-}
-
-.station__actions {
-  margin-top: 16px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.station__hold {
-  flex: 1;
-  min-width: 220px;
-  border: 1px solid var(--ochre-2);
-  background: rgba(224, 138, 60, 0.16);
-  padding: 16px 22px;
-  font-size: 11px;
-  font-weight: 900;
-  letter-spacing: 0.26em;
-  text-indent: 0.26em;
-  color: var(--paper);
-  cursor: pointer;
-  touch-action: none;
-  user-select: none;
-  -webkit-user-select: none;
-  transition: background 120ms ease;
-}
-
-.station__hold:active,
-.station__hold.is-holding {
-  background: rgba(224, 138, 60, 0.55);
-}
-
-.station__progress {
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  color: var(--ochre-2);
-  min-width: 44px;
-  text-align: right;
-}
-
-/* ============================================================
    MENÚ — índice / viaje rápido
    ============================================================ */
 
@@ -1478,13 +943,6 @@ button {
   max-width: 320px;
 }
 
-.debug-panel__title {
-  font-size: 8.5px;
-  letter-spacing: 0.2em;
-  opacity: 0.6;
-  margin-bottom: 7px;
-}
-
 .debug-panel td {
   padding: 1.5px 0;
   vertical-align: top;
@@ -1493,25 +951,6 @@ button {
 .debug-panel td:first-child {
   padding-right: 12px;
   opacity: 0.55;
-}
-
-.debug-panel__hint {
-  margin-top: 7px;
-  font-size: 8.5px;
-  opacity: 0.45;
-}
-
-.debug-panel__reset {
-  margin-top: 8px;
-  pointer-events: auto;
-  background: none;
-  border: 1px solid #666;
-  color: #eee;
-  font: inherit;
-  font-size: 9px;
-  letter-spacing: 0.2em;
-  padding: 5px 8px;
-  cursor: pointer;
 }
 
 /* ============================================================
@@ -1527,21 +966,6 @@ button {
   .hud__menu-button {
     top: 16px;
     right: 14px;
-  }
-
-  .hud__oficio {
-    right: 14px;
-    bottom: calc(132px + env(safe-area-inset-bottom, 0px));
-  }
-
-  .hud__hint {
-    bottom: calc(24px + env(safe-area-inset-bottom, 0px));
-    left: 14px;
-    transform: none;
-    max-width: 60vw;
-    white-space: normal;
-    text-align: left;
-    line-height: 1.5;
   }
 
   .toasts {
@@ -1574,14 +998,6 @@ button {
   .overlay__cta-row {
     margin-top: 28px;
     padding-top: 0;
-  }
-
-  .station__panel {
-    padding: 20px 20px calc(24px + env(safe-area-inset-bottom, 0px));
-  }
-
-  .station__title {
-    font-size: 26px;
   }
 
   .menu__panel {

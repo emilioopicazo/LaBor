@@ -8,5 +8,7 @@ export default defineConfig({
   },
   build: {
     target: "es2019",
+    // Phaser se carga en un chunk aparte (dinámico) después de la intro
+    chunkSizeWarningLimit: 1700,
   },
 })

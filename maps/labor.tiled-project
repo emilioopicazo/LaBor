@@ -1,0 +1,94 @@
+{
+    "automappingRulesFile": "",
+    "commands": [
+    ],
+    "compatibilityVersion": 1100,
+    "extensionsPath": "extensions",
+    "folders": [
+        "../public/maps"
+    ],
+    "properties": [
+    ],
+    "propertyTypes": [
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 1,
+            "members": [
+                { "name": "spaceId", "type": "string", "value": "" },
+                { "name": "label", "type": "string", "value": "" },
+                { "name": "enterable", "type": "bool", "value": true }
+            ],
+            "name": "building",
+            "type": "class",
+            "useAs": [ "object" ]
+        },
+        {
+            "color": "#ff3f9c96",
+            "drawFill": true,
+            "id": 2,
+            "members": [
+                { "name": "spaceId", "type": "string", "value": "" },
+                { "name": "sceneId", "type": "string", "value": "" },
+                { "name": "action", "type": "string", "value": "ENTRAR" },
+                { "name": "radius", "type": "int", "value": 72 },
+                { "name": "facing", "type": "string", "value": "s" }
+            ],
+            "name": "workshop-door",
+            "type": "class",
+            "useAs": [ "object" ]
+        },
+        {
+            "color": "#ffc98f42",
+            "drawFill": true,
+            "id": 3,
+            "members": [
+                { "name": "id", "type": "string", "value": "" },
+                { "name": "action", "type": "string", "value": "VER" },
+                { "name": "missionRole", "type": "string", "value": "" },
+                { "name": "radius", "type": "int", "value": 96 },
+                { "name": "label", "type": "string", "value": "" }
+            ],
+            "name": "poi",
+            "type": "class",
+            "useAs": [ "object" ]
+        },
+        {
+            "color": "#ffe08a3c",
+            "drawFill": true,
+            "id": 4,
+            "members": [
+                { "name": "facing", "type": "string", "value": "down" }
+            ],
+            "name": "spawn",
+            "type": "class",
+            "useAs": [ "object" ]
+        },
+        {
+            "color": "#ff8e9299",
+            "drawFill": true,
+            "id": 5,
+            "members": [
+                { "name": "sprite", "type": "string", "value": "" },
+                { "name": "scale", "type": "int", "value": 3 },
+                { "name": "canopy", "type": "bool", "value": false },
+                { "name": "missionAnchor", "type": "string", "value": "" }
+            ],
+            "name": "prop",
+            "type": "class",
+            "useAs": [ "object" ]
+        },
+        { "color": "#ffff0000", "drawFill": false, "id": 6, "members": [], "name": "obstacle", "type": "class", "useAs": [ "object" ] },
+        { "color": "#ff00ff00", "drawFill": false, "id": 7, "members": [], "name": "walkable", "type": "class", "useAs": [ "object" ] },
+        { "color": "#ffffffff", "drawFill": false, "id": 8, "members": [], "name": "property-boundary", "type": "class", "useAs": [ "object" ] },
+        {
+            "color": "#ff888888",
+            "drawFill": false,
+            "id": 9,
+            "members": [ { "name": "for", "type": "string", "value": "" }, { "name": "offset", "type": "int", "value": 0 } ],
+            "name": "depth-anchor",
+            "type": "class",
+            "useAs": [ "object" ]
+        }
+    ]
+}

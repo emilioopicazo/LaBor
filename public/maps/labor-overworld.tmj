@@ -1,0 +1,1859 @@
+{
+  "compressionlevel": -1,
+  "height": 43,
+  "infinite": false,
+  "layers": [
+    {
+      "id": 1,
+      "name": "00_REFERENCE_PLAN",
+      "type": "imagelayer",
+      "image": "../assets/reference/labor-plan-48px.png",
+      "locked": true,
+      "opacity": 0.45,
+      "visible": true,
+      "x": 0,
+      "y": 0,
+      "properties": [
+        {
+          "name": "note",
+          "type": "string",
+          "value": "Plano TRAMA rasterizado a 48 px/m. Solo calibración; no se dibuja en producción."
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "PROPERTY_BOUNDARY",
+      "type": "objectgroup",
+      "draworder": "topdown",
+      "objects": [
+        {
+          "id": 1,
+          "name": "labor-property",
+          "type": "property-boundary",
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "polygon": [
+            {
+              "x": 0,
+              "y": 0
+            },
+            {
+              "x": 380.64,
+              "y": 223.2
+            },
+            {
+              "x": 1675.2,
+              "y": 223.2
+            },
+            {
+              "x": 1675.2,
+              "y": 2020.32
+            },
+            {
+              "x": 15.36,
+              "y": 2020.32
+            },
+            {
+              "x": 0,
+              "y": 1430.4
+            }
+          ],
+          "properties": [
+            {
+              "name": "note",
+              "type": "string",
+              "value": "Perímetro real medido (líneas exteriores). Chaflán NO; INGRESO en muro este y 24.80–29.90."
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "name": "ingreso-opening",
+          "type": "opening",
+          "x": 1660.8,
+          "y": 1190.4,
+          "width": 28.8,
+          "height": 244.8,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "label",
+              "type": "string",
+              "value": "INGRESO"
+            },
+            {
+              "name": "street",
+              "type": "string",
+              "value": "CALLE 12 SUR"
+            }
+          ]
+        }
+      ],
+      "opacity": 1,
+      "visible": true,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "id": 3,
+      "name": "BUILDING_COLLISION",
+      "type": "objectgroup",
+      "draworder": "topdown",
+      "objects": [
+        {
+          "id": 3,
+          "name": "veta",
+          "type": "building",
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "polygon": [
+            {
+              "x": 0,
+              "y": 0
+            },
+            {
+              "x": 380.64,
+              "y": 223.2
+            },
+            {
+              "x": 271.2,
+              "y": 223.2
+            },
+            {
+              "x": 271.2,
+              "y": 844.8
+            },
+            {
+              "x": 0,
+              "y": 844.8
+            }
+          ],
+          "properties": [
+            {
+              "name": "spaceId",
+              "type": "string",
+              "value": "veta"
+            },
+            {
+              "name": "label",
+              "type": "string",
+              "value": "VETA"
+            },
+            {
+              "name": "enterable",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": 4,
+          "name": "mannno",
+          "type": "building",
+          "x": 0,
+          "y": 844.8,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "polygon": [
+            {
+              "x": 0,
+              "y": 0
+            },
+            {
+              "x": 271.2,
+              "y": 0
+            },
+            {
+              "x": 271.2,
+              "y": 585.6
+            },
+            {
+              "x": 0,
+              "y": 585.6
+            }
+          ],
+          "properties": [
+            {
+              "name": "spaceId",
+              "type": "string",
+              "value": "mannno"
+            },
+            {
+              "name": "label",
+              "type": "string",
+              "value": "MANNNO"
+            },
+            {
+              "name": "enterable",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": 5,
+          "name": "franja-sur",
+          "type": "building",
+          "x": 0,
+          "y": 1430.4,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "polygon": [
+            {
+              "x": 0,
+              "y": 0
+            },
+            {
+              "x": 264,
+              "y": 0
+            },
+            {
+              "x": 264,
+              "y": 589.92
+            },
+            {
+              "x": 15.36,
+              "y": 589.92
+            }
+          ],
+          "properties": [
+            {
+              "name": "spaceId",
+              "type": "string",
+              "value": "franja-sur"
+            },
+            {
+              "name": "label",
+              "type": "string",
+              "value": ""
+            },
+            {
+              "name": "enterable",
+              "type": "bool",
+              "value": false
+            }
+          ]
+        },
+        {
+          "id": 6,
+          "name": "pabellon-04",
+          "type": "building",
+          "x": 264,
+          "y": 223.2,
+          "width": 290.4,
+          "height": 336,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "spaceId",
+              "type": "string",
+              "value": "pabellon-04"
+            },
+            {
+              "name": "label",
+              "type": "string",
+              "value": "PABELLÓN 04"
+            },
+            {
+              "name": "enterable",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": 7,
+          "name": "contraste",
+          "type": "building",
+          "x": 554.4,
+          "y": 223.2,
+          "width": 290.4,
+          "height": 336,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "spaceId",
+              "type": "string",
+              "value": "contraste"
+            },
+            {
+              "name": "label",
+              "type": "string",
+              "value": "CONTRASTE"
+            },
+            {
+              "name": "enterable",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": 8,
+          "name": "pabellon-01",
+          "type": "building",
+          "x": 1099.2,
+          "y": 223.2,
+          "width": 576,
+          "height": 326.88,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "spaceId",
+              "type": "string",
+              "value": "pabellon-01"
+            },
+            {
+              "name": "label",
+              "type": "string",
+              "value": "PABELLÓN 01"
+            },
+            {
+              "name": "enterable",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": 9,
+          "name": "pabellon-02",
+          "type": "building",
+          "x": 1099.2,
+          "y": 550.08,
+          "width": 576,
+          "height": 320.16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "spaceId",
+              "type": "string",
+              "value": "pabellon-02"
+            },
+            {
+              "name": "label",
+              "type": "string",
+              "value": "PABELLÓN 02"
+            },
+            {
+              "name": "enterable",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": 10,
+          "name": "pabellon-03",
+          "type": "building",
+          "x": 1339.2,
+          "y": 870.24,
+          "width": 336,
+          "height": 320.16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "spaceId",
+              "type": "string",
+              "value": "pabellon-03"
+            },
+            {
+              "name": "label",
+              "type": "string",
+              "value": "PABELLÓN 03"
+            },
+            {
+              "name": "enterable",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": 11,
+          "name": "nave-03",
+          "type": "building",
+          "x": 360,
+          "y": 1435.2,
+          "width": 376.8,
+          "height": 585.12,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "spaceId",
+              "type": "string",
+              "value": "nave-03"
+            },
+            {
+              "name": "label",
+              "type": "string",
+              "value": "NAVE 03"
+            },
+            {
+              "name": "enterable",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": 12,
+          "name": "nave-02",
+          "type": "building",
+          "x": 736.8,
+          "y": 1435.2,
+          "width": 465.6,
+          "height": 585.12,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "spaceId",
+              "type": "string",
+              "value": "nave-02"
+            },
+            {
+              "name": "label",
+              "type": "string",
+              "value": "NAVE 02"
+            },
+            {
+              "name": "enterable",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": 13,
+          "name": "nave-01",
+          "type": "building",
+          "x": 1202.4,
+          "y": 1435.2,
+          "width": 472.8,
+          "height": 585.12,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "spaceId",
+              "type": "string",
+              "value": "nave-01"
+            },
+            {
+              "name": "label",
+              "type": "string",
+              "value": "NAVE 01"
+            },
+            {
+              "name": "enterable",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        }
+      ],
+      "opacity": 1,
+      "visible": true,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "id": 4,
+      "name": "WALKABLE",
+      "type": "objectgroup",
+      "draworder": "topdown",
+      "objects": [
+        {
+          "id": 14,
+          "name": "patio",
+          "type": "walkable",
+          "x": 271.2,
+          "y": 559.2,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "polygon": [
+            {
+              "x": 0,
+              "y": 0
+            },
+            {
+              "x": 573.6,
+              "y": 0
+            },
+            {
+              "x": 573.6,
+              "y": -328.8
+            },
+            {
+              "x": 828,
+              "y": -328.8
+            },
+            {
+              "x": 828,
+              "y": 311.04
+            },
+            {
+              "x": 1068,
+              "y": 311.04
+            },
+            {
+              "x": 1068,
+              "y": 631.2
+            },
+            {
+              "x": 1485.6,
+              "y": 631.2
+            },
+            {
+              "x": 1485.6,
+              "y": 876
+            },
+            {
+              "x": 0,
+              "y": 876
+            }
+          ],
+          "properties": [
+            {
+              "name": "note",
+              "type": "string",
+              "value": "Patio + pasillo del árbol + bolsa norte P03 + ingreso con banqueta."
+            }
+          ]
+        }
+      ],
+      "opacity": 1,
+      "visible": true,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "id": 5,
+      "name": "DOORS",
+      "type": "objectgroup",
+      "draworder": "topdown",
+      "objects": [
+        {
+          "id": 15,
+          "name": "veta-door",
+          "type": "workshop-door",
+          "x": 290.4,
+          "y": 624,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "point": true,
+          "properties": [
+            {
+              "name": "spaceId",
+              "type": "string",
+              "value": "veta"
+            },
+            {
+              "name": "sceneId",
+              "type": "string",
+              "value": "veta-room"
+            },
+            {
+              "name": "action",
+              "type": "string",
+              "value": "ENTRAR"
+            },
+            {
+              "name": "radius",
+              "type": "int",
+              "value": 72
+            },
+            {
+              "name": "facing",
+              "type": "string",
+              "value": "e"
+            }
+          ]
+        },
+        {
+          "id": 16,
+          "name": "mannno-door",
+          "type": "workshop-door",
+          "x": 290.4,
+          "y": 1137.6,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "point": true,
+          "properties": [
+            {
+              "name": "spaceId",
+              "type": "string",
+              "value": "mannno"
+            },
+            {
+              "name": "sceneId",
+              "type": "string",
+              "value": "mannno-room"
+            },
+            {
+              "name": "action",
+              "type": "string",
+              "value": "ENTRAR"
+            },
+            {
+              "name": "radius",
+              "type": "int",
+              "value": 72
+            },
+            {
+              "name": "facing",
+              "type": "string",
+              "value": "e"
+            }
+          ]
+        },
+        {
+          "id": 17,
+          "name": "pabellon-04-door",
+          "type": "workshop-door",
+          "x": 408,
+          "y": 578.4,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "point": true,
+          "properties": [
+            {
+              "name": "spaceId",
+              "type": "string",
+              "value": "pabellon-04"
+            },
+            {
+              "name": "sceneId",
+              "type": "string",
+              "value": "pabellon-04-room"
+            },
+            {
+              "name": "action",
+              "type": "string",
+              "value": "VER"
+            },
+            {
+              "name": "radius",
+              "type": "int",
+              "value": 72
+            },
+            {
+              "name": "facing",
+              "type": "string",
+              "value": "s"
+            }
+          ]
+        },
+        {
+          "id": 18,
+          "name": "contraste-door",
+          "type": "workshop-door",
+          "x": 700.8,
+          "y": 578.4,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "point": true,
+          "properties": [
+            {
+              "name": "spaceId",
+              "type": "string",
+              "value": "contraste"
+            },
+            {
+              "name": "sceneId",
+              "type": "string",
+              "value": "contraste-room"
+            },
+            {
+              "name": "action",
+              "type": "string",
+              "value": "ENTRAR"
+            },
+            {
+              "name": "radius",
+              "type": "int",
+              "value": 72
+            },
+            {
+              "name": "facing",
+              "type": "string",
+              "value": "s"
+            }
+          ]
+        },
+        {
+          "id": 19,
+          "name": "pabellon-01-door",
+          "type": "workshop-door",
+          "x": 1080,
+          "y": 388.8,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "point": true,
+          "properties": [
+            {
+              "name": "spaceId",
+              "type": "string",
+              "value": "pabellon-01"
+            },
+            {
+              "name": "sceneId",
+              "type": "string",
+              "value": "pabellon-01-room"
+            },
+            {
+              "name": "action",
+              "type": "string",
+              "value": "VER"
+            },
+            {
+              "name": "radius",
+              "type": "int",
+              "value": 72
+            },
+            {
+              "name": "facing",
+              "type": "string",
+              "value": "w"
+            }
+          ]
+        },
+        {
+          "id": 20,
+          "name": "pabellon-02-door",
+          "type": "workshop-door",
+          "x": 1080,
+          "y": 710.4,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "point": true,
+          "properties": [
+            {
+              "name": "spaceId",
+              "type": "string",
+              "value": "pabellon-02"
+            },
+            {
+              "name": "sceneId",
+              "type": "string",
+              "value": "pabellon-02-room"
+            },
+            {
+              "name": "action",
+              "type": "string",
+              "value": "VER"
+            },
+            {
+              "name": "radius",
+              "type": "int",
+              "value": 72
+            },
+            {
+              "name": "facing",
+              "type": "string",
+              "value": "w"
+            }
+          ]
+        },
+        {
+          "id": 21,
+          "name": "pabellon-03-door",
+          "type": "workshop-door",
+          "x": 1320,
+          "y": 1032,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "point": true,
+          "properties": [
+            {
+              "name": "spaceId",
+              "type": "string",
+              "value": "pabellon-03"
+            },
+            {
+              "name": "sceneId",
+              "type": "string",
+              "value": "pabellon-03-room"
+            },
+            {
+              "name": "action",
+              "type": "string",
+              "value": "VER"
+            },
+            {
+              "name": "radius",
+              "type": "int",
+              "value": 72
+            },
+            {
+              "name": "facing",
+              "type": "string",
+              "value": "w"
+            }
+          ]
+        },
+        {
+          "id": 22,
+          "name": "nave-03-door",
+          "type": "workshop-door",
+          "x": 475.2,
+          "y": 1416,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "point": true,
+          "properties": [
+            {
+              "name": "spaceId",
+              "type": "string",
+              "value": "nave-03"
+            },
+            {
+              "name": "sceneId",
+              "type": "string",
+              "value": "nave-03-room"
+            },
+            {
+              "name": "action",
+              "type": "string",
+              "value": "VER"
+            },
+            {
+              "name": "radius",
+              "type": "int",
+              "value": 72
+            },
+            {
+              "name": "facing",
+              "type": "string",
+              "value": "n"
+            }
+          ]
+        },
+        {
+          "id": 23,
+          "name": "nave-02-door",
+          "type": "workshop-door",
+          "x": 859.2,
+          "y": 1416,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "point": true,
+          "properties": [
+            {
+              "name": "spaceId",
+              "type": "string",
+              "value": "nave-02"
+            },
+            {
+              "name": "sceneId",
+              "type": "string",
+              "value": "nave-02-room"
+            },
+            {
+              "name": "action",
+              "type": "string",
+              "value": "VER"
+            },
+            {
+              "name": "radius",
+              "type": "int",
+              "value": 72
+            },
+            {
+              "name": "facing",
+              "type": "string",
+              "value": "n"
+            }
+          ]
+        },
+        {
+          "id": 24,
+          "name": "nave-01-door",
+          "type": "workshop-door",
+          "x": 1320,
+          "y": 1416,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "point": true,
+          "properties": [
+            {
+              "name": "spaceId",
+              "type": "string",
+              "value": "nave-01"
+            },
+            {
+              "name": "sceneId",
+              "type": "string",
+              "value": "nave-01-room"
+            },
+            {
+              "name": "action",
+              "type": "string",
+              "value": "VER"
+            },
+            {
+              "name": "radius",
+              "type": "int",
+              "value": 72
+            },
+            {
+              "name": "facing",
+              "type": "string",
+              "value": "n"
+            }
+          ]
+        }
+      ],
+      "opacity": 1,
+      "visible": true,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "id": 6,
+      "name": "SPAWNS",
+      "type": "objectgroup",
+      "draworder": "topdown",
+      "objects": [
+        {
+          "id": 25,
+          "name": "main-ingreso",
+          "type": "spawn",
+          "x": 1723.2,
+          "y": 1312.8,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "point": true,
+          "properties": [
+            {
+              "name": "facing",
+              "type": "string",
+              "value": "left"
+            },
+            {
+              "name": "note",
+              "type": "string",
+              "value": "INGRESO real del plano (Calle 12 Sur)"
+            }
+          ]
+        },
+        {
+          "id": 26,
+          "name": "return-veta",
+          "type": "spawn",
+          "x": 328.8,
+          "y": 624,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "point": true,
+          "properties": [
+            {
+              "name": "facing",
+              "type": "string",
+              "value": "left"
+            }
+          ]
+        },
+        {
+          "id": 27,
+          "name": "return-mannno",
+          "type": "spawn",
+          "x": 328.8,
+          "y": 1137.6,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "point": true,
+          "properties": [
+            {
+              "name": "facing",
+              "type": "string",
+              "value": "left"
+            }
+          ]
+        },
+        {
+          "id": 28,
+          "name": "return-pabellon-04",
+          "type": "spawn",
+          "x": 408,
+          "y": 616.8,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "point": true,
+          "properties": [
+            {
+              "name": "facing",
+              "type": "string",
+              "value": "up"
+            }
+          ]
+        },
+        {
+          "id": 29,
+          "name": "return-contraste",
+          "type": "spawn",
+          "x": 700.8,
+          "y": 616.8,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "point": true,
+          "properties": [
+            {
+              "name": "facing",
+              "type": "string",
+              "value": "up"
+            }
+          ]
+        },
+        {
+          "id": 30,
+          "name": "return-pabellon-01",
+          "type": "spawn",
+          "x": 1041.6,
+          "y": 388.8,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "point": true,
+          "properties": [
+            {
+              "name": "facing",
+              "type": "string",
+              "value": "right"
+            }
+          ]
+        },
+        {
+          "id": 31,
+          "name": "return-pabellon-02",
+          "type": "spawn",
+          "x": 1041.6,
+          "y": 710.4,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "point": true,
+          "properties": [
+            {
+              "name": "facing",
+              "type": "string",
+              "value": "right"
+            }
+          ]
+        },
+        {
+          "id": 32,
+          "name": "return-pabellon-03",
+          "type": "spawn",
+          "x": 1281.6,
+          "y": 1032,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "point": true,
+          "properties": [
+            {
+              "name": "facing",
+              "type": "string",
+              "value": "right"
+            }
+          ]
+        },
+        {
+          "id": 33,
+          "name": "return-nave-03",
+          "type": "spawn",
+          "x": 475.2,
+          "y": 1377.6,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "point": true,
+          "properties": [
+            {
+              "name": "facing",
+              "type": "string",
+              "value": "down"
+            }
+          ]
+        },
+        {
+          "id": 34,
+          "name": "return-nave-02",
+          "type": "spawn",
+          "x": 859.2,
+          "y": 1377.6,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "point": true,
+          "properties": [
+            {
+              "name": "facing",
+              "type": "string",
+              "value": "down"
+            }
+          ]
+        },
+        {
+          "id": 35,
+          "name": "return-nave-01",
+          "type": "spawn",
+          "x": 1320,
+          "y": 1377.6,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "point": true,
+          "properties": [
+            {
+              "name": "facing",
+              "type": "string",
+              "value": "down"
+            }
+          ]
+        }
+      ],
+      "opacity": 1,
+      "visible": true,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "id": 7,
+      "name": "POI",
+      "type": "objectgroup",
+      "draworder": "topdown",
+      "objects": [
+        {
+          "id": 36,
+          "name": "pieza-central",
+          "type": "poi",
+          "x": 672,
+          "y": 960,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "point": true,
+          "properties": [
+            {
+              "name": "id",
+              "type": "string",
+              "value": "pieza-central"
+            },
+            {
+              "name": "action",
+              "type": "string",
+              "value": "VER"
+            },
+            {
+              "name": "missionRole",
+              "type": "string",
+              "value": "anchor"
+            },
+            {
+              "name": "radius",
+              "type": "int",
+              "value": 96
+            },
+            {
+              "name": "label",
+              "type": "string",
+              "value": "LA PIEZA CENTRAL"
+            }
+          ]
+        },
+        {
+          "id": 37,
+          "name": "eventos-board",
+          "type": "poi",
+          "x": 984,
+          "y": 1406.4,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "point": true,
+          "properties": [
+            {
+              "name": "id",
+              "type": "string",
+              "value": "eventos-board"
+            },
+            {
+              "name": "action",
+              "type": "string",
+              "value": "VER"
+            },
+            {
+              "name": "missionRole",
+              "type": "string",
+              "value": ""
+            },
+            {
+              "name": "radius",
+              "type": "float",
+              "value": 76.8
+            },
+            {
+              "name": "label",
+              "type": "string",
+              "value": "EVENTOS"
+            }
+          ]
+        },
+        {
+          "id": 38,
+          "name": "info-totem",
+          "type": "poi",
+          "x": 1468.8,
+          "y": 1243.2,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "point": true,
+          "properties": [
+            {
+              "name": "id",
+              "type": "string",
+              "value": "info-totem"
+            },
+            {
+              "name": "action",
+              "type": "string",
+              "value": "VER"
+            },
+            {
+              "name": "missionRole",
+              "type": "string",
+              "value": ""
+            },
+            {
+              "name": "radius",
+              "type": "float",
+              "value": 76.8
+            },
+            {
+              "name": "label",
+              "type": "string",
+              "value": "INFORMACIÓN"
+            }
+          ]
+        }
+      ],
+      "opacity": 1,
+      "visible": true,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "id": 8,
+      "name": "OBSTACLES",
+      "type": "objectgroup",
+      "draworder": "topdown",
+      "objects": [
+        {
+          "id": 39,
+          "name": "tree-main-trunk",
+          "type": "obstacle",
+          "x": 900,
+          "y": 333.6,
+          "width": 43.2,
+          "height": 43.2,
+          "rotation": 0,
+          "visible": true,
+          "ellipse": true,
+          "properties": []
+        },
+        {
+          "id": 40,
+          "name": "pieza-pedestal",
+          "type": "obstacle",
+          "x": 626.4,
+          "y": 880.8,
+          "width": 91.2,
+          "height": 91.2,
+          "rotation": 0,
+          "visible": true,
+          "ellipse": true,
+          "properties": []
+        },
+        {
+          "id": 41,
+          "name": "eventos-board",
+          "type": "obstacle",
+          "x": 950.4,
+          "y": 1384.8,
+          "width": 67.2,
+          "height": 67.2,
+          "rotation": 0,
+          "visible": true,
+          "ellipse": true,
+          "properties": []
+        },
+        {
+          "id": 42,
+          "name": "info-totem",
+          "type": "obstacle",
+          "x": 1449.6,
+          "y": 1238.4,
+          "width": 38.4,
+          "height": 38.4,
+          "rotation": 0,
+          "visible": true,
+          "ellipse": true,
+          "properties": []
+        },
+        {
+          "id": 43,
+          "name": "wood-stack",
+          "type": "obstacle",
+          "x": 328.8,
+          "y": 760.8,
+          "width": 52.8,
+          "height": 52.8,
+          "rotation": 0,
+          "visible": true,
+          "ellipse": true,
+          "properties": []
+        },
+        {
+          "id": 44,
+          "name": "pallets",
+          "type": "obstacle",
+          "x": 326.4,
+          "y": 1281.6,
+          "width": 48,
+          "height": 48,
+          "rotation": 0,
+          "visible": true,
+          "ellipse": true,
+          "properties": []
+        }
+      ],
+      "opacity": 1,
+      "visible": true,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "id": 9,
+      "name": "DEPTH_ANCHORS",
+      "type": "objectgroup",
+      "draworder": "topdown",
+      "objects": [
+        {
+          "id": 45,
+          "name": "tree-main-canopy",
+          "type": "depth-anchor",
+          "x": 921.6,
+          "y": 372,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "point": true,
+          "properties": [
+            {
+              "name": "for",
+              "type": "string",
+              "value": "tree-main-canopy"
+            },
+            {
+              "name": "offset",
+              "type": "int",
+              "value": 40
+            }
+          ]
+        }
+      ],
+      "opacity": 1,
+      "visible": true,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "id": 10,
+      "name": "ART_GROUND",
+      "type": "objectgroup",
+      "draworder": "topdown",
+      "objects": [],
+      "opacity": 1,
+      "visible": true,
+      "x": 0,
+      "y": 0,
+      "properties": [
+        {
+          "name": "note",
+          "type": "string",
+          "value": "Piso del patio: el renderer tapiza world-floor-patio dentro de WALKABLE."
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "name": "ART_BACK",
+      "type": "objectgroup",
+      "draworder": "topdown",
+      "objects": [],
+      "opacity": 1,
+      "visible": true,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "id": 12,
+      "name": "ART_BUILDINGS",
+      "type": "objectgroup",
+      "draworder": "topdown",
+      "objects": [],
+      "opacity": 1,
+      "visible": true,
+      "x": 0,
+      "y": 0,
+      "properties": [
+        {
+          "name": "note",
+          "type": "string",
+          "value": "Los edificios se dibujan desde BUILDING_COLLISION (techos/etiquetas)."
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "name": "ART_PROPS",
+      "type": "objectgroup",
+      "draworder": "topdown",
+      "objects": [
+        {
+          "id": 46,
+          "name": "tree-main-base",
+          "type": "prop",
+          "x": 921.6,
+          "y": 372,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "point": true,
+          "properties": [
+            {
+              "name": "sprite",
+              "type": "string",
+              "value": "treeMainBase"
+            },
+            {
+              "name": "scale",
+              "type": "int",
+              "value": 6
+            }
+          ]
+        },
+        {
+          "id": 47,
+          "name": "shrub-01",
+          "type": "prop",
+          "x": 820.8,
+          "y": 604.8,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "point": true,
+          "properties": [
+            {
+              "name": "sprite",
+              "type": "string",
+              "value": "shrub01"
+            },
+            {
+              "name": "scale",
+              "type": "int",
+              "value": 4
+            }
+          ]
+        },
+        {
+          "id": 48,
+          "name": "shrub-02",
+          "type": "prop",
+          "x": 950.4,
+          "y": 662.4,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "point": true,
+          "properties": [
+            {
+              "name": "sprite",
+              "type": "string",
+              "value": "shrub02"
+            },
+            {
+              "name": "scale",
+              "type": "int",
+              "value": 4
+            }
+          ]
+        },
+        {
+          "id": 49,
+          "name": "installation-base",
+          "type": "prop",
+          "x": 672,
+          "y": 960,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "point": true,
+          "properties": [
+            {
+              "name": "sprite",
+              "type": "string",
+              "value": "installationBase"
+            },
+            {
+              "name": "scale",
+              "type": "int",
+              "value": 3
+            },
+            {
+              "name": "missionAnchor",
+              "type": "string",
+              "value": "pieza-central"
+            }
+          ]
+        },
+        {
+          "id": 50,
+          "name": "events-board",
+          "type": "prop",
+          "x": 984,
+          "y": 1425.6,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "point": true,
+          "properties": [
+            {
+              "name": "sprite",
+              "type": "string",
+              "value": "eventsBoard"
+            },
+            {
+              "name": "scale",
+              "type": "int",
+              "value": 3
+            }
+          ]
+        },
+        {
+          "id": 51,
+          "name": "info-totem",
+          "type": "prop",
+          "x": 1468.8,
+          "y": 1267.2,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "point": true,
+          "properties": [
+            {
+              "name": "sprite",
+              "type": "string",
+              "value": "infoTotem"
+            },
+            {
+              "name": "scale",
+              "type": "int",
+              "value": 3
+            }
+          ]
+        },
+        {
+          "id": 52,
+          "name": "wood-stack",
+          "type": "prop",
+          "x": 355.2,
+          "y": 801.6,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "point": true,
+          "properties": [
+            {
+              "name": "sprite",
+              "type": "string",
+              "value": "woodStack"
+            },
+            {
+              "name": "scale",
+              "type": "int",
+              "value": 3
+            }
+          ]
+        },
+        {
+          "id": 53,
+          "name": "pallets",
+          "type": "prop",
+          "x": 350.4,
+          "y": 1320,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "point": true,
+          "properties": [
+            {
+              "name": "sprite",
+              "type": "string",
+              "value": "palletStack"
+            },
+            {
+              "name": "scale",
+              "type": "int",
+              "value": 3
+            }
+          ]
+        },
+        {
+          "id": 54,
+          "name": "planter-01",
+          "type": "prop",
+          "x": 590.4,
+          "y": 600,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "point": true,
+          "properties": [
+            {
+              "name": "sprite",
+              "type": "string",
+              "value": "planter"
+            },
+            {
+              "name": "scale",
+              "type": "int",
+              "value": 3
+            }
+          ]
+        },
+        {
+          "id": 55,
+          "name": "planter-02",
+          "type": "prop",
+          "x": 1209.6,
+          "y": 912,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "point": true,
+          "properties": [
+            {
+              "name": "sprite",
+              "type": "string",
+              "value": "planter"
+            },
+            {
+              "name": "scale",
+              "type": "int",
+              "value": 3
+            }
+          ]
+        },
+        {
+          "id": 56,
+          "name": "water-tank",
+          "type": "prop",
+          "x": 1161.6,
+          "y": 1171.2,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "point": true,
+          "properties": [
+            {
+              "name": "sprite",
+              "type": "string",
+              "value": "waterTank"
+            },
+            {
+              "name": "scale",
+              "type": "int",
+              "value": 3
+            }
+          ]
+        }
+      ],
+      "opacity": 1,
+      "visible": true,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "id": 14,
+      "name": "ART_FRONT",
+      "type": "objectgroup",
+      "draworder": "topdown",
+      "objects": [
+        {
+          "id": 57,
+          "name": "tree-main-canopy",
+          "type": "prop",
+          "x": 921.6,
+          "y": 331.2,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "point": true,
+          "properties": [
+            {
+              "name": "sprite",
+              "type": "string",
+              "value": "treeMainCanopy"
+            },
+            {
+              "name": "scale",
+              "type": "int",
+              "value": 6
+            },
+            {
+              "name": "canopy",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        }
+      ],
+      "opacity": 1,
+      "visible": true,
+      "x": 0,
+      "y": 0
+    }
+  ],
+  "nextlayerid": 15,
+  "nextobjectid": 58,
+  "orientation": "orthogonal",
+  "properties": [
+    {
+      "name": "pxPerMeter",
+      "type": "int",
+      "value": 48
+    },
+    {
+      "name": "source",
+      "type": "string",
+      "value": "public/assets/reference/260823_TRAMA-layout.pdf (calibrado con la cota 34.90 m)"
+    },
+    {
+      "name": "origin",
+      "type": "string",
+      "value": "esquina NO del rectángulo envolvente del predio; x→este, y→sur"
+    },
+    {
+      "name": "propertyWidthM",
+      "type": "float",
+      "value": 34.9
+    },
+    {
+      "name": "propertyHeightM",
+      "type": "float",
+      "value": 42.09
+    },
+    {
+      "name": "streetSouth",
+      "type": "string",
+      "value": "CALLE COBÁ"
+    },
+    {
+      "name": "streetEast",
+      "type": "string",
+      "value": "CALLE 12 SUR"
+    },
+    {
+      "name": "neighborNorth",
+      "type": "string",
+      "value": "MALA CASA"
+    }
+  ],
+  "renderorder": "right-down",
+  "tiledversion": "1.10.2",
+  "tileheight": 48,
+  "tilesets": [],
+  "tilewidth": 48,
+  "type": "map",
+  "version": "1.10",
+  "width": 35
+}

@@ -36,7 +36,7 @@ export const ASSETS = {
     "pabellon-04": sprite("world/roofs/roof-pabellon-04-v1.png", 46, 38),
     contraste: sprite("world/roofs/roof-contraste-v1.png", 39, 39),
     veta: sprite("world/roofs/roof-veta-v1.png", 32, 72),
-    mannino: sprite("world/roofs/roof-mannino-v1.png", 32, 80),
+    mannno: sprite("world/roofs/roof-mannno-v1.png", 32, 80),
   } as Record<string, SpriteAsset>,
 
   // --- vegetación (solo la del plano: árbol principal + 2 plantas;

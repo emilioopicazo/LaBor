@@ -1,23 +1,24 @@
-import { SPACES } from "../../data/spaces"
+import { AVAILABLE, CONTACT, RESIDENTS, mailLink, whatsappLink } from "../../data/spaces"
+import { PIEZA_CENTRAL } from "../../data/missions"
+import { missionView, useMissionRun } from "../../game/mission"
 
 interface FastMenuProps {
   open: boolean
   setOpen: (open: boolean) => void
-  /** Fast travel: camina rápido hasta el espacio y abre su overlay */
+  /** Fast travel: camina rápido hasta la puerta del espacio */
   onTravel: (id: string) => void
-  /** Abre un overlay sin posición física (AGENDA) */
+  /** Abre un overlay directo (misión, agenda, contacto) */
   onDirect: (id: string) => void
+  onChangeAvatar: () => void
 }
 
 /**
- * Menú de respaldo (accesibilidad / usuarios impacientes).
- * No es un navbar: es un índice de viaje rápido que conserva la
- * metáfora espacial — al elegir un espacio, el visitante camina
- * hasta él y su overlay se abre al llegar.
+ * Menú (arriba-derecha): índice de viaje rápido + misión + personaje +
+ * contacto. Respaldo para quien no quiere caminar; no sustituye al mundo.
  */
-export function FastMenu({ open, setOpen, onTravel, onDirect }: FastMenuProps) {
-  const residents = SPACES.filter((s) => s.type === "resident")
-  const available = SPACES.filter((s) => s.type === "available")
+export function FastMenu({ open, setOpen, onTravel, onDirect, onChangeAvatar }: FastMenuProps) {
+  const run = useMissionRun()
+  const view = missionView(run)
 
   const Item = ({ id, label, meta, direct }: { id: string; label: string; meta?: string; direct?: boolean }) => (
     <li>
@@ -54,26 +55,56 @@ export function FastMenu({ open, setOpen, onTravel, onDirect }: FastMenuProps) {
               </button>
             </header>
 
+            <p className="menu__section">MISIÓN</p>
+            <ul className="menu__list">
+              <Item id="pieza-central" label={PIEZA_CENTRAL.title} meta={view ? (view.complete ? "COMPLETA" : view.progress) : "INICIAR"} direct />
+            </ul>
+
             <p className="menu__section">RESIDENTES</p>
             <ul className="menu__list">
-              {residents.map((s) => (
+              {RESIDENTS.map((s) => (
                 <Item key={s.id} id={s.id} label={s.name} />
               ))}
             </ul>
 
             <p className="menu__section">ESPACIOS DISPONIBLES</p>
             <ul className="menu__list">
-              {available.map((s) => (
-                <Item key={s.id} id={s.id} label={s.name} meta={`${s.areaM2} M²`} />
+              {AVAILABLE.map((s) => (
+                <Item key={s.id} id={s.id} label={s.name} meta={`${s.areaM2} M² · ${s.rentMxn ? `$${(s.rentMxn / 1000).toFixed(0)}K` : "COTIZAR"}`} />
               ))}
             </ul>
 
             <p className="menu__section">PATIO</p>
             <ul className="menu__list">
-              <Item id="pieza" label="LA PIEZA CENTRAL" />
-              <Item id="eventos" label="EVENTOS" />
+              <Item id="eventos-board" label="EVENTOS" />
+              <Item id="info-totem" label="INFORMACIÓN" />
               <Item id="agenda" label="AGENDA" direct />
-              <Item id="contacto" label="CONTACTO" />
+            </ul>
+
+            <p className="menu__section">PERSONAJE</p>
+            <ul className="menu__list">
+              <li>
+                <button type="button" className="menu__item" onClick={onChangeAvatar}>
+                  <span>CAMBIAR PERSONAJE</span>
+                  <span className="menu__item-meta">→</span>
+                </button>
+              </li>
+            </ul>
+
+            <p className="menu__section">CONTACTO</p>
+            <ul className="menu__list menu__list--links">
+              <li>
+                <a className="menu__item" href={whatsappLink("Hola La Bor, quiero información sobre los espacios disponibles.")} target="_blank" rel="noreferrer">
+                  <span>WHATSAPP</span>
+                  <span className="menu__item-meta">{CONTACT.phoneDisplay} ↗</span>
+                </a>
+              </li>
+              <li>
+                <a className="menu__item" href={mailLink("Información La Bor")}>
+                  <span>EMAIL</span>
+                  <span className="menu__item-meta">{CONTACT.email} ↗</span>
+                </a>
+              </li>
             </ul>
 
             <p className="menu__foot">LA BOR — TALLERES · TULUM, QROO.</p>

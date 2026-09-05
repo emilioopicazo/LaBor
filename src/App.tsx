@@ -1,46 +1,24 @@
 import { useCallback, useEffect, useState } from "react"
+import { GameStage } from "./components/game/GameStage"
+import { AvatarSelector } from "./components/experience/AvatarSelector"
 import { Intro } from "./components/experience/Intro"
-import { WorkshopWorld } from "./components/experience/WorkshopWorld"
 import { ENTRANCE_GATE_MS, prefersReducedMotion } from "./config/world"
-import { allSpriteSrcs } from "./data/assets"
+import { useProfile } from "./game/profile"
 
-type Phase = "intro" | "entering" | "world"
+type Phase = "intro" | "avatar" | "entering" | "world"
 
-/** Precarga los sprites del mundo durante la intro (§61). */
-function preloadSprites(): Promise<void> {
-  const srcs = allSpriteSrcs()
-  return new Promise((resolve) => {
-    let pending = srcs.length
-    if (pending === 0) return resolve()
-    const done = () => {
-      pending -= 1
-      if (pending <= 0) resolve()
-    }
-    srcs.forEach((src) => {
-      const img = new Image()
-      img.onload = done
-      img.onerror = done
-      img.src = src
-    })
-    window.setTimeout(resolve, 3000)
-  })
-}
-
+/**
+ * INTRO → (ELIGE TU PERSONAJE la primera vez) → el portón se abre → patio.
+ * El mundo (Phaser) se monta desde el principio, detrás de la intro, para
+ * que cargue mientras se lee; recibe input solo en la fase "world".
+ */
 export default function App() {
   const [phase, setPhase] = useState<Phase>("intro")
-  const [ready, setReady] = useState(false)
-
-  useEffect(() => {
-    let alive = true
-    preloadSprites().then(() => alive && setReady(true))
-    return () => {
-      alive = false
-    }
-  }, [])
+  const prof = useProfile()
 
   const handleIntroDone = useCallback(() => {
-    setPhase((p) => (p === "intro" ? "entering" : p))
-  }, [])
+    setPhase((p) => (p === "intro" ? (prof.avatarId ? "entering" : "avatar") : p))
+  }, [prof.avatarId])
 
   useEffect(() => {
     if (phase !== "entering") return
@@ -51,8 +29,9 @@ export default function App() {
 
   return (
     <div className="app">
-      {phase !== "intro" && <WorkshopWorld />}
-      {phase !== "world" && <Intro ready={ready} opening={phase === "entering"} onDone={handleIntroDone} />}
+      <GameStage active={phase === "world"} />
+      {phase === "avatar" && <AvatarSelector mode="first" onConfirm={() => setPhase("entering")} />}
+      {phase !== "world" && <Intro ready opening={phase === "entering"} hidden={phase === "avatar"} onDone={handleIntroDone} />}
     </div>
   )
 }

@@ -1,12 +1,10 @@
 // ============================================================
-// LA BOR — espacios del taller
-// Contenido editable: nombres, estados, descripciones, áreas,
-// CTAs y puntos de interacción. El motor de exploración lee
-// esta configuración; no hay contenido regado en la lógica.
-// Lógica del complejo: 7 talleres + 3 naves. Residentes:
-// CONTRASTE (joyería), VETA (carpintería), MANNINO (herrería).
-// Huellas: geometría del prototipo de diseño ×2.5 (ver map.ts).
-// Todos los talleres se pueden recorrer por dentro (escenas).
+// LA BOR — espacios del taller (CONTENIDO)
+// Nombres, estados, descripciones, áreas, renta y CTAs. La UBICACIÓN
+// (huellas, puertas, puntos) vive en public/maps/labor-overworld.tmj:
+// el juego relaciona ambos por `id` === `spaceId` del mapa.
+// Lógica del complejo: 7 talleres + 3 naves. Residentes: CONTRASTE
+// (joyería), VETA (carpintería), MANNNO (herrería).
 // ============================================================
 
 export type SpaceType = "resident" | "available" | "event" | "navigation" | "installation"
@@ -24,60 +22,81 @@ export interface SpaceCta {
 export interface WorkshopSpace {
   id: string
   name: string
+  /** nombre corto para HUD / botón contextual */
+  shortName?: string
   /** Índice arquitectónico corto (P01, N02, 01…) */
   number?: string
   subtitle?: string
   description?: string
   /** Líneas de detalle extra en el overlay (listas cortas) */
   details?: string[]
-
-  /** Huella del edificio en coordenadas de mundo */
-  buildingRect?: {
-    x: number
-    y: number
-    width: number
-    height: number
-  }
-
-  /**
-   * Punto de interacción frente al edificio / objeto (puerta).
-   * Los espacios sin punto (p. ej. AGENDA) solo existen en el
-   * menú y abren su overlay directamente.
-   */
-  interactionPoint?: {
-    x: number
-    y: number
-  }
-
-  interactionRadius: number
-
   type: SpaceType
   status: SpaceStatus
-
   areaM2?: number
-
+  /** renta mensual (MXN); sin valor = a cotizar */
+  rentMxn?: number
   /** acción principal del overlay */
   cta?: SpaceCta
   /** acción secundaria del overlay */
   cta2?: SpaceCta
-
   image?: string
 }
 
-const R = 160
+// ---- contacto real ------------------------------------------------------
+export const CONTACT = {
+  email: "labortulum@gmail.com",
+  phoneDisplay: "+52 55 3037 4167",
+  phoneWa: "525530374167",
+  instagram: "",
+  address: "Calle Cobá esq. Calle 12 Sur · Tulum, Quintana Roo, México",
+}
+
+export function whatsappLink(message: string): string {
+  return `https://wa.me/${CONTACT.phoneWa}?text=${encodeURIComponent(message)}`
+}
+
+export function mailLink(subject: string, body = ""): string {
+  return `mailto:${CONTACT.email}?subject=${encodeURIComponent(subject)}${body ? `&body=${encodeURIComponent(body)}` : ""}`
+}
+
+/** CTA de propuesta para un espacio disponible (WhatsApp, mensaje prellenado) */
+export function proposalCta(space: Pick<WorkshopSpace, "name" | "areaM2">): SpaceCta {
+  const msg = `Hola La Bor, me interesa ${space.name} (${space.areaM2} m²). Mi propuesta: uso: ___, plazo: ___, fecha de entrada: ___.`
+  return { label: "ENVIAR PROPUESTA", href: whatsappLink(msg) }
+}
+
+const PROPOSAL_HINT = "Cuéntanos qué harías ahí, por cuánto tiempo y desde cuándo. Las mejores propuestas se quedan con el espacio."
+
+function available(id: string, name: string, number: string, areaM2: number, rentMxn: number | undefined, details: string[] = []): WorkshopSpace {
+  const space: WorkshopSpace = {
+    id,
+    name,
+    shortName: name,
+    number,
+    type: "available",
+    status: "available",
+    areaM2,
+    rentMxn,
+    description: rentMxn
+      ? `Renta mensual: $${rentMxn.toLocaleString("es-MX")} MXN. ${PROPOSAL_HINT}`
+      : `Renta a cotizar según uso y plazo. ${PROPOSAL_HINT}`,
+    details,
+    cta: { label: "RECORRER EL ESPACIO", enterSceneId: `${id}-room` },
+  }
+  space.cta2 = proposalCta(space)
+  return space
+}
 
 export const SPACES: WorkshopSpace[] = [
   // ---- RESIDENTES ------------------------------------------
   {
     id: "contraste",
     name: "CONTRASTE ATELIER",
+    shortName: "CONTRASTE",
     number: "01",
     subtitle: "Joyería / Producción / Talleres",
     description:
       "Taller dedicado a la joyería, el trabajo en plata, la producción y talleres presenciales.",
-    buildingRect: { x: 965, y: 332, width: 425, height: 508 },
-    interactionPoint: { x: 1178, y: 890 },
-    interactionRadius: R,
     type: "resident",
     status: "active",
     cta: { label: "ENTRAR AL TALLER", enterSceneId: "contraste-room" },
@@ -86,164 +105,79 @@ export const SPACES: WorkshopSpace[] = [
   {
     id: "veta",
     name: "VETA",
+    shortName: "VETA",
     number: "02",
     subtitle: "Carpintería / Diseño / Producción",
     description: "Taller de carpintería enfocado en diseño y producción en madera.",
-    buildingRect: { x: 100, y: 100, width: 365, height: 1195 },
-    interactionPoint: { x: 512, y: 700 },
-    interactionRadius: R,
     type: "resident",
     status: "active",
     cta: { label: "ENTRAR AL TALLER", enterSceneId: "veta-room" },
   },
   {
-    id: "mannino",
-    name: "MANNINO",
+    id: "mannno",
+    name: "MANNNO",
+    shortName: "MANNNO",
     number: "03",
     subtitle: "Herrería / Metal",
-    description: "Taller de herrería y trabajo en metal. Información próximamente.",
-    buildingRect: { x: 100, y: 1295, width: 365, height: 695 },
-    interactionPoint: { x: 512, y: 1640 },
-    interactionRadius: R,
+    description: "Taller de herrería y trabajo en metal.",
     type: "resident",
     status: "active",
-    cta: { label: "ENTRAR AL TALLER", enterSceneId: "mannino-room" },
+    cta: { label: "ENTRAR AL TALLER", enterSceneId: "mannno-room" },
   },
 
   // ---- ESPACIOS DISPONIBLES --------------------------------
-  {
-    id: "pabellon-04",
-    name: "PABELLÓN 04",
-    number: "P04",
-    buildingRect: { x: 465, y: 332, width: 492, height: 508 },
-    interactionPoint: { x: 711, y: 890 },
-    interactionRadius: R,
-    type: "available",
-    status: "available",
-    areaM2: 42,
-    cta: { label: "RECORRER EL ESPACIO", enterSceneId: "pabellon-04-room" },
-    cta2: { label: "INFORMACIÓN", targetSpaceId: "contacto" },
-  },
-  {
-    id: "pabellon-01",
-    name: "PABELLÓN 01",
-    number: "P01",
-    details: ["Interior — 45.6 m²", "Terraza exterior — 33.3 m²"],
-    buildingRect: { x: 2148, y: 332, width: 852, height: 452 },
-    interactionPoint: { x: 2100, y: 560 },
-    interactionRadius: R,
-    type: "available",
-    status: "available",
-    areaM2: 80,
-    cta: { label: "RECORRER EL ESPACIO", enterSceneId: "pabellon-01-room" },
-    cta2: { label: "INFORMACIÓN", targetSpaceId: "contacto" },
-  },
-  {
-    id: "pabellon-02",
-    name: "PABELLÓN 02",
-    number: "P02",
-    details: ["Interior — 45.7 m²", "Terraza exterior — 33.3 m²"],
-    buildingRect: { x: 2148, y: 785, width: 852, height: 488 },
-    interactionPoint: { x: 2100, y: 1030 },
-    interactionRadius: R,
-    type: "available",
-    status: "available",
-    areaM2: 80,
-    cta: { label: "RECORRER EL ESPACIO", enterSceneId: "pabellon-02-room" },
-    cta2: { label: "INFORMACIÓN", targetSpaceId: "contacto" },
-  },
-  {
-    id: "pabellon-03",
-    name: "PABELLÓN 03",
-    number: "P03",
-    buildingRect: { x: 2512, y: 1272, width: 488, height: 465 },
-    interactionPoint: { x: 2462, y: 1500 },
-    interactionRadius: R,
-    type: "available",
-    status: "available",
-    areaM2: 46,
-    cta: { label: "RECORRER EL ESPACIO", enterSceneId: "pabellon-03-room" },
-    cta2: { label: "INFORMACIÓN", targetSpaceId: "contacto" },
-  },
-  {
-    id: "nave-03",
-    name: "NAVE 03",
-    number: "N03",
-    buildingRect: { x: 775, y: 1990, width: 670, height: 798 },
-    interactionPoint: { x: 1110, y: 1940 },
-    interactionRadius: R,
-    type: "available",
-    status: "available",
-    areaM2: 95,
-    cta: { label: "RECORRER EL ESPACIO", enterSceneId: "nave-03-room" },
-    cta2: { label: "INFORMACIÓN", targetSpaceId: "contacto" },
-  },
-  {
-    id: "nave-02",
-    name: "NAVE 02",
-    number: "N02",
-    buildingRect: { x: 1445, y: 1990, width: 828, height: 798 },
-    interactionPoint: { x: 1859, y: 1940 },
-    interactionRadius: R,
-    type: "available",
-    status: "available",
-    areaM2: 117,
-    cta: { label: "RECORRER EL ESPACIO", enterSceneId: "nave-02-room" },
-    cta2: { label: "INFORMACIÓN", targetSpaceId: "contacto" },
-  },
-  {
-    id: "nave-01",
-    name: "NAVE 01",
-    number: "N01",
-    buildingRect: { x: 2272, y: 1990, width: 828, height: 798 },
-    interactionPoint: { x: 2686, y: 1940 },
-    interactionRadius: R,
-    type: "available",
-    status: "available",
-    areaM2: 117,
-    cta: { label: "RECORRER EL ESPACIO", enterSceneId: "nave-01-room" },
-    cta2: { label: "INFORMACIÓN", targetSpaceId: "contacto" },
-  },
+  // Pabellones chicos: $10,000 MXN / mes · grandes: $15,000 MXN / mes.
+  // Naves: a cotizar. Sin "negociable": se piden propuestas.
+  available("pabellon-04", "PABELLÓN 04", "P04", 42, 10000, ["Planta libre — 6.05 × 6.85 m", "Junto a CONTRASTE, frente al patio"]),
+  available("pabellon-01", "PABELLÓN 01", "P01", 80, 15000, ["Interior — 45.6 m²", "Terraza exterior — 33.3 m²"]),
+  available("pabellon-02", "PABELLÓN 02", "P02", 80, 15000, ["Interior — 45.7 m²", "Terraza exterior — 33.3 m²"]),
+  available("pabellon-03", "PABELLÓN 03", "P03", 46, 10000, ["Planta libre — 6.85 × 6.67 m", "Junto al ingreso por Calle 12 Sur"]),
+  available("nave-03", "NAVE 03", "N03", 95, undefined, ["Nave — 7.85 × 12.06 m", "Frente al patio, acceso desde Calle Cobá"]),
+  available("nave-02", "NAVE 02", "N02", 117, undefined, ["Nave — 9.70 × 12.06 m", "Frente al patio"]),
+  available("nave-01", "NAVE 01", "N01", 117, undefined, ["Nave — 9.70 × 12.06 m", "Esquina Calle Cobá / Calle 12 Sur"]),
 
   // ---- PATIO / PROGRAMA ------------------------------------
   {
-    id: "pieza",
+    id: "pieza-central",
     name: "LA PIEZA CENTRAL",
+    shortName: "LA PIEZA",
     subtitle: "Instalación colaborativa",
-    interactionPoint: { x: 1820, y: 1440 },
-    interactionRadius: 200,
     type: "installation",
     status: "active",
   },
   {
-    id: "eventos",
+    id: "eventos-board",
     name: "EVENTOS",
+    shortName: "EVENTOS",
     subtitle: "Programa del patio",
+    description: "El patio se abre a bazares, exhibiciones, activaciones y encuentros. ¿Tienes un evento? Propónlo.",
     details: ["Bazares", "Exhibiciones", "Activaciones", "Encuentros"],
-    interactionPoint: { x: 2330, y: 1760 },
-    interactionRadius: R,
     type: "event",
-    status: "coming-soon",
+    status: "active",
+    cta: { label: "PROPONER UN EVENTO", href: whatsappLink("Hola La Bor, quiero proponer un evento en el patio: ___ (fecha: ___).") },
+    cta2: { label: "VER AGENDA", targetSpaceId: "agenda" },
   },
   {
-    id: "contacto",
+    id: "info-totem",
     name: "CONTACTO",
+    shortName: "INFORMACIÓN",
     subtitle: "La Bor — Talleres",
-    description: "Calle Cobá · Tulum, Quintana Roo, México.",
-    details: ["Instagram —", "WhatsApp —", "Email —"],
-    interactionPoint: { x: 900, y: 1740 },
-    interactionRadius: 150,
+    description: `${CONTACT.address}. Espacios disponibles desde $10,000 MXN al mes; naves a cotizar. Escríbenos para visitar.`,
+    details: [`WhatsApp — ${CONTACT.phoneDisplay}`, `Email — ${CONTACT.email}`],
     type: "navigation",
-    status: "coming-soon",
+    status: "active",
+    cta: { label: "WHATSAPP", href: whatsappLink("Hola La Bor, quiero información sobre los espacios disponibles.") },
+    cta2: { label: "EMAIL", href: mailLink("Información La Bor — espacios disponibles") },
   },
   {
     id: "agenda",
     name: "AGENDA",
+    shortName: "AGENDA",
     subtitle: "Calendario de talleres y eventos",
-    description: "Cursos, experiencias y eventos impartidos por los talleres residentes.",
-    interactionRadius: R,
+    description: "Cursos, experiencias y eventos impartidos por los talleres residentes. Escríbenos para enterarte de las próximas fechas.",
     type: "navigation",
     status: "coming-soon",
+    cta: { label: "AVÍSAME POR WHATSAPP", href: whatsappLink("Hola La Bor, quiero enterarme de los próximos talleres y eventos.") },
   },
 ]
 
@@ -251,11 +185,8 @@ export function getSpace(id: string): WorkshopSpace | undefined {
   return SPACES.find((s) => s.id === id)
 }
 
-/** Espacios que existen físicamente en el mundo (con punto de interacción). */
-export const WORLD_SPACES = SPACES.filter((s) => s.interactionPoint)
-
-/** Espacios con edificio (huella bloqueada en el patio). */
-export const BUILDINGS = SPACES.filter((s) => s.buildingRect)
+export const RESIDENTS = SPACES.filter((s) => s.type === "resident")
+export const AVAILABLE = SPACES.filter((s) => s.type === "available")
 
 /** Etiqueta corta del tipo, para kickers de overlay y etiquetas. */
 export function spaceKindLabel(space: WorkshopSpace): string {
@@ -280,7 +211,7 @@ export function spaceAccent(space: WorkshopSpace): string | undefined {
       return "#c98f42"
     case "contraste":
       return "#3f9c96"
-    case "mannino":
+    case "mannno":
       return "#8e9299"
     default:
       return undefined

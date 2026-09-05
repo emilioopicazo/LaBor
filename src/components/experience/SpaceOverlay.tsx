@@ -76,7 +76,14 @@ export function SpaceOverlay({ space, onClose, onNavigate, onEnterScene, current
           ))}
         </h2>
 
-        {space.areaM2 !== undefined && <p className="overlay__area">{space.areaM2} M²</p>}
+        {space.areaM2 !== undefined && (
+          <p className="overlay__area">
+            {space.areaM2} M²
+            {space.status === "available" && (
+              <span className="overlay__rent">{space.rentMxn ? `$${space.rentMxn.toLocaleString("es-MX")} MXN / MES` : "RENTA A COTIZAR"}</span>
+            )}
+          </p>
+        )}
 
         {subtitleLines.length > 0 && (
           <ul className="overlay__subtitle">
