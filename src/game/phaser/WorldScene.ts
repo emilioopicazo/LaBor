@@ -191,13 +191,30 @@ export abstract class WorldScene extends Phaser.Scene implements GameCommands {
   private onPointerDown(p: Phaser.Input.Pointer) {
     if (this.paused) return
     const touch = p.wasTouch
-    if (touch && !this.joystick.active && this.inJoystickZone(p)) {
-      this.joystick.begin(p.id, p.x, p.y)
-      this.cancelPath()
-      this.emitJoystick()
-      return
+    if (touch && this.inJoystickZone(p)) {
+      // si el dedo dueño del joystick ya no está abajo (touchcancel, gesto del
+      // navegador), el joystick se libera y el nuevo dedo lo toma
+      if (this.joystick.active && !this.joystickOwnerDown()) this.releaseJoystick()
+      if (!this.joystick.active) {
+        this.joystick.begin(p.id, p.x, p.y)
+        this.cancelPath()
+        this.emitJoystick()
+        return
+      }
     }
     this.tap = { id: p.id, x: p.x, y: p.y, t: this.time.now }
+  }
+
+  private joystickOwnerDown(): boolean {
+    const id = this.joystick.pointerId
+    if (id === null) return false
+    const owner = this.input.manager.pointers.find((pt) => pt.id === id)
+    return Boolean(owner && owner.isDown)
+  }
+
+  private releaseJoystick() {
+    this.joystick.end()
+    this.emitJoystick()
   }
 
   private onPointerMove(p: Phaser.Input.Pointer) {
@@ -289,6 +306,8 @@ export abstract class WorldScene extends Phaser.Scene implements GameCommands {
     let vx = 0
     let vy = 0
     let fast = false
+    // vigilante: un joystick sin dedo abajo (evento perdido) se suelta solo
+    if (this.joystick.active && !this.joystickOwnerDown()) this.releaseJoystick()
     if (!this.paused) {
       if (this.joystick.active && this.joystick.mag > 0) {
         vx = this.joystick.x * this.joystick.mag
