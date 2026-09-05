@@ -227,7 +227,7 @@ export function GameStage({ active }: GameStageProps) {
 
       <Toasts />
 
-      {debug && ready && <DebugPanel onTravel={travelTo} onOpenMinigame={(id) => setOverlay({ type: "minigame", minigameId: id, stationId: "debug" })} />}
+      {debug && ready && !overlay && !menuOpen && <DebugPanel onTravel={travelTo} onOpenMinigame={(id) => setOverlay({ type: "minigame", minigameId: id, stationId: "debug" })} />}
     </div>
   )
 }

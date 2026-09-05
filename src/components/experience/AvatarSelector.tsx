@@ -22,6 +22,13 @@ export function AvatarSelector({ mode, onConfirm, onClose }: AvatarSelectorProps
   const avatar = AVATARS[idx]
 
   const step = useCallback((d: number) => setIdx((i) => (i + d + AVATARS.length) % AVATARS.length), [])
+  // pantallas bajas (teléfono horizontal): figura más chica para que quepa todo
+  const [scale, setScale] = useState(() => (typeof window !== "undefined" && window.innerHeight < 520 ? 5 : 7))
+  useEffect(() => {
+    const onResize = () => setScale(window.innerHeight < 520 ? 5 : 7)
+    window.addEventListener("resize", onResize)
+    return () => window.removeEventListener("resize", onResize)
+  }, [])
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -72,7 +79,7 @@ export function AvatarSelector({ mode, onConfirm, onClose }: AvatarSelectorProps
             ‹
           </button>
           <div className="selector__figure" key={avatar.id}>
-            <AvatarSprite avatar={avatar} scale={7} walking />
+            <AvatarSprite avatar={avatar} scale={scale} walking />
             <span className="selector__shadow" />
           </div>
           <button type="button" className="selector__arrow" onClick={() => step(1)} aria-label="Siguiente">

@@ -10,15 +10,25 @@ interface DebugPanelProps {
   onOpenMinigame: (id: MinigameId) => void
 }
 
+const B = ({ label, onClick }: { label: string; onClick: () => void }) => (
+  <button type="button" className="debug-panel__btn" onClick={onClick}>
+    {label}
+  </button>
+)
+
 /** Menú de desarrollo (?debug / ?mapdebug=1): atajos de misión y posición. */
 export function DebugPanel({ onTravel, onOpenMinigame }: DebugPanelProps) {
   const run = useMissionRun()
   const [pos, setPos] = useState({ x: 0, y: 0, sceneId: "" })
-  useEffect(() => gameEvents.on("player", (p) => setPos({ x: Math.round(p.x), y: Math.round(p.y), sceneId: p.sceneId })), [])
-  const B = ({ label, onClick }: { label: string; onClick: () => void }) => (
-    <button type="button" className="debug-panel__btn" onClick={onClick}>
-      {label}
-    </button>
+  useEffect(
+    () =>
+      gameEvents.on("player", (p) =>
+        setPos((prev) => {
+          const next = { x: Math.round(p.x), y: Math.round(p.y), sceneId: p.sceneId }
+          return prev.x === next.x && prev.y === next.y && prev.sceneId === next.sceneId ? prev : next
+        }),
+      ),
+    [],
   )
   return (
     <aside className="debug-panel" aria-label="Debug">

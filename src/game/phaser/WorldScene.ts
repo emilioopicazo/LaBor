@@ -493,7 +493,8 @@ export abstract class WorldScene extends Phaser.Scene implements GameCommands {
   focus(target: { x: number; y: number } | null) {
     this.focused = target !== null
     const cam = this.cameras.main
-    cam.zoomTo(this.focused ? this.baseZoom * FOCUS_ZOOM_MULT : this.baseZoom, 320, "Sine.easeInOut")
+    // force = true: si el zoom anterior sigue animando, el nuevo lo sustituye (si no, se ignora)
+    cam.zoomTo(this.focused ? this.baseZoom * FOCUS_ZOOM_MULT : this.baseZoom, 320, "Sine.easeInOut", true)
   }
 
   // ---- hooks de prueba ---------------------------------------------------------

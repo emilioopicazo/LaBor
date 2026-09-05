@@ -1,59 +1,64 @@
-# LA BOR — Tarea de assets y contenido
+# LA BOR — Tareas de assets y contenido (tras la reconstrucción jugable)
 
-Estado tras V1.2 (mundo amplio, intro, controles, 10 talleres
-recorribles, pieza de 3 componentes). Reglas: vista cenital, luz del
-noroeste, sombras al sureste, fondo transparente, export 2×, nombres
-de `docs/LABOR_ART_DIRECTION_ASSETS.md` §23.
+Estado: la base jugable (mapa real, controles móviles, cámara, avatares,
+misión, minijuegos) pasa el playtest móvil. Lo que sigue es arte y contenido;
+nada de esto bloquea jugar. Reglas: vista cenital, luz del noroeste, sombras
+al sureste, fondo transparente, nombres de `docs/LABOR_ART_DIRECTION_ASSETS.md`.
 
-## Entregado e integrado
+## Resuelto en esta iteración
 
-- [x] Sistema de diseño (tokens, tipografía, chips, pulso ocre).
-- [x] Piso del patio, muro perimetral, portón de Cobá.
-- [x] Techumbres de las 10 estructuras (el anexo de VETA no existe en
-      planta baja; es un segundo piso futuro).
-- [x] Árbol principal (base + copa) y sus dos plantas — la vegetación
-      del plano. (Palmas y árbol de banqueta quedan en el paquete pero
-      no se usan.)
-- [x] Props: tablero, tótem, mesa, madera, tarimas, macetas, tanque.
-- [x] Pedestal de LA PIEZA CENTRAL.
-- [x] Visitante: idle + 2 frames de caminata.
-- [x] Gato y pájaros (2 frames).
-- [x] Plano medido `labor-master-plan.png` + TRAMA PDF.
+- [x] Geometría real desde el PDF TRAMA (48 px/m), editable en Tiled.
+- [x] MANNNO (no MANNINO) en código, mapa y UI.
+- [x] Contacto real: WhatsApp +52 55 3037 4167 · labortulum@gmail.com.
+- [x] Renta visible: pabellones chicos $10,000, grandes $15,000 MXN/mes; naves a cotizar; CTA ENVIAR PROPUESTA.
+- [x] Cinco avatares (placeholder) con selector.
+- [x] Tres minijuegos reales en lugar de "mantener presionado".
 
 ## Falta — mayor impacto primero
 
-### Interiores (hoy: placeholders con los sprites del sistema)
-- [ ] VETA: piso de duela, racks y herramientas de carpintería.
-- [ ] MANNINO / herrería: fragua, yunque, mesa de soldar, chispas.
-- [ ] CONTRASTE / joyería: banco de joyero, pulidora, vitrina.
-- [ ] Naves y pabellones vacíos: piso, muro de fondo, ventana/portón
-      (hoy: losa del patio + letrero).
-- [ ] Componentes de LA PIEZA: base de madera (hoy usa el sprite de
-      madera), componente de metal y detalle en plata (hoy vectores
-      simples), pieza completa.
-- [ ] Pose de interacción del visitante.
-- [ ] Iconos/tags de inventario.
+### 1. Avatares (arte final, 60 frames)
+- [ ] Sheet por arquetipo en `public/assets/characters/avatars/<id>.png`,
+      64×84 px: 4 columnas (idle, walk-1, walk-2, walk-3) × 3 filas (frente,
+      espalda, perfil derecho). Misma silueta y timing para los cinco.
+- [ ] Opcional después: pose de interacción / carga / festejo.
 
-### Identidad y contenido
+### 2. Techumbres a las huellas reales
+- [ ] Las techumbres actuales se dibujan estiradas sobre la huella medida.
+      Rehacer a proporción real (48 px/m): VETA con chaflán, MANNNO, franja
+      sur, P04 6.05×7 m, CONTRASTE 6.05×7 m, P01/P02 12×6.7 m, P03 7×6.7 m,
+      naves 7.85/9.7 × 12.2 m. Cara sur (muro) y puerta hacia el patio.
+- [ ] Piso del patio: el mosaico actual queda tenue; una textura de losa /
+      concreto a 48 px/m con juntas cada 1–2 m.
+- [ ] Calle 12 Sur / Cobá: banqueta y asfalto (hoy tono plano).
+
+### 3. Interiores (hoy: piso plano por estilo + props del sistema)
+- [ ] VETA: duela, racks, herramientas; banco de carpintero (estación GATO).
+- [ ] MANNNO: fragua, yunque, mesa de soldar (estación CONECTA 4).
+- [ ] CONTRASTE: banco de joyero, pulidora, vitrina (estación MEMORIA).
+- [ ] Espacios disponibles: muro de fondo, portón / ventana, letrero con renta.
+
+### 4. Minijuegos (piel; la lógica ya está)
+- [ ] GATO: fichas de madera (X / O) y tablero tallado.
+- [ ] CONECTA 4: marco metálico y rondanas (hoy círculos CSS).
+- [ ] MEMORIA: 6 ilustraciones de piezas (anillo, dije, cadena, piedra, pinza, lima).
+
+### 5. LA PIEZA CENTRAL
+- [ ] Pedestal a 48 px/m y los tres componentes (base, estructura de metal,
+      detalle en plata) + pieza completa (hoy: sprite de madera + vectores).
+
+### 6. Identidad y contenido
 - [ ] Logotipo LA BOR TALLERES en SVG (hoy tipografía).
-- [ ] Logos de VETA, MANNINO, CONTRASTE.
-- [ ] Contacto real (Instagram, WhatsApp, email).
-- [ ] Descripción real de 2–3 líneas por residente.
-- [ ] Texto definitivo de la intro (hoy: 2 líneas provisionales).
-- [ ] 1 foto por residente y por espacio disponible (`public/assets/overlays/`).
-- [ ] Idioma de la interfaz (español hoy; el diseño móvil está en inglés).
+- [ ] Logos de VETA, MANNNO, CONTRASTE (para techos y overlays).
+- [ ] Descripción real de 2–3 líneas por residente; foto por espacio.
+- [ ] Instagram de La Bor (campo `CONTACT.instagram` vacío).
+- [ ] Texto definitivo de la intro.
 
-### Diseño móvil pendiente (docs/LABOR_MOBILE_WORLD_DESIGN_HANDOFF.md)
-- [x] Stick flotante al arrastrar.
-- [x] Botón ENTRAR "espacio más cercano".
-- [ ] Hoja inferior con formulario "CLAIM THIS SPACE" (a dónde llegan
-      los leads: email / WhatsApp / hoja de cálculo).
-- [ ] Slot de video 16:9 en los overlays.
+### 7. Sonido (futuro, apagado)
+- [ ] Room tone del patio + efectos (martillo, sierra, metal, pasos, fichas).
 
-### Sonido (futuro, apagado)
-- [ ] Room tone del patio + 3–4 efectos (martillo, sierra, metal, pasos).
-
-## Decisiones pendientes
-- [ ] MANNINO vs MANNNO (el logo del plano TRAMA parece decir MANNNO).
-- [ ] ¿Precio de renta visible o solo "INFORMACIÓN → contacto"?
+## Decisiones pendientes (no inventar geometría)
+- [ ] Uso real de la franja sur de la franja oeste (12.31 m, hoy bloqueada sin nombre).
+- [ ] Acceso por Cobá: el plano solo abre el INGRESO en Calle 12 Sur. Si hay
+      acceso peatonal por Cobá, agregar `opening` + `spawn` en el TMJ (1 min).
+- [ ] Puertas exactas de P01/P02 (hoy en la cara oeste, hacia el patio) y de P04/CONTRASTE (cara sur).
 - [ ] Dominio + hosting para publicar (Vercel sería lo directo).
