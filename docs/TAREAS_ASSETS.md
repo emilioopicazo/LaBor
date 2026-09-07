@@ -53,7 +53,9 @@ al sureste, fondo transparente, nombres de `docs/LABOR_ART_DIRECTION_ASSETS.md`.
 - [ ] Instagram de La Bor (campo `CONTACT.instagram` vacío).
 - [ ] Texto definitivo de la intro.
 
-### 7. Sonido (futuro, apagado)
+### 7. Sonido
+- [x] Música de ambiente en loop (Love In The Night) con play / pausa en el menú.
+- [ ] 3–4 pistas y selector en el menú (la lista `TRACKS` ya lo admite).
 - [ ] Room tone del patio + efectos (martillo, sierra, metal, pasos, fichas).
 
 ## Decisiones pendientes (no inventar geometría)

@@ -1,5 +1,6 @@
 import { AVAILABLE, CONTACT, RESIDENTS, mailLink, whatsappLink } from "../../data/spaces"
 import { PIEZA_CENTRAL } from "../../data/missions"
+import { currentTrack, music, useMusic } from "../../game/audio"
 import { missionView, useMissionRun } from "../../game/mission"
 
 interface FastMenuProps {
@@ -19,6 +20,9 @@ interface FastMenuProps {
 export function FastMenu({ open, setOpen, onTravel, onDirect, onChangeAvatar }: FastMenuProps) {
   const run = useMissionRun()
   const view = missionView(run)
+  const audio = useMusic()
+  const track = currentTrack()
+  const playing = audio.enabled && audio.playing
 
   const Item = ({ id, label, meta, direct }: { id: string; label: string; meta?: string; direct?: boolean }) => (
     <li>
@@ -80,6 +84,26 @@ export function FastMenu({ open, setOpen, onTravel, onDirect, onChangeAvatar }: 
               <Item id="info-totem" label="INFORMACIÓN" />
               <Item id="agenda" label="AGENDA" direct />
             </ul>
+
+            <p className="menu__section">MÚSICA</p>
+            <div className="menu__music">
+              <button
+                type="button"
+                className={`menu__music-toggle${playing ? " is-playing" : ""}`}
+                onClick={() => music.toggle()}
+                aria-label={playing ? "Pausar música" : "Reproducir música"}
+                aria-pressed={playing}
+              >
+                <span aria-hidden="true">{playing ? "❚❚" : "▶"}</span>
+              </button>
+              <span className="menu__music-text">
+                <span className="menu__music-title">{track.title}</span>
+                <span className="menu__music-meta">
+                  {track.artist} ·{" "}
+                  {playing ? "SONANDO · VOLUMEN AMBIENTE" : audio.unsupported ? "NO DISPONIBLE EN ESTE NAVEGADOR" : audio.enabled && audio.blocked ? "TOCA ▶ PARA ESCUCHAR" : "EN PAUSA"}
+                </span>
+              </span>
+            </div>
 
             <p className="menu__section">PERSONAJE</p>
             <ul className="menu__list">

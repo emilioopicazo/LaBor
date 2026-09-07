@@ -716,6 +716,55 @@
   letter-spacing: 0.14em;
 }
 
+/* ---- menú: música ---------------------------------------------------- */
+.menu__music {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 0 14px;
+  border-bottom: 1px solid var(--line);
+}
+.menu__music-toggle {
+  width: 46px;
+  height: 46px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  border: 1px solid var(--paper);
+  background: transparent;
+  color: var(--paper);
+  font: inherit;
+  font-size: 13px;
+  letter-spacing: 0;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+.menu__music-toggle.is-playing {
+  background: var(--paper);
+  color: var(--ink);
+}
+.menu__music-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.menu__music-title {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--paper);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.menu__music-meta {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--muted-2);
+}
+
 /* ---- menú: enlaces ------------------------------------------------ */
 .menu__list--links .menu__item {
   text-decoration: none;

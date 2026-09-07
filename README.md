@@ -132,6 +132,16 @@ $15,000 (P01, P02), naves a cotizar. Cada ficha y cada cuarto vacío muestra la
 renta y el CTA **ENVIAR PROPUESTA** (WhatsApp prellenado); completar la misión
 ofrece **AGENDAR VISITA**.
 
+## Música de ambiente
+
+`src/data/music.ts` lista las pistas (hoy una: `public/assets/audio/love-in-the-night.m4a`,
+AAC 80 kbps, 5 MB, se transmite por rangos). `src/game/audio.ts` la reproduce en loop a
+volumen ambiente (0.22) con fade-in de 2.6 s. Los navegadores bloquean el sonido automático
+hasta el primer gesto: el primer toque en la intro, el selector o el patio la arranca. En el
+menú, sección MÚSICA, se pausa y se reanuda; pausar se recuerda en `labor.audio.v1` para
+no volver a sonar contra la voluntad de quien la apagó. Para agregar pistas basta añadirlas
+a `TRACKS` (el selector de 3–4 canciones queda para después).
+
 ## Archivos clave
 
 ```
@@ -146,7 +156,8 @@ src/
   game/phaser/{config,Joystick,WorldScene,OverworldScene,RoomScene,BootScene,createGame}.ts
   game/{profile,mission}.ts          ← perfil persistente / corrida reseteable
   game/minigames/{contract,tictactoe,connectfour,memory}.ts
-  data/{spaces,rooms,missions,avatars,assets}.ts
+  data/{spaces,rooms,missions,avatars,assets,music}.ts
+  game/audio.ts                      ← música de ambiente (autoplay tras gesto, pausa recordada)
   components/game/GameStage.tsx      ← monta Phaser + HUD + overlays
   components/hud/*                   ← chip, línea de misión, acción, joystick, hint, debug
   components/experience/*            ← intro, selector, overlays, menú, toasts
