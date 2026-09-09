@@ -3,7 +3,6 @@ import { GameStage } from "./components/game/GameStage"
 import { AvatarSelector } from "./components/experience/AvatarSelector"
 import { Intro } from "./components/experience/Intro"
 import { ENTRANCE_GATE_MS, prefersReducedMotion } from "./config/world"
-import { installAutoplayUnlock } from "./game/audio"
 import { useProfile } from "./game/profile"
 
 type Phase = "intro" | "avatar" | "entering" | "world"
@@ -16,9 +15,6 @@ type Phase = "intro" | "avatar" | "entering" | "world"
 export default function App() {
   const [phase, setPhase] = useState<Phase>("intro")
   const prof = useProfile()
-
-  // música de ambiente: arranca con el primer toque (política de autoplay)
-  useEffect(() => installAutoplayUnlock(), [])
 
   const handleIntroDone = useCallback(() => {
     setPhase((p) => (p === "intro" ? (prof.avatarId ? "entering" : "avatar") : p))

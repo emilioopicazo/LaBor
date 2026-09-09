@@ -54,7 +54,7 @@ al sureste, fondo transparente, nombres de `docs/LABOR_ART_DIRECTION_ASSETS.md`.
 - [ ] Texto definitivo de la intro.
 
 ### 7. Sonido
-- [x] Música de ambiente en loop (Love In The Night) con play / pausa en el menú.
+- [x] Música de recompensa (Love In The Night): se estrena al terminar LA PIEZA CENTRAL, play / pausa en el menú.
 - [ ] 3–4 pistas y selector en el menú (la lista `TRACKS` ya lo admite).
 - [ ] Room tone del patio + efectos (martillo, sierra, metal, pasos, fichas).
 

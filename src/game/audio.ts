@@ -1,14 +1,14 @@
 // ============================================================
-// LA BOR — reproductor de ambiente
-// Un <audio> en loop a volumen bajo. Los navegadores bloquean el sonido
-// automático hasta el primer gesto: la intro / el selector / cualquier
-// toque lo desbloquea (installAutoplayUnlock). Pausar desde el menú se
-// recuerda (labor.audio.v1) para no volver a sonar contra la voluntad
-// de quien lo apagó.
+// LA BOR — música de recompensa
+// La pista se estrena cuando se instala el último componente de LA
+// PIEZA CENTRAL (mission.installNext la arranca dentro del mismo gesto
+// del visitante, que es lo que exige el navegador para sonar). Queda
+// desbloqueada en el perfil de quien la terminó; desde el menú se
+// pausa o se reanuda. Pausar se recuerda (labor.audio.v1).
 // ============================================================
 
 import { useSyncExternalStore } from "react"
-import { AMBIENT_VOLUME, FADE_IN_MS, TRACKS, type Track } from "../data/music"
+import { AMBIENT_VOLUME, FADE_IN_MS, FADE_OUT_MS, TRACKS, type Track } from "../data/music"
 
 export interface MusicState {
   /** el visitante quiere música (no la ha pausado) */
@@ -16,7 +16,7 @@ export interface MusicState {
   /** está sonando ahora mismo */
   playing: boolean
   trackId: string
-  /** el navegador bloqueó el autoplay: hace falta un toque */
+  /** el navegador bloqueó la reproducción: hace falta un toque */
   blocked: boolean
   /** el navegador no puede reproducir ninguna fuente */
   unsupported: boolean
@@ -78,7 +78,7 @@ function ensureElement(): HTMLAudioElement {
   if (el) return el
   el = document.createElement("audio")
   el.loop = true
-  el.preload = "auto"
+  el.preload = "none"
   el.volume = 0
   el.setAttribute("aria-hidden", "true")
   applySources(el, currentTrack())
@@ -88,19 +88,22 @@ function ensureElement(): HTMLAudioElement {
   return el
 }
 
-function fadeTo(target: number) {
+function fade(target: number, ms: number, done?: () => void) {
   const a = ensureElement()
   window.clearInterval(fadeTimer)
   const start = a.volume
   const t0 = performance.now()
   fadeTimer = window.setInterval(() => {
-    const k = Math.min(1, (performance.now() - t0) / FADE_IN_MS)
+    const k = Math.min(1, (performance.now() - t0) / ms)
     a.volume = start + (target - start) * k
-    if (k >= 1) window.clearInterval(fadeTimer)
+    if (k >= 1) {
+      window.clearInterval(fadeTimer)
+      done?.()
+    }
   }, 50)
 }
 
-/** Debe llamarse de forma síncrona dentro de un gesto del usuario para que iOS lo permita. */
+/** Debe llamarse de forma síncrona dentro de un gesto del visitante (iOS lo exige). */
 function attemptPlay(): void {
   const a = ensureElement()
   const p = a.play()
@@ -108,7 +111,7 @@ function attemptPlay(): void {
   p.then(
     () => {
       set({ playing: true, blocked: false, unsupported: false })
-      fadeTo(AMBIENT_VOLUME)
+      fade(AMBIENT_VOLUME, FADE_IN_MS)
     },
     (err: unknown) => {
       const name = (err as { name?: string } | null)?.name
@@ -123,16 +126,16 @@ export const music = {
   /** volumen actual del elemento (pruebas / depuración) */
   volume: () => el?.volume ?? null,
 
-  /** gesto del usuario: si quiere música y no suena, arranca */
-  unlock() {
-    if (!state.enabled || state.playing) return
-    attemptPlay()
-  },
-
+  /** empieza a sonar (desde un gesto: botón del menú o instalar el último componente) */
   play() {
     persist(true)
     set({ enabled: true })
     attemptPlay()
+  },
+
+  /** la pieza quedó completa: se estrena la pista aunque antes se hubiera pausado */
+  celebrate() {
+    this.play()
   },
 
   pause() {
@@ -140,6 +143,15 @@ export const music = {
     window.clearInterval(fadeTimer)
     el?.pause()
     set({ enabled: false, playing: false })
+  },
+
+  /** se apaga con fade (nueva corrida): no cambia la preferencia del visitante */
+  stop() {
+    if (!el || !state.playing) return
+    fade(0, FADE_OUT_MS, () => {
+      el?.pause()
+      set({ playing: false })
+    })
   },
 
   toggle() {
@@ -168,30 +180,10 @@ const subscribe = (fn: () => void) => {
 }
 const snapshot = () => state
 
-// hook de pruebas (Playwright)
-if (typeof window !== "undefined") (window as unknown as { __LABOR_MUSIC__: unknown }).__LABOR_MUSIC__ = music
-
 export function useMusic(): MusicState {
   return useSyncExternalStore(subscribe, snapshot, snapshot)
 }
 
-/**
- * Autoplay: el primer gesto en cualquier parte (intro, selector, patio)
- * arranca la música si está habilitada. Se retira solo cuando ya suena o
- * cuando el visitante la apagó.
- */
-export function installAutoplayUnlock(): () => void {
-  const events: Array<keyof DocumentEventMap> = ["pointerup", "touchend", "keydown", "click"]
-  const handler = () => {
-    if (!state.enabled || state.playing) {
-      if (state.playing || !state.enabled) remove()
-      return
-    }
-    music.unlock()
-  }
-  const remove = () => events.forEach((e) => document.removeEventListener(e, handler, true))
-  events.forEach((e) => document.addEventListener(e, handler, true))
-  // precarga silenciosa mientras se lee la intro
-  if (state.enabled) ensureElement()
-  return remove
+if (typeof window !== "undefined") {
+  ;(window as unknown as { __LABOR_MUSIC__: typeof music }).__LABOR_MUSIC__ = music
 }

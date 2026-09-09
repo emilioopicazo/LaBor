@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 import { PIEZA_CENTRAL } from "../../data/missions"
+import { TRACKS } from "../../data/music"
 import { getSpace, whatsappLink } from "../../data/spaces"
 import { mission, missionView, useMissionRun } from "../../game/mission"
 import { useProfile } from "../../game/profile"
@@ -126,6 +127,7 @@ export function MissionOverlay({ onClose, onGoTo }: MissionOverlayProps) {
           <>
             <p className="overlay__lead">{def.reward.title}</p>
             <p className="overlay__description">{def.reward.text}</p>
+            <p className="overlay__kicker">SUENA · {TRACKS[0].title.toUpperCase()} · {TRACKS[0].artist.toUpperCase()}</p>
             <div className="overlay__cta-row">
               <a
                 className="overlay__cta overlay__cta--primary"

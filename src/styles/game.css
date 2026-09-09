@@ -743,6 +743,15 @@
   background: var(--paper);
   color: var(--ink);
 }
+.menu__music.is-locked .menu__music-toggle {
+  border-style: dashed;
+  border-color: var(--line-strong);
+  color: var(--muted-2);
+  cursor: default;
+}
+.menu__music.is-locked .menu__music-title {
+  color: var(--muted);
+}
 .menu__music-text {
   display: flex;
   flex-direction: column;

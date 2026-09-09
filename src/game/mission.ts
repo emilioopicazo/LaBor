@@ -8,6 +8,7 @@
 
 import { useSyncExternalStore } from "react"
 import { getMission, type MissionDef } from "../data/missions"
+import { music } from "./audio"
 import type { MinigameId, MinigameResult } from "./minigames/contract"
 import { profile } from "./profile"
 
@@ -186,6 +187,8 @@ export const mission = {
   startMission(missionId: string) {
     const def = getMission(missionId)
     if (!def) return
+    // corrida nueva: la pista de recompensa se apaga (sigue desbloqueada en el perfil)
+    music.stop()
     commit({
       runId: newRunId(),
       missionId,
@@ -261,6 +264,8 @@ export const mission = {
     if (allDone) {
       profile.recordCompletion(run.missionId)
       toast(`${view.def.title} — COMPLETA`, "reward")
+      // se estrena la música: mismo gesto con el que se instaló (el navegador lo exige)
+      music.celebrate()
     }
     return id
   },

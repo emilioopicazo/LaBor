@@ -1,7 +1,8 @@
 // ============================================================
-// LA BOR — música de ambiente
-// Una pista por ahora; la lista ya admite varias (selector después).
-// Archivos en public/assets/audio/ (AAC .m4a: Safari, Chrome, Firefox).
+// LA BOR — música de recompensa
+// Se estrena al terminar LA PIEZA CENTRAL. Una pista por ahora; la lista
+// ya admite varias (selector después). Archivos en public/assets/audio/
+// (AAC .m4a + respaldo MP3).
 // ============================================================
 
 export interface Track {
@@ -28,3 +29,7 @@ export const TRACKS: Track[] = [
 export const AMBIENT_VOLUME = 0.22
 /** entrada suave para que nadie brinque */
 export const FADE_IN_MS = 2600
+/** salida al reiniciar la misión */
+export const FADE_OUT_MS = 1400
+/** misión que desbloquea la pista */
+export const UNLOCK_MISSION_ID = "pieza-central"

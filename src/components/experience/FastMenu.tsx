@@ -1,7 +1,9 @@
 import { AVAILABLE, CONTACT, RESIDENTS, mailLink, whatsappLink } from "../../data/spaces"
 import { PIEZA_CENTRAL } from "../../data/missions"
+import { UNLOCK_MISSION_ID } from "../../data/music"
 import { currentTrack, music, useMusic } from "../../game/audio"
 import { missionView, useMissionRun } from "../../game/mission"
+import { useProfile } from "../../game/profile"
 
 interface FastMenuProps {
   open: boolean
@@ -23,6 +25,9 @@ export function FastMenu({ open, setOpen, onTravel, onDirect, onChangeAvatar }: 
   const audio = useMusic()
   const track = currentTrack()
   const playing = audio.enabled && audio.playing
+  const prof = useProfile()
+  // la pista se desbloquea al terminar LA PIEZA CENTRAL (queda en el perfil)
+  const unlocked = (prof.completed[UNLOCK_MISSION_ID] ?? 0) > 0 || run?.completed === true
 
   const Item = ({ id, label, meta, direct }: { id: string; label: string; meta?: string; direct?: boolean }) => (
     <li>
@@ -86,21 +91,23 @@ export function FastMenu({ open, setOpen, onTravel, onDirect, onChangeAvatar }: 
             </ul>
 
             <p className="menu__section">MÚSICA</p>
-            <div className="menu__music">
+            <div className={`menu__music${unlocked ? "" : " is-locked"}`}>
               <button
                 type="button"
                 className={`menu__music-toggle${playing ? " is-playing" : ""}`}
                 onClick={() => music.toggle()}
-                aria-label={playing ? "Pausar música" : "Reproducir música"}
+                disabled={!unlocked}
+                aria-label={!unlocked ? "Pista bloqueada" : playing ? "Pausar música" : "Reproducir música"}
                 aria-pressed={playing}
               >
-                <span aria-hidden="true">{playing ? "❚❚" : "▶"}</span>
+                <span aria-hidden="true">{!unlocked ? "·" : playing ? "❚❚" : "▶"}</span>
               </button>
               <span className="menu__music-text">
-                <span className="menu__music-title">{track.title}</span>
+                <span className="menu__music-title">{unlocked ? track.title : "PISTA DE LA PIEZA"}</span>
                 <span className="menu__music-meta">
-                  {track.artist} ·{" "}
-                  {playing ? "SONANDO · VOLUMEN AMBIENTE" : audio.unsupported ? "NO DISPONIBLE EN ESTE NAVEGADOR" : audio.enabled && audio.blocked ? "TOCA ▶ PARA ESCUCHAR" : "EN PAUSA"}
+                  {!unlocked
+                    ? "SE DESBLOQUEA AL TERMINAR LA PIEZA CENTRAL"
+                    : `${track.artist} · ${playing ? "SONANDO · VOLUMEN AMBIENTE" : audio.unsupported ? "NO DISPONIBLE EN ESTE NAVEGADOR" : audio.blocked ? "TOCA ▶ PARA ESCUCHAR" : "EN PAUSA"}`}
                 </span>
               </span>
             </div>
