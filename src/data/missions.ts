@@ -14,9 +14,12 @@ export interface MissionComponent {
   /** nombre corto para la línea de misión (MADERA / METAL / PLATA) */
   short: string
   spaceId: string
-  minigameId: MinigameId
+  /** minijuegos del taller: al usar la estación se elige uno al azar */
+  minigameIds: MinigameId[]
   /** bandera temporal de mundo al instalarse */
   installFlag: string
+  /** icono del componente (clave en ASSETS) */
+  icon: string
 }
 
 export interface MissionStep {
@@ -42,20 +45,20 @@ export interface MissionDef {
 
 export const PIEZA_CENTRAL: MissionDef = {
   id: "pieza-central",
-  title: "LA PIEZA CENTRAL",
-  short: "LA PIEZA",
+  title: "LA HORA",
+  short: "LA HORA",
   description:
-    "Una instalación colaborativa construida entre los talleres de La Bor. Gana un componente en cada taller residente y ármala en el pedestal del patio.",
+    "Un reloj de sol de los tres talleres: el disco de madera de VETA, la aguja forjada por MANNNO y las marcas de plata de CONTRASTE. La aguja está a 20.2°, la latitud de Tulum: la pieza da la hora de verdad. Gana cada componente en su taller y ármala en el pedestal del patio.",
   components: [
-    { id: "base-madera", label: "BASE DE MADERA", short: "MADERA", spaceId: "veta", minigameId: "gato", installFlag: "pieza.baseInstalled" },
-    { id: "componente-metal", label: "COMPONENTE DE METAL", short: "METAL", spaceId: "mannno", minigameId: "conecta4", installFlag: "pieza.metalInstalled" },
-    { id: "detalle-plata", label: "DETALLE EN PLATA", short: "PLATA", spaceId: "contraste", minigameId: "memoria", installFlag: "pieza.detailInstalled" },
+    { id: "base-madera", label: "DISCO DE MADERA", short: "MADERA", spaceId: "veta", minigameIds: ["gato", "corte"], installFlag: "pieza.baseInstalled", icon: "iconMadera" },
+    { id: "componente-metal", label: "AGUJA DE METAL", short: "METAL", spaceId: "mannno", minigameIds: ["conecta4", "ritmo"], installFlag: "pieza.metalInstalled", icon: "iconMetal" },
+    { id: "detalle-plata", label: "MARCAS DE PLATA", short: "PLATA", spaceId: "contraste", minigameIds: ["memoria", "balanza"], installFlag: "pieza.detailInstalled", icon: "iconPlata" },
   ],
-  finalStep: { id: "instalar", objective: "INSTALA LA PIEZA EN EL PATIO", spaceId: "pieza-central" },
+  finalStep: { id: "instalar", objective: "INSTALA LA HORA EN EL PATIO", spaceId: "pieza-central" },
   completeFlag: "pieza.complete",
   reward: {
-    title: "LA PIEZA QUEDÓ EN EL PATIO",
-    text: "Ya conoces los tres talleres residentes. Lo que sigue es venir en persona: agenda una visita y te enseñamos los espacios disponibles.",
+    title: "LA HORA YA MARCA EL PATIO",
+    text: "La sombra ya cruza los tres talleres. Lo que sigue es venir en persona: agenda una visita y te enseñamos los espacios disponibles.",
   },
 }
 

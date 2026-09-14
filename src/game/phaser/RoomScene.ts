@@ -65,7 +65,7 @@ export class RoomScene extends WorldScene {
         y: s.y,
         radius: s.radius,
         spaceId: d.spaceId,
-        minigameId: s.minigameId,
+        minigameIds: s.minigameIds,
       })),
     ]
     this.registry.set("approach", {})

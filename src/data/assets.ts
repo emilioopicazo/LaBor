@@ -57,6 +57,17 @@ export const ASSETS = {
   waterTank: sprite("world/props/prop-water-tank-v1.png", 18, 18),
   installationBase: sprite("world/installations/installation-base-v1.png", 44, 44),
 
+  // --- LA HORA (pieza central: reloj de sol) ---------------------
+  piezaPedestal: sprite("world/installations/pieza-pedestal-v1.png", 44, 44),
+  piezaBaseMadera: sprite("world/installations/pieza-base-madera-v1.png", 36, 22),
+  piezaAgujaMetal: sprite("world/installations/pieza-aguja-metal-v1.png", 24, 28),
+  piezaMarcasPlata: sprite("world/installations/pieza-marcas-plata-v1.png", 36, 22),
+  piezaSombra: sprite("world/installations/pieza-sombra-v1.png", 44, 44),
+  piezaDestello: sprite("world/installations/pieza-destello-v1.png", 7, 7),
+  iconMadera: sprite("world/installations/icon-madera-v1.png", 16, 16),
+  iconMetal: sprite("world/installations/icon-metal-v1.png", 16, 16),
+  iconPlata: sprite("world/installations/icon-plata-v1.png", 16, 16),
+
   // --- personajes ----------------------------------------------
   visitorIdle: sprite("characters/visitor/visitor-idle-front-v1.png", 16, 28),
   visitorWalk1: sprite("characters/visitor/visitor-walk-01-v1.png", 16, 28),

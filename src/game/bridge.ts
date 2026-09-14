@@ -20,7 +20,7 @@ export interface Interactable {
   radius: number
   spaceId?: string
   sceneId?: string
-  minigameId?: MinigameId
+  minigameIds?: MinigameId[]
 }
 
 import type { MinigameId } from "./minigames/contract"

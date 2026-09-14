@@ -1219,7 +1219,7 @@
             {
               "name": "label",
               "type": "string",
-              "value": "LA PIEZA CENTRAL"
+              "value": "LA HORA"
             }
           ]
         },
@@ -1573,7 +1573,7 @@
             {
               "name": "sprite",
               "type": "string",
-              "value": "installationBase"
+              "value": "piezaPedestal"
             },
             {
               "name": "scale",

@@ -17,7 +17,7 @@ import { DebugPanel } from "../hud/DebugPanel"
 import { JoystickView } from "../hud/JoystickView"
 import { MissionLine } from "../hud/MissionLine"
 import { MinigameHost } from "../minigames/MinigameHost"
-import type { MinigameId } from "../../game/minigames/contract"
+import { pickMinigame, type MinigameId } from "../../game/minigames/contract"
 
 type Overlay =
   | { type: "space"; id: string }
@@ -93,7 +93,8 @@ export function GameStage({ active }: GameStageProps) {
         setOverlay({ type: "space", id: t.id })
         return
       case "station":
-        if (t.minigameId) setOverlay({ type: "minigame", minigameId: t.minigameId, stationId: t.id })
+        // dos juegos por taller: se elige uno al azar en cada visita a la estación
+        if (t.minigameIds && t.minigameIds.length > 0) setOverlay({ type: "minigame", minigameId: pickMinigame(t.minigameIds), stationId: t.id })
         return
       case "exit":
         gameCommands.exitRoom()

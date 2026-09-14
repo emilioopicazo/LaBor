@@ -1,8 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import { MINIGAMES, type MinigameId, type MinigameResult } from "../../game/minigames/contract"
 import { mission } from "../../game/mission"
+import { BalanceBoard } from "./BalanceBoard"
 import { ConnectFourBoard } from "./ConnectFourBoard"
+import { CutBoard } from "./CutBoard"
 import { MemoryBoard } from "./MemoryBoard"
+import { RhythmBoard } from "./RhythmBoard"
 import { TicTacToeBoard } from "./TicTacToeBoard"
 
 interface MinigameHostProps {
@@ -52,8 +55,11 @@ export function MinigameHost({ minigameId, onClose, onExitRoom }: MinigameHostPr
 
         <div className="minigame__board" key={round}>
           {minigameId === "gato" && <TicTacToeBoard onComplete={handleComplete} />}
+          {minigameId === "corte" && <CutBoard onComplete={handleComplete} />}
           {minigameId === "conecta4" && <ConnectFourBoard onComplete={handleComplete} />}
+          {minigameId === "ritmo" && <RhythmBoard onComplete={handleComplete} />}
           {minigameId === "memoria" && <MemoryBoard onComplete={handleComplete} />}
+          {minigameId === "balanza" && <BalanceBoard onComplete={handleComplete} />}
         </div>
 
         {result && (

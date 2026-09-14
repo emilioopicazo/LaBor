@@ -162,14 +162,13 @@ export function missionView(r: MissionRun | null = run): MissionView | null {
   }
   const c = comps[nextIdx]
   const spaceLabel = c.spaceId.toUpperCase().replace("PABELLON", "PABELLÓN")
-  const game = c.minigameId === "gato" ? "GATO" : c.minigameId === "conecta4" ? "CONECTA 4" : "MEMORIA"
   return {
     def,
     run: r,
     phase: nextIdx + 1,
     phases,
     progress: `${nextIdx + 1}/${phases}`,
-    objective: `${spaceLabel} · ${game}`,
+    objective: `${spaceLabel} · JUEGA EN EL TALLER`,
     targetSpaceId: c.spaceId,
     currentComponentId: c.id,
     installable,
@@ -225,7 +224,7 @@ export const mission = {
       return { rewarded: null, message: result.success ? "GANASTE · Inicia la misión en el patio para ganar el componente." : "Inténtalo de nuevo." }
     }
     if (!result.success) return { rewarded: null, message: "Casi. Juega otra vez." }
-    const comp = view.def.components.find((c) => c.minigameId === gameId)
+    const comp = view.def.components.find((c) => c.minigameIds.includes(gameId))
     if (!comp) return { rewarded: null, message: "GANASTE" }
     const already = run.temporaryInventory.includes(comp.id) || run.installed.includes(comp.id)
     if (already) return { rewarded: null, message: `Ya tienes ${comp.label}. Llévala al pedestal del patio.` }

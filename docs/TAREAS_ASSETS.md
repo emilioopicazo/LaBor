@@ -39,12 +39,16 @@ al sureste, fondo transparente, nombres de `docs/LABOR_ART_DIRECTION_ASSETS.md`.
 
 ### 4. Minijuegos (piel; la lógica ya está)
 - [ ] GATO: fichas de madera (X / O) y tablero tallado.
+- [ ] CORTE A MEDIDA: tabla con veta real, marca de sierra y kerf.
 - [ ] CONECTA 4: marco metálico y rondanas (hoy círculos CSS).
+- [ ] RITMO DE FRAGUA: cuatro yunques y martillo (hoy silueta CSS).
 - [ ] MEMORIA: 6 ilustraciones de piezas (anillo, dije, cadena, piedra, pinza, lima).
+- [ ] LA BALANZA: balanza de joyero y piedras (hoy formas CSS).
 
-### 5. LA PIEZA CENTRAL
-- [ ] Pedestal a 48 px/m y los tres componentes (base, estructura de metal,
-      detalle en plata) + pieza completa (hoy: sprite de madera + vectores).
+### 5. LA HORA (pieza central)
+- [x] Reloj de sol integrado: pedestal, disco, aguja con sombra que da la hora real,
+      marcas de plata, destello (paquete "Diseño visual 2").
+- [ ] Vista de la pieza completa en el overlay de recompensa (`pieza-completa-v1.png`).
 
 ### 6. Identidad y contenido
 - [ ] Logotipo LA BOR TALLERES en SVG (hoy tipografía).

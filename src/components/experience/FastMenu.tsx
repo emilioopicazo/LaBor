@@ -106,7 +106,7 @@ export function FastMenu({ open, setOpen, onTravel, onDirect, onChangeAvatar }: 
                 <span className="menu__music-title">{unlocked ? track.title : "PISTA DE LA PIEZA"}</span>
                 <span className="menu__music-meta">
                   {!unlocked
-                    ? "SE DESBLOQUEA AL TERMINAR LA PIEZA CENTRAL"
+                    ? "SE DESBLOQUEA AL TERMINAR LA HORA"
                     : `${track.artist} · ${playing ? "SONANDO · VOLUMEN AMBIENTE" : audio.unsupported ? "NO DISPONIBLE EN ESTE NAVEGADOR" : audio.blocked ? "TOCA ▶ PARA ESCUCHAR" : "EN PAUSA"}`}
                 </span>
               </span>

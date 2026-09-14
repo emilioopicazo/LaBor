@@ -52,9 +52,9 @@ export function DebugPanel({ onTravel, onOpenMinigame }: DebugPanelProps) {
         <B label="INSTALL" onClick={() => mission.installNext()} />
       </div>
       <div className="debug-panel__row">
-        <B label="OPEN GATO" onClick={() => onOpenMinigame("gato")} />
-        <B label="OPEN CONECTA 4" onClick={() => onOpenMinigame("conecta4")} />
-        <B label="OPEN MEMORIA" onClick={() => onOpenMinigame("memoria")} />
+        {(["gato", "corte", "conecta4", "ritmo", "memoria", "balanza"] as const).map((id) => (
+          <B key={id} label={`OPEN ${id.toUpperCase()}`} onClick={() => onOpenMinigame(id)} />
+        ))}
       </div>
       <div className="debug-panel__row">
         {["veta", "mannno", "contraste", "pabellon-01", "nave-02"].map((id) => (

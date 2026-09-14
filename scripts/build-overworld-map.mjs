@@ -79,7 +79,7 @@ const TREE = { x: 19.2, y: 7.4, trunkR: 0.45, canopyR: 2.4 }
 
 // ---- puntos de interés del patio ------------------------------------
 const POIS = [
-  { id: "pieza-central", x: 14.0, y: 20.0, r: 2.0, action: "VER", missionRole: "anchor", label: "LA PIEZA CENTRAL" },
+  { id: "pieza-central", x: 14.0, y: 20.0, r: 2.0, action: "VER", missionRole: "anchor", label: "LA HORA" },
   { id: "eventos-board", x: 20.5, y: 29.3, r: 1.6, action: "VER", missionRole: "", label: "EVENTOS" },
   { id: "info-totem", x: 30.6, y: 25.9, r: 1.6, action: "VER", missionRole: "", label: "INFORMACIÓN" },
 ]
@@ -101,7 +101,7 @@ const PROPS = [
   { id: "tree-main-canopy", sprite: "treeMainCanopy", x: TREE.x, y: TREE.y - 0.5, scale: 6, layer: "ART_FRONT", canopy: true },
   { id: "shrub-01", sprite: "shrub01", x: 17.1, y: 12.6, scale: 4, layer: "ART_PROPS" },
   { id: "shrub-02", sprite: "shrub02", x: 19.8, y: 13.8, scale: 4, layer: "ART_PROPS" },
-  { id: "installation-base", sprite: "installationBase", x: 14.0, y: 20.0, scale: 3, layer: "ART_PROPS", missionAnchor: "pieza-central" },
+  { id: "installation-base", sprite: "piezaPedestal", x: 14.0, y: 20.0, scale: 3, layer: "ART_PROPS", missionAnchor: "pieza-central" },
   { id: "events-board", sprite: "eventsBoard", x: 20.5, y: 29.7, scale: 3, layer: "ART_PROPS" },
   { id: "info-totem", sprite: "infoTotem", x: 30.6, y: 26.4, scale: 3, layer: "ART_PROPS" },
   { id: "wood-stack", sprite: "woodStack", x: 7.4, y: 16.7, scale: 3, layer: "ART_PROPS" },

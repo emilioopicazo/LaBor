@@ -113,16 +113,22 @@ menú no toca la misión.
   etapas de la escultura en cero), `restartMission` pide confirmación,
   recargar reanuda, `installNext` instala y al completar registra el logro en
   el perfil. `JUGAR DE NUEVO` resetea la escultura.
-- **LA PIEZA CENTRAL** (`src/data/missions.ts`): VETA → GATO → base de madera;
-  MANNNO → CONECTA 4 → componente de metal; CONTRASTE → MEMORIA → detalle en
-  plata; INSTALAR en el pedestal (tres veces). La línea de misión solo muestra
-  el objetivo: `LA PIEZA · 2/4 · MANNNO · CONECTA 4`.
-- **Minijuegos** (`src/game/minigames/`, lógica pura sin UI + tableros React):
-  Gato 3×3 con minimax y 40 % de jugadas "distraídas" (se puede ganar);
-  Conecta 4 7×6 con gravedad e IA gana → bloquea → no regala → centro;
-  Memoria 4×3 de seis pares. Contrato `MinigameResult { gameId, success,
-  score?, durationMs }`; el minijuego devuelve resultado y `mission.onMinigameResult`
-  decide la recompensa.
+- **LA HORA** (`src/data/missions.ts`, id `pieza-central`): la pieza central es un
+  reloj de sol de los tres talleres (`docs/LABOR_LA_HORA_PIEZA_CENTRAL.md`). VETA →
+  disco de madera; MANNNO → aguja de metal; CONTRASTE → marcas de plata; INSTALAR
+  en el pedestal (tres veces). La sombra de la aguja marca la hora real de Tulum
+  (`src/game/world/sundial.ts`, UTC−5, −52° a las 6:30 y +52° a las 18:30) y al
+  completar la punta destella. La línea de misión solo muestra el objetivo:
+  `LA HORA · 2/4 · MANNNO · JUEGA EN EL TALLER`.
+- **Minijuegos** (`src/game/minigames/`, lógica pura sin UI + tableros React), dos
+  por taller y se elige uno al azar en cada visita a la estación:
+  VETA → Gato (minimax con 40 % de jugadas "distraídas") o Corte a medida (toca
+  cuando la marca pasa por la línea: 3 cortes buenos de 5, cada acierto acelera);
+  MANNNO → Conecta 4 (IA gana → bloquea → no regala → centro) o Ritmo de fragua
+  (repite el orden de 2, 3, 4 y 5 golpes); CONTRASTE → Memoria (seis pares) o La
+  balanza (elige las piedras que pesan exacto, tres rondas, siempre con solución).
+  Contrato `MinigameResult { gameId, success, score?, durationMs }`; el minijuego
+  devuelve resultado y `mission.onMinigameResult` decide la recompensa.
 
 ## Comercial
 
@@ -157,13 +163,14 @@ src/
   game/world/collision.ts            ← canStand, deslizamiento, ruta ligera
   game/phaser/{config,Joystick,WorldScene,OverworldScene,RoomScene,BootScene,createGame}.ts
   game/{profile,mission}.ts          ← perfil persistente / corrida reseteable
-  game/minigames/{contract,tictactoe,connectfour,memory}.ts
+  game/minigames/{contract,tictactoe,cut,connectfour,rhythm,memory,balance}.ts
+  game/world/sundial.ts              ← la sombra de LA HORA sigue al sol real de Tulum
   data/{spaces,rooms,missions,avatars,assets,music}.ts
   game/audio.ts                      ← música de recompensa (se estrena al terminar la pieza)
   components/game/GameStage.tsx      ← monta Phaser + HUD + overlays
   components/hud/*                   ← chip, línea de misión, acción, joystick, hint, debug
   components/experience/*            ← intro, selector, overlays, menú, toasts
-  components/minigames/*             ← anfitrión + tres tableros
+  components/minigames/*             ← anfitrión + seis tableros
   styles/{experience,game}.css
 ```
 

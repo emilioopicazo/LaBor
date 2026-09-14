@@ -31,7 +31,8 @@ export interface RoomStation {
   y: number
   radius: number
   label: string
-  minigameId: MinigameId
+  /** dos juegos por taller; se elige uno al azar al usar la estación */
+  minigameIds: MinigameId[]
 }
 
 export interface RoomDef {
@@ -79,7 +80,7 @@ function room(spaceId: string, width: number, height: number, style: RoomStyle, 
 export const ROOMS: Record<string, RoomDef> = Object.fromEntries(
   [
     room("veta", 720, 480, "wood", "#c98f42", {
-      stations: [{ id: "veta-bench", x: 360, y: 236, radius: 84, label: "BANCO DE CARPINTERO", minigameId: "gato" }],
+      stations: [{ id: "veta-bench", x: 360, y: 236, radius: 84, label: "BANCO DE CARPINTERO", minigameIds: ["gato", "corte"] }],
       props: [
         { id: "veta-bench", sprite: "worktable", x: 360, y: 232, scale: 3, obstacleR: 46, obstacleDy: -26 },
         { id: "veta-wood-1", sprite: "woodStack", x: 96, y: 150, scale: 3, obstacleR: 34, obstacleDy: -20 },
@@ -91,7 +92,7 @@ export const ROOMS: Record<string, RoomDef> = Object.fromEntries(
       ],
     }),
     room("mannno", 720, 480, "concrete-dark", "#8e9299", {
-      stations: [{ id: "mannno-forge", x: 360, y: 236, radius: 84, label: "FRAGUA", minigameId: "conecta4" }],
+      stations: [{ id: "mannno-forge", x: 360, y: 236, radius: 84, label: "FRAGUA", minigameIds: ["conecta4", "ritmo"] }],
       props: [
         { id: "mannno-anvil", sprite: "worktable", x: 360, y: 232, scale: 3, obstacleR: 46, obstacleDy: -26, tint: 0x6f7378 },
         { id: "mannno-quench", sprite: "waterTank", x: 600, y: 210, scale: 3, obstacleR: 30, obstacleDy: -26 },
@@ -101,7 +102,7 @@ export const ROOMS: Record<string, RoomDef> = Object.fromEntries(
       ],
     }),
     room("contraste", 640, 440, "concrete-light", "#3f9c96", {
-      stations: [{ id: "contraste-bench", x: 320, y: 216, radius: 84, label: "BANCO DE JOYERO", minigameId: "memoria" }],
+      stations: [{ id: "contraste-bench", x: 320, y: 216, radius: 84, label: "BANCO DE JOYERO", minigameIds: ["memoria", "balanza"] }],
       props: [
         { id: "contraste-bench", sprite: "worktable", x: 320, y: 212, scale: 3, obstacleR: 46, obstacleDy: -26 },
         { id: "contraste-planter", sprite: "planter", x: 560, y: 150, scale: 3 },

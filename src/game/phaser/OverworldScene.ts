@@ -10,6 +10,7 @@ import { getSpace } from "../../data/spaces"
 import type { Interactable } from "../bridge"
 import { boundsOf, type BuildingDef, type OverworldMap, type PropDef, type Rect, type Vec } from "../map/tiled"
 import { nearestStandable } from "../world/collision"
+import { SHADOW_MAX_DEG, sundialReading } from "../world/sundial"
 import { PLAYER_RADIUS, WORLD_MARGIN_M } from "./config"
 import { WorldScene, type WorldBuild } from "./WorldScene"
 
@@ -51,6 +52,8 @@ export class OverworldScene extends WorldScene {
   private map!: OverworldMap
   private sculpture: Phaser.GameObjects.GameObject[] = []
   private pedestal: PropDef | null = null
+  private shadowSprite: Phaser.GameObjects.Image | null = null
+  private previousFlags: string[] = []
 
   constructor() {
     super("overworld")
@@ -225,7 +228,9 @@ export class OverworldScene extends WorldScene {
       if (p.missionAnchor) this.pedestal = p
     })
 
+    this.previousFlags = this.worldFlags
     this.renderSculpture()
+    this.time.addEvent({ delay: 60000, loop: true, callback: () => this.updateSundial() })
 
     if (this.mapDebug && this.textures.exists("ref-plan")) {
       const ref = this.add.image(0, 0, "ref-plan").setOrigin(0).setAlpha(0.45).setDepth(8500)
@@ -262,45 +267,84 @@ export class OverworldScene extends WorldScene {
     }
   }
 
-  /** etapas de LA PIEZA CENTRAL sobre el pedestal (banderas de la corrida) */
-  private renderSculpture() {
+  /**
+   * LA HORA sobre el pedestal (banderas de la corrida): disco de madera,
+   * aguja con su sombra (marca la hora real de Tulum), marcas de plata y
+   * destello al completar. Anclaje: centro de la cara superior del plinto.
+   */
+  private renderSculpture(justInstalled: string[] = []) {
     this.sculpture.forEach((o) => o.destroy())
     this.sculpture = []
+    this.shadowSprite = null
     const p = this.pedestal
     if (!p) return
     const flags = this.worldFlags
-    const top = p.y - 44
-    if (flags.includes("pieza.baseInstalled")) {
-      const base = this.add.image(p.x, top + 4, "woodStack").setOrigin(0.5, 1).setScale(2.4).setDepth(p.y + 1)
-      this.sculpture.push(base)
+    const S = p.scale
+    const top = p.y - 23 * S
+
+    const add = (key: string, x: number, y: number, depth: number, ox = 0.5, oy = 0.5, flag?: string) => {
+      if (!this.textures.exists(key)) return null
+      const img = this.add.image(x, y, key).setOrigin(ox, oy).setScale(S).setDepth(depth)
+      this.sculpture.push(img)
+      if (flag && justInstalled.includes(flag)) {
+        // instalar: el componente baja 12 px con rebote corto
+        img.y = y - 12
+        this.tweens.add({ targets: img, y, duration: 260, ease: "Back.easeOut" })
+      }
+      return img
     }
+
+    // 01 · disco de madera — VETA
+    if (!flags.includes("pieza.baseInstalled")) return
+    add("piezaBaseMadera", p.x, top, p.y + 1, 0.5, 0.43, "pieza.baseInstalled")
+
+    // 02 · aguja forjada — MANNNO, con la sombra que da la hora
     if (flags.includes("pieza.metalInstalled")) {
-      const g = this.add.graphics()
-      g.lineStyle(6, 0x5b5f66, 1)
-      g.strokeRect(p.x - 26, top - 84, 52, 44)
-      g.lineBetween(p.x - 26, top - 62, p.x + 26, top - 62)
-      g.lineStyle(6, 0x8e9299, 1)
-      g.lineBetween(p.x, top - 40, p.x, top - 6)
-      g.setDepth(p.y + 2)
-      this.sculpture.push(g)
+      const shadow = add("piezaSombra", p.x, top, p.y + 0.5)
+      if (shadow) {
+        this.shadowSprite = shadow
+        const reading = sundialReading()
+        shadow.setAlpha(reading.daylight ? 1 : 0)
+        if (justInstalled.includes("pieza.metalInstalled")) {
+          // al instalar, la sombra barre desde el amanecer hasta la hora real
+          shadow.setAngle(-SHADOW_MAX_DEG)
+          this.tweens.add({ targets: shadow, angle: reading.angle, duration: 2600, ease: "Sine.easeInOut" })
+        } else {
+          shadow.setAngle(reading.angle)
+        }
+      }
+      add("piezaAgujaMetal", p.x, top, p.y + 2, 0.5, 1, "pieza.metalInstalled")
     }
+
+    // 03 · marcas de plata — CONTRASTE
     if (flags.includes("pieza.detailInstalled")) {
-      const g = this.add.graphics()
-      g.fillStyle(0xe8e6e1, 1)
-      g.fillPoints([new Phaser.Math.Vector2(p.x, top - 112), new Phaser.Math.Vector2(p.x + 12, top - 96), new Phaser.Math.Vector2(p.x, top - 80), new Phaser.Math.Vector2(p.x - 12, top - 96)], true)
-      g.setDepth(p.y + 3)
-      this.sculpture.push(g)
-      this.tweens.add({ targets: g, alpha: { from: 0.75, to: 1 }, duration: 900, yoyo: true, repeat: -1 })
+      add("piezaMarcasPlata", p.x, top, p.y + 3, 0.5, 0.43, "pieza.detailInstalled")
     }
+
+    // destello de la punta pulida: solo con la pieza completa
     if (flags.includes("pieza.complete")) {
-      const glow = this.add.ellipse(p.x, p.y - 10, 200, 90, 0xc98f42, 0.16).setDepth(p.y - 0.8)
-      this.sculpture.push(glow)
-      this.tweens.add({ targets: glow, scaleX: 1.08, scaleY: 1.08, duration: 1600, yoyo: true, repeat: -1, ease: "Sine.easeInOut" })
+      const glint = add("piezaDestello", p.x - 5 * S, top - 26 * S, p.y + 4)
+      if (glint) {
+        glint.setAlpha(0)
+        this.tweens.add({ targets: glint, alpha: { from: 0, to: 1 }, duration: 150, hold: 100, yoyo: true, repeat: -1, repeatDelay: 5600 })
+      }
     }
   }
 
-  protected onWorldFlags() {
-    this.renderSculpture()
+  /** cada minuto la sombra sigue al sol real */
+  private updateSundial() {
+    const shadow = this.shadowSprite
+    if (!shadow || !shadow.active) return
+    const reading = sundialReading()
+    if (this.tweens.getTweensOf(shadow).length > 0) return
+    shadow.setAngle(reading.angle)
+    shadow.setAlpha(reading.daylight ? 1 : 0)
+  }
+
+  protected onWorldFlags(flags: string[]) {
+    const fresh = flags.filter((f) => !this.previousFlags.includes(f))
+    this.previousFlags = flags
+    this.renderSculpture(fresh)
   }
 
   protected drawExtraDebug(g: Phaser.GameObjects.Graphics) {

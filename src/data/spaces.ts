@@ -139,9 +139,9 @@ export const SPACES: WorkshopSpace[] = [
   // ---- PATIO / PROGRAMA ------------------------------------
   {
     id: "pieza-central",
-    name: "LA PIEZA CENTRAL",
-    shortName: "LA PIEZA",
-    subtitle: "Instalación colaborativa",
+    name: "LA HORA",
+    shortName: "LA HORA",
+    subtitle: "La Pieza Central · reloj de sol de los tres talleres",
     type: "installation",
     status: "active",
   },

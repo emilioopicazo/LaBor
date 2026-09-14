@@ -1,9 +1,18 @@
 import { useEffect, useRef, useState } from "react"
+import { ASSETS } from "../../data/assets"
 import { PIEZA_CENTRAL } from "../../data/missions"
+import { MINIGAMES } from "../../game/minigames/contract"
 import { TRACKS } from "../../data/music"
 import { getSpace, whatsappLink } from "../../data/spaces"
 import { mission, missionView, useMissionRun } from "../../game/mission"
 import { useProfile } from "../../game/profile"
+
+/** icono pixel del componente (16×16 lógicos, ×2) */
+function ComponentIcon({ icon }: { icon: string }) {
+  const asset = (ASSETS as unknown as Record<string, { src: string } | undefined>)[icon]
+  if (!asset) return null
+  return <span className="overlay__icon" style={{ backgroundImage: `url(${asset.src})` }} aria-hidden="true" />
+}
 
 interface MissionOverlayProps {
   onClose: () => void
@@ -42,17 +51,20 @@ export function MissionOverlay({ onClose, onGoTo }: MissionOverlayProps) {
         </header>
 
         <h2 className="overlay__name">
-          <span>LA PIEZA</span>
-          <span>CENTRAL</span>
+          <span>LA HORA</span>
         </h2>
+        <p className="overlay__status">LA PIEZA CENTRAL · RELOJ DE SOL</p>
 
         {!view && (
           <>
             <p className="overlay__description">{def.description}</p>
-            <ul className="overlay__details">
+            <ul className="overlay__details overlay__details--icons">
               {def.components.map((c) => (
                 <li key={c.id}>
-                  {getSpace(c.spaceId)?.shortName} — {c.minigameId === "gato" ? "GATO" : c.minigameId === "conecta4" ? "CONECTA 4" : "MEMORIA"} → {c.label}
+                  <ComponentIcon icon={c.icon} />
+                  <span>
+                    {getSpace(c.spaceId)?.shortName} — {c.minigameIds.map((g) => MINIGAMES[g].title).join(" o ")} → {c.label}
+                  </span>
                 </li>
               ))}
             </ul>
@@ -78,6 +90,7 @@ export function MissionOverlay({ onClose, onGoTo }: MissionOverlayProps) {
                 return (
                   <li key={c.id} className={`overlay__step overlay__step--${status}`}>
                     <span className="overlay__step-mark">{installed ? "✓" : carried ? "●" : status === "active" ? "→" : "—"}</span>
+                    <ComponentIcon icon={c.icon} />
                     <span className="overlay__step-text">
                       {c.label} · {getSpace(c.spaceId)?.shortName}
                       {carried ? " · EN MANO" : installed ? " · INSTALADA" : ""}
