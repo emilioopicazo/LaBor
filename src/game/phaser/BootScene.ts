@@ -28,7 +28,41 @@ export class BootScene extends Phaser.Scene {
     if (isMapDebug()) this.load.image("ref-plan", "/assets/reference/labor-plan-48px.png")
   }
 
+  /** balizas de interacción: rombo (pendiente), rombo grande (objetivo), círculo con palomita (hecho) */
+  private makeBeaconTextures() {
+    const g = this.make.graphics({ x: 0, y: 0 }, false)
+    // pendiente: rombo papel con borde tinta
+    g.clear()
+    g.fillStyle(0x181411, 1)
+    g.fillPoints([new Phaser.Math.Vector2(8, 0), new Phaser.Math.Vector2(16, 8), new Phaser.Math.Vector2(8, 16), new Phaser.Math.Vector2(0, 8)], true)
+    g.fillStyle(0xf4efe4, 1)
+    g.fillPoints([new Phaser.Math.Vector2(8, 3), new Phaser.Math.Vector2(13, 8), new Phaser.Math.Vector2(8, 13), new Phaser.Math.Vector2(3, 8)], true)
+    g.generateTexture("beacon-todo", 16, 16)
+    // objetivo: rombo ocre
+    g.clear()
+    g.fillStyle(0x181411, 1)
+    g.fillPoints([new Phaser.Math.Vector2(8, 0), new Phaser.Math.Vector2(16, 8), new Phaser.Math.Vector2(8, 16), new Phaser.Math.Vector2(0, 8)], true)
+    g.fillStyle(0xe08a3c, 1)
+    g.fillPoints([new Phaser.Math.Vector2(8, 3), new Phaser.Math.Vector2(13, 8), new Phaser.Math.Vector2(8, 13), new Phaser.Math.Vector2(3, 8)], true)
+    g.generateTexture("beacon-target", 16, 16)
+    // hecho: círculo teal con palomita
+    g.clear()
+    g.fillStyle(0x181411, 1)
+    g.fillCircle(8, 8, 8)
+    g.fillStyle(0x3f9c96, 1)
+    g.fillCircle(8, 8, 6.5)
+    g.lineStyle(2, 0xf4efe4, 1)
+    g.beginPath()
+    g.moveTo(4.5, 8.2)
+    g.lineTo(7, 10.8)
+    g.lineTo(11.6, 5.6)
+    g.strokePath()
+    g.generateTexture("beacon-done", 16, 16)
+    g.destroy()
+  }
+
   create() {
+    this.makeBeaconTextures()
     const json = this.cache.json.get("map") as TiledMapJson
     this.registry.set("map", parseTiledMap(json))
     createAvatarAnimations(this.anims)

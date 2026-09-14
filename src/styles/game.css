@@ -410,6 +410,9 @@
 .menu__item--event span:first-child {
   color: var(--ochre);
 }
+.menu__check {
+  color: var(--teal);
+}
 
 /* ---- overlays: extras ---------------------------------------- */
 /* la cabecera (con ×) se queda fija mientras el panel hace scroll (teléfono horizontal) */

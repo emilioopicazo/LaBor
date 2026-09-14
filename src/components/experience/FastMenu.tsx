@@ -32,14 +32,20 @@ export function FastMenu({ open, setOpen, onTravel, onDirect, onChangeAvatar }: 
   const unlocked = (prof.completed[UNLOCK_MISSION_ID] ?? 0) > 0 || run?.completed === true
   const ev = nextEvent()
 
-  const Item = ({ id, label, meta, direct }: { id: string; label: string; meta?: string; direct?: boolean }) => (
-    <li>
-      <button type="button" className="menu__item" onClick={() => (direct ? onDirect(id) : onTravel(id))}>
-        <span>{label}</span>
-        <span className="menu__item-meta">{meta ? `${meta} →` : "→"}</span>
-      </button>
-    </li>
-  )
+  const Item = ({ id, label, meta, direct }: { id: string; label: string; meta?: string; direct?: boolean }) => {
+    const visited = prof.visited.includes(id)
+    return (
+      <li>
+        <button type="button" className={`menu__item${visited ? " is-visited" : ""}`} onClick={() => (direct ? onDirect(id) : onTravel(id))}>
+          <span>
+            {visited && <span className="menu__check" aria-label="Visitado">✓ </span>}
+            {label}
+          </span>
+          <span className="menu__item-meta">{meta ? `${meta} →` : "→"}</span>
+        </button>
+      </li>
+    )
+  }
 
   return (
     <>

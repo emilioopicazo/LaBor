@@ -15,11 +15,13 @@ export interface PlayerProfile {
   completed: Record<string, number>
   /** el visitante ya vio el hint de controles */
   seenControls: boolean
+  /** espacios que ya recorrió por dentro */
+  visited: string[]
 }
 
 const KEY = "labor.profile.v1"
 
-const EMPTY: PlayerProfile = { version: 1, avatarId: null, completed: {}, seenControls: false }
+const EMPTY: PlayerProfile = { version: 1, avatarId: null, completed: {}, seenControls: false, visited: [] }
 
 function load(): PlayerProfile {
   try {
@@ -27,7 +29,7 @@ function load(): PlayerProfile {
     if (!raw) return EMPTY
     const parsed = JSON.parse(raw) as Partial<PlayerProfile>
     if (parsed.version !== 1) return EMPTY
-    return { ...EMPTY, ...parsed, completed: { ...(parsed.completed ?? {}) } }
+    return { ...EMPTY, ...parsed, completed: { ...(parsed.completed ?? {}) }, visited: [...(parsed.visited ?? [])] }
   } catch {
     return EMPTY
   }
@@ -70,6 +72,10 @@ export const profile = {
   markControlsSeen() {
     if (state.seenControls) return
     commit({ ...state, seenControls: true })
+  },
+  markVisited(spaceId: string) {
+    if (state.visited.includes(spaceId)) return
+    commit({ ...state, visited: [...state.visited, spaceId] })
   },
   recordCompletion(missionId: string) {
     commit({ ...state, completed: { ...state.completed, [missionId]: (state.completed[missionId] ?? 0) + 1 } })

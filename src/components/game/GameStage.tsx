@@ -2,10 +2,11 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { isCoarsePointer } from "../../config/world"
 import { DEFAULT_AVATAR } from "../../data/avatars"
 import { eventShortLabel, nextEvent } from "../../data/events"
-import { getSpace } from "../../data/spaces"
-import { gameCommands, gameEvents, type Interactable } from "../../game/bridge"
+import { ROOMS } from "../../data/rooms"
+import { SPACES, getSpace } from "../../data/spaces"
+import { gameCommands, gameEvents, type Interactable, type MarkerState } from "../../game/bridge"
 import { mission, missionView, toast, useMissionRun } from "../../game/mission"
-import { useProfile } from "../../game/profile"
+import { profile, useProfile } from "../../game/profile"
 import { AvatarSelector } from "../experience/AvatarSelector"
 import { FastMenu } from "../experience/FastMenu"
 import { MissionOverlay } from "../experience/MissionOverlay"
@@ -108,10 +109,11 @@ export function GameStage({ active }: GameStageProps) {
 
   useEffect(() => {
     const offs = [
-      gameEvents.on("ready", ({ sceneId: id }) => {
+      gameEvents.on("ready", ({ sceneId: id, spaceId }) => {
         setReady(true)
         setSceneId(id)
         setTarget(null)
+        if (spaceId) profile.markVisited(spaceId)
         const travel = pendingTravel.current
         if (travel && id === "overworld") {
           pendingTravel.current = null
@@ -135,6 +137,41 @@ export function GameStage({ active }: GameStageProps) {
   useEffect(() => {
     gameCommands.setPaused(paused)
   }, [paused])
+
+  // balizas (✓ hecho / ◆ objetivo) y chevrón de guía, a partir de misión + visitados
+  useEffect(() => {
+    const states: Record<string, MarkerState> = {}
+    const comps = view?.def.components ?? []
+    const won = (spaceId: string) => {
+      const c = comps.find((x) => x.spaceId === spaceId)
+      return !!c && !!run && (run.temporaryInventory.includes(c.id) || run.installed.includes(c.id))
+    }
+    const targetSpace = view && !view.complete ? view.targetSpaceId : null
+    // paso final: ya se ganaron los tres componentes → toca instalar en el pedestal
+    const finalStep = !!view && !view.complete && view.currentComponentId === null
+    let guide: string | null = null
+    if (sceneId === "overworld") {
+      SPACES.forEach((sp) => {
+        const id = `${sp.id}-door`
+        if (sp.type === "resident" && won(sp.id)) states[id] = "done"
+        else if (prof.visited.includes(sp.id) && sp.type !== "resident") states[id] = "done"
+        if (targetSpace === sp.id) states[id] = "target"
+      })
+      if (view?.complete) states["pieza-central"] = "done"
+      else if (!run || finalStep) states["pieza-central"] = "target"
+      guide = !run ? "pieza-central" : view?.complete ? null : finalStep ? "pieza-central" : targetSpace ? `${targetSpace}-door` : null
+    } else {
+      const spaceId = sceneId.replace(/-room$/, "")
+      const st = ROOMS[sceneId]?.stations[0]
+      if (st) {
+        if (won(spaceId)) states[st.id] = "done"
+        else if (targetSpace === spaceId) states[st.id] = "target"
+        guide = targetSpace === spaceId && !won(spaceId) ? st.id : run ? "exit" : null
+      } else guide = null
+    }
+    gameCommands.setMarkers(states)
+    gameCommands.setGuide(guide)
+  }, [view, run, sceneId, prof.visited, ready])
 
   // próximo evento: un aviso breve al entrar al patio (una vez por sesión)
   const eventToasted = useRef(false)

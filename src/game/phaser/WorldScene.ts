@@ -8,7 +8,7 @@
 
 import Phaser from "phaser"
 import { AVATARS, DEFAULT_AVATAR } from "../../data/avatars"
-import { gameEvents, registerController, type GameCommands, type Interactable } from "../bridge"
+import { gameEvents, registerController, type GameCommands, type Interactable, type MarkerState } from "../bridge"
 import type { Facing, Rect, Vec } from "../map/tiled"
 import { buildNavGraph, canStand, dist, findPath, moveWithSliding, nearestStandable, type Geometry, type NavGraph } from "../world/collision"
 import {
@@ -81,6 +81,11 @@ export abstract class WorldScene extends Phaser.Scene implements GameCommands {
   private lastEmit = 0
   protected debugGfx: Phaser.GameObjects.Graphics | null = null
   protected mapDebug = isMapDebug()
+  /** balizas por id de interactuable */
+  private beacons = new Map<string, Phaser.GameObjects.Image>()
+  private markers: Record<string, MarkerState> = {}
+  private guideTarget: string | null = null
+  private guideGfx!: Phaser.GameObjects.Graphics
 
   protected abstract buildWorld(data: Record<string, unknown>): WorldBuild
   /** las subclases reaccionan a banderas de mundo (etapas de la escultura) */
@@ -123,6 +128,12 @@ export abstract class WorldScene extends Phaser.Scene implements GameCommands {
 
     this.setupCamera()
     this.setupInput()
+    this.createBeacons()
+    this.guideGfx = this.add.graphics()
+    this.guideGfx.setDepth(9500)
+    this.markers = (this.registry.get("markers") as Record<string, MarkerState> | undefined) ?? {}
+    this.guideTarget = (this.registry.get("guide") as string | null | undefined) ?? null
+    this.applyMarkers()
 
     if (this.mapDebug) {
       this.debugGfx = this.add.graphics()
@@ -386,6 +397,7 @@ export abstract class WorldScene extends Phaser.Scene implements GameCommands {
       this.lastEmit = time
       gameEvents.emit("player", { x: this.px, y: this.py, moving: this.moving, sceneId: this.sceneId })
     }
+    this.drawGuide()
     if (this.debugGfx) this.drawDebug()
   }
 
@@ -403,6 +415,7 @@ export abstract class WorldScene extends Phaser.Scene implements GameCommands {
     if ((best?.id ?? null) !== (this.current?.id ?? null)) {
       this.current = best
       gameEvents.emit("action", { target: best })
+      this.applyMarkers()
     }
   }
 
@@ -442,7 +455,90 @@ export abstract class WorldScene extends Phaser.Scene implements GameCommands {
     g.strokeCircle(this.px, this.py, PLAYER_RADIUS)
   }
 
+  // ---- balizas de interacción ------------------------------------------------
+  /** altura de la baliza sobre el punto de interacción, por tipo */
+  private beaconLift(it: Interactable): number {
+    switch (it.kind) {
+      case "door":
+        return 54
+      case "poi":
+        return it.id === "pieza-central" ? 150 : 92
+      case "station":
+        return 110
+      case "sign":
+        return 96
+      case "exit":
+        return 44
+    }
+  }
+
+  private createBeacons() {
+    this.beacons.forEach((b) => b.destroy())
+    this.beacons.clear()
+    this.interactables.forEach((it) => {
+      const y = it.y - this.beaconLift(it)
+      const img = this.add.image(it.x, y, "beacon-todo").setScale(1.5).setDepth(6000).setAlpha(0.8)
+      this.tweens.add({ targets: img, y: y - 5, duration: 1100 + Math.random() * 300, yoyo: true, repeat: -1, ease: "Sine.easeInOut" })
+      this.beacons.set(it.id, img)
+    })
+  }
+
+  private applyMarkers() {
+    this.beacons.forEach((img, id) => {
+      const state = this.markers[id] ?? "todo"
+      const near = this.current?.id === id
+      img.setTexture(state === "done" ? "beacon-done" : state === "target" ? "beacon-target" : "beacon-todo")
+      img.setScale(near ? 1.9 : state === "target" ? 1.7 : 1.5)
+      img.setAlpha(near ? 1 : state === "done" ? 0.85 : state === "target" ? 1 : 0.75)
+    })
+  }
+
+  /** chevrón en el borde de la pantalla hacia el objetivo cuando queda fuera de vista */
+  private drawGuide() {
+    const g = this.guideGfx
+    g.clear()
+    if (!this.guideTarget) return
+    const it = this.interactables.find((i) => i.id === this.guideTarget)
+    if (!it) return
+    const cam = this.cameras.main
+    const view = cam.worldView
+    const margin = 34 / cam.zoom
+    const inside = it.x > view.x + margin && it.x < view.right - margin && it.y > view.y + margin * 2.4 && it.y < view.bottom - margin * 2.6
+    if (inside) return
+    // punto del objetivo proyectado al borde del viewport (con margen y sin tapar el HUD)
+    const cx = view.centerX
+    const cy = view.centerY
+    const dx = it.x - cx
+    const dy = it.y - cy
+    const halfW = view.width / 2 - margin
+    const halfH = view.height / 2 - margin * 2.5
+    const k = Math.min(halfW / Math.max(Math.abs(dx), 1e-6), halfH / Math.max(Math.abs(dy), 1e-6))
+    const px = cx + dx * k
+    const py = cy + dy * k
+    const angle = Math.atan2(dy, dx)
+    const size = 11 / cam.zoom
+    const tip = { x: px + Math.cos(angle) * size, y: py + Math.sin(angle) * size }
+    const left = { x: px + Math.cos(angle + 2.5) * size, y: py + Math.sin(angle + 2.5) * size }
+    const right = { x: px + Math.cos(angle - 2.5) * size, y: py + Math.sin(angle - 2.5) * size }
+    const pulse = 0.55 + 0.35 * Math.abs(Math.sin(this.time.now / 500))
+    g.fillStyle(0x181411, 0.9)
+    g.fillCircle(px, py, size * 1.35)
+    g.fillStyle(0xe08a3c, pulse)
+    g.fillPoints([new Phaser.Math.Vector2(tip.x, tip.y), new Phaser.Math.Vector2(left.x, left.y), new Phaser.Math.Vector2(right.x, right.y)], true)
+  }
+
   // ---- comandos (React → mundo) --------------------------------------------
+  setMarkers(states: Record<string, MarkerState>) {
+    this.markers = states
+    this.registry.set("markers", states)
+    this.applyMarkers()
+  }
+
+  setGuide(targetId: string | null) {
+    this.guideTarget = targetId
+    this.registry.set("guide", targetId)
+  }
+
   enterRoom(sceneId: string) {
     this.transitionTo("room", { roomId: sceneId })
   }
@@ -529,6 +625,10 @@ export abstract class WorldScene extends Phaser.Scene implements GameCommands {
       paused: this.paused,
       interactables: this.interactables.map((i) => ({ id: i.id, x: i.x, y: i.y, radius: i.radius, action: i.action })),
       joystick: this.joystick.state(),
+      markers: this.markers,
+      guide: this.guideTarget,
+      beacons: [...this.beacons.entries()].map(([id, b]) => ({ id, texture: b.texture.key, scale: b.scaleX })),
+      guideVisible: this.guideGfx ? this.guideGfx.commandBuffer.length > 0 : false,
     }
   }
 

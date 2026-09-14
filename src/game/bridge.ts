@@ -8,6 +8,9 @@
 
 export type InteractKind = "door" | "poi" | "station" | "exit" | "sign"
 
+/** estado visual de la baliza de un interactuable */
+export type MarkerState = "todo" | "done" | "target"
+
 export interface Interactable {
   id: string
   kind: InteractKind
@@ -87,6 +90,10 @@ export interface GameCommands {
   triggerAction(): void
   /** hace zoom sutil hacia un objetivo (foco de interacción) o lo suelta */
   focus(target: { x: number; y: number } | null): void
+  /** balizas: qué está hecho, qué es el objetivo (por id de interactuable) */
+  setMarkers(states: Record<string, MarkerState>): void
+  /** chevrón de guía hacia un interactuable cuando queda fuera de pantalla */
+  setGuide(targetId: string | null): void
 }
 
 let controller: GameCommands | null = null
@@ -116,4 +123,6 @@ export const gameCommands: GameCommands = {
   setWorldFlags: (f) => run((c) => c.setWorldFlags(f)),
   triggerAction: () => run((c) => c.triggerAction()),
   focus: (t) => run((c) => c.focus(t)),
+  setMarkers: (m) => run((c) => c.setMarkers(m)),
+  setGuide: (id) => run((c) => c.setGuide(id)),
 }
