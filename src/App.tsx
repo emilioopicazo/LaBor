@@ -29,7 +29,7 @@ export default function App() {
 
   return (
     <div className="app">
-      <GameStage active={phase === "world"} />
+      <GameStage active={phase === "world"} opening={phase === "entering"} />
       {phase === "avatar" && <AvatarSelector mode="first" onConfirm={() => setPhase("entering")} />}
       {phase !== "world" && <Intro ready opening={phase === "entering"} hidden={phase === "avatar"} onDone={handleIntroDone} />}
     </div>

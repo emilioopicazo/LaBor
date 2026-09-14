@@ -94,6 +94,8 @@ export interface GameCommands {
   setMarkers(states: Record<string, MarkerState>): void
   /** chevrón de guía hacia un interactuable cuando queda fuera de pantalla */
   setGuide(targetId: string | null): void
+  /** el portón se abre: el visitante aterriza y la cámara asienta (llegada visible) */
+  arrive(): void
 }
 
 let controller: GameCommands | null = null
@@ -125,4 +127,5 @@ export const gameCommands: GameCommands = {
   focus: (t) => run((c) => c.focus(t)),
   setMarkers: (m) => run((c) => c.setMarkers(m)),
   setGuide: (id) => run((c) => c.setGuide(id)),
+  arrive: () => run((c) => c.arrive()),
 }

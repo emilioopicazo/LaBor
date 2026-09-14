@@ -32,7 +32,7 @@ export function FastMenu({ open, setOpen, onTravel, onDirect, onChangeAvatar }: 
   const unlocked = (prof.completed[UNLOCK_MISSION_ID] ?? 0) > 0 || run?.completed === true
   const ev = nextEvent()
 
-  const Item = ({ id, label, meta, direct }: { id: string; label: string; meta?: string; direct?: boolean }) => {
+  const Item = ({ id, label, meta, direct, reserved }: { id: string; label: string; meta?: string; direct?: boolean; reserved?: boolean }) => {
     const visited = prof.visited.includes(id)
     return (
       <li>
@@ -41,7 +41,7 @@ export function FastMenu({ open, setOpen, onTravel, onDirect, onChangeAvatar }: 
             {visited && <span className="menu__check" aria-label="Visitado">✓ </span>}
             {label}
           </span>
-          <span className="menu__item-meta">{meta ? `${meta} →` : "→"}</span>
+          <span className={`menu__item-meta${reserved ? " menu__item-meta--reserved" : ""}`}>{meta ? `${meta} →` : "→"}</span>
         </button>
       </li>
     )
@@ -106,7 +106,7 @@ export function FastMenu({ open, setOpen, onTravel, onDirect, onChangeAvatar }: 
               {AVAILABLE.map((s) => {
                 const from = fromPrice(s)
                 const meta = s.status === "reserved" ? `${s.areaM2} M² · RESERVADO` : from ? `${s.areaM2} M² · DESDE ${mxn(from)}` : `${s.areaM2} M² · COTIZAR`
-                return <Item key={s.id} id={s.id} label={s.name} meta={meta} />
+                return <Item key={s.id} id={s.id} label={s.name} meta={meta} reserved={s.status === "reserved"} />
               })}
             </ul>
 

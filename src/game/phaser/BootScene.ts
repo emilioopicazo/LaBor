@@ -58,6 +58,15 @@ export class BootScene extends Phaser.Scene {
     g.lineTo(11.6, 5.6)
     g.strokePath()
     g.generateTexture("beacon-done", 16, 16)
+    // chispas (partículas): papel y ocre
+    g.clear()
+    g.fillStyle(0xf4efe4, 1)
+    g.fillRect(0, 0, 4, 4)
+    g.generateTexture("spark-paper", 4, 4)
+    g.clear()
+    g.fillStyle(0xe08a3c, 1)
+    g.fillRect(0, 0, 4, 4)
+    g.generateTexture("spark-ochre", 4, 4)
     g.destroy()
   }
 

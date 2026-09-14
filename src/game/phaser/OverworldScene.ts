@@ -264,8 +264,13 @@ export class OverworldScene extends WorldScene {
     name.setOrigin(0.5).setDepth(-3).setResolution(2)
     if (space && commercial) {
       const reserved = space.status === "reserved"
-      const meta = this.add.text(cx, cy + 14, `${reserved ? "RESERVADO" : "DISPONIBLE"} · ${space.areaM2} M²`, { ...TEXT_STYLE, fontSize: "11px", color: reserved ? "#8a5a2b" : "#5b554a", letterSpacing: 1 })
+      const meta = this.add.text(cx, cy + 14, `${reserved ? "RESERVADO" : "DISPONIBLE"} · ${space.areaM2} M²`, { ...TEXT_STYLE, fontSize: "11px", color: reserved ? "#f4efe4" : "#5b554a", letterSpacing: 1 })
       meta.setOrigin(0.5).setDepth(-3).setResolution(2)
+      if (reserved) {
+        // sello RESERVADO: fondo óxido y pulso que llama la atención
+        meta.setPadding(8, 3, 8, 3).setBackgroundColor("#b8663d")
+        if (!this.reducedMotion) this.tweens.add({ targets: meta, alpha: { from: 1, to: 0.45 }, scaleX: { from: 1, to: 1.08 }, scaleY: { from: 1, to: 1.08 }, duration: 900, yoyo: true, repeat: -1, ease: "Sine.easeInOut" })
+      }
     }
   }
 
@@ -347,6 +352,30 @@ export class OverworldScene extends WorldScene {
     const fresh = flags.filter((f) => !this.previousFlags.includes(f))
     this.previousFlags = flags
     this.renderSculpture(fresh)
+    const p = this.pedestal
+    if (!p || fresh.length === 0) return
+    const top = p.y - 23 * p.scale
+    if (fresh.some((f) => f.endsWith("Installed"))) {
+      // instalar: anillo + chispas sobre el disco
+      this.ringPulse(p.x, top, 46, 0xe08a3c, 750)
+      this.burst(p.x, top - 10, 22)
+    }
+    if (fresh.includes("pieza.complete")) this.celebrate(p.x, top)
+  }
+
+  /** LA HORA completa: tres anillos, lluvia de chispas desde la punta y un acercamiento breve */
+  private celebrate(x: number, y: number) {
+    const tip = { x: x - 5 * (this.pedestal?.scale ?? 3), y: y - 26 * (this.pedestal?.scale ?? 3) }
+    ;[0, 260, 520].forEach((delay, i) => {
+      this.time.delayedCall(delay, () => {
+        this.ringPulse(x, y, 40 + i * 24, i % 2 ? 0xf4efe4 : 0xe08a3c, 900)
+        this.burst(tip.x, tip.y, 26, i % 2 === 0)
+      })
+    })
+    this.time.delayedCall(900, () => this.burst(x, y - 20, 30, true))
+    const cam = this.cameras.main
+    cam.zoomTo(this.baseZoom * 1.22, 700, "Sine.easeInOut", true)
+    this.time.delayedCall(2200, () => cam.zoomTo(this.restZoom(), 900, "Sine.easeInOut", true))
   }
 
   protected drawExtraDebug(g: Phaser.GameObjects.Graphics) {

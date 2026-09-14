@@ -170,6 +170,12 @@ export function SpaceOverlay({ space, onClose, onNavigate, onEnterScene, current
   const commercial = space.type === "available"
   const reserved = space.status === "reserved"
   const from = fromPrice(space)
+  // escasez real por familia: pabellones (con reservas) y naves (a cotizar)
+  const pabs = AVAILABLE.filter((s) => s.id.startsWith("pabellon"))
+  const pabsReserved = pabs.filter((s) => s.status === "reserved").length
+  const scarcity = space.id.startsWith("nave")
+    ? `QUEDAN ${AVAILABLE.filter((s) => s.id.startsWith("nave") && s.status === "available").length} NAVES · ${pabsReserved} DE ${pabs.length} PABELLONES YA RESERVADOS`
+    : `QUEDAN ${pabs.length - pabsReserved} PABELLONES DE ${pabs.length} · ${pabsReserved} YA RESERVADOS`
 
   const renderCta = (cta: SpaceCta, primary: boolean) => {
     const cls = `overlay__cta${primary ? " overlay__cta--primary" : ""}`
@@ -235,7 +241,10 @@ export function SpaceOverlay({ space, onClose, onNavigate, onEnterScene, current
         )}
 
         {commercial && (
-          <p className={`overlay__status${reserved ? " overlay__status--reserved" : ""}`}>{reserved ? "RESERVADO · LISTA DE ESPERA" : "ESPACIO DISPONIBLE"}</p>
+          <>
+            <p key={space.id} className={`overlay__status${reserved ? " overlay__status--reserved" : " overlay__status--open"}`}>{reserved ? "RESERVADO · LISTA DE ESPERA" : "ESPACIO DISPONIBLE"}</p>
+            <p className="overlay__scarcity">{scarcity}</p>
+          </>
         )}
 
         {space.description && <p className="overlay__description">{space.description}</p>}

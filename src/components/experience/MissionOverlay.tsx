@@ -141,7 +141,7 @@ export function MissionOverlay({ onClose, onGoTo }: MissionOverlayProps) {
 
         {view && view.complete && (
           <>
-            <p className="overlay__lead">{def.reward.title}</p>
+            <p className="overlay__lead overlay__lead--stamp">{def.reward.title}</p>
             <p className="overlay__description">{def.reward.text}</p>
             <p className="overlay__kicker">SUENA · {TRACKS[0].title.toUpperCase()} · {TRACKS[0].artist.toUpperCase()}</p>
             <div className="overlay__cta-row">

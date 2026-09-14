@@ -17,3 +17,15 @@
 - **Geometría**: no derivar del mockup; el PDF vectorial (pdftocairo -svg) da
   segmentos exactos y se calibra con una cota conocida.
 - **Nunca poner un patrón de `pkill`/`pgrep -f` en la misma llamada que otros comandos**: el shell de la herramienta acaba matándose (exit 144), aunque el patrón lleve `[p]`. Comprobar con `ps | grep "[p]atrón"` y dejar que los procesos terminen solos, o matarlos en una llamada aparte sin ningún otro texto.
+- **Phaser se monta detrás de la intro**: cualquier animación lanzada en
+  `create()` del primer patio corre tapada por el portón; la llegada visible se
+  dispara desde React al abrirse el portón (`gameCommands.arrive()`), con guarda
+  de 1 s para no duplicarla. En pruebas, `getState()` solo se ve tras el segundo
+  toque, así que el muestreo de zoom empieza ahí.
+- **Renderer canvas dibuja los `Text` con `setResolution(2)` al doble** (medido
+  con `renderer.snapshot`: 66 px vs 33 px en WebGL). Para juzgar tamaños de
+  texto usar WebGL headless con `--use-gl=angle --use-angle=swiftshader
+  --enable-unsafe-swiftshader`; el canvas solo sirve para lógica y fps.
+- **`→ PIEZA` instala sola al llegar** (`arrived` → `triggerAction`): una prueba
+  no debe contar toques de INSTALAR; hay que leer `installed.length` y no tocar
+  "VER" después de completar, porque abre el overlay y pausa la escena.

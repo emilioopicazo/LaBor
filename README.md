@@ -162,6 +162,34 @@ menú, sección MÚSICA, aparece bloqueada hasta entonces y después se pausa y 
 pausar se recuerda en `labor.audio.v1`. Para agregar pistas basta añadirlas a `TRACKS`
 (el selector de 3–4 canciones queda para después).
 
+## Animaciones y señales
+
+Todo lo que pasa en el mundo se ve (y respeta `prefers-reduced-motion`):
+
+- **Llegada**: cuando el portón se abre, React manda `gameCommands.arrive()`:
+  el visitante "aterriza" con un pop y la cámara asienta desde un poco más lejos
+  al zoom base. Phaser se monta detrás de la intro, así que la animación de
+  `create()` sola no se vería; por eso se dispara desde el portón. Cuartos y
+  regresos al patio la repiten tras el fundido.
+- **Entrar a un taller**: anillo en la puerta y acercamiento de cámara mientras
+  funde a negro.
+- **Ganar en un taller**: el tablero brilla y el resultado se "sella"; la
+  baliza de la estación/puerta salta con chispas y anillo teal al cerrar el
+  panel (si estaba abierto, queda pendiente hasta cerrarlo) y la línea de misión
+  hace un bump.
+- **Instalar en LA HORA**: la pieza cae con rebote, anillo ocre y chispas sobre
+  el disco.
+- **LA HORA completa**: tres anillos escalonados, chispas desde la punta de la
+  aguja, acercamiento de cámara 2 s y regreso; el título de la recompensa se
+  sella; empieza la música.
+- **RESERVADO (FOMO)**: sello óxido con entrada tipo estampa y pulso continuo en
+  la ficha, más la línea "QUEDAN N PABELLONES DE 4 · M YA RESERVADOS"; en el
+  techo del patio y en el letrero del cuarto el texto va sobre fondo óxido con
+  pulso; en el menú la meta parpadea.
+
+En `?debug`, `__LABOR__.getState().fx` lista los últimos efectos
+(`ring:x,y`, `burst:x,y`) para verificarlos en Playwright.
+
 ## Archivos clave
 
 ```

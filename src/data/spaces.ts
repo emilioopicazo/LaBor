@@ -214,7 +214,7 @@ export function spaceKindLabel(space: WorkshopSpace): string {
     case "resident":
       return "RESIDENTE"
     case "available":
-      return "ESPACIO DISPONIBLE"
+      return space.status === "reserved" ? "ESPACIO RESERVADO" : "ESPACIO DISPONIBLE"
     case "event":
       return "PATIO"
     case "navigation":

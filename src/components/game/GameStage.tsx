@@ -30,6 +30,8 @@ type Overlay =
 interface GameStageProps {
   /** el mundo recibe input (intro y selector cerrados) */
   active: boolean
+  /** el portón se está abriendo: momento de la llegada visible */
+  opening?: boolean
 }
 
 /**
@@ -38,7 +40,7 @@ interface GameStageProps {
  * Phaser manda eventos (acción cercana, interacción, escena) y React
  * decide qué significa cada uno: entrar, ver, jugar, instalar.
  */
-export function GameStage({ active }: GameStageProps) {
+export function GameStage({ active, opening = false }: GameStageProps) {
   const hostRef = useRef<HTMLDivElement>(null)
   const prof = useProfile()
   const run = useMissionRun()
@@ -134,6 +136,14 @@ export function GameStage({ active }: GameStageProps) {
 
   // ---- sincronía React → mundo ----------------------------------------------
   const paused = !active || overlay !== null || menuOpen
+
+  // llegada visible: cuando el portón se abre (o, si algo falla, al activarse el mundo)
+  const arrived = useRef(false)
+  useEffect(() => {
+    if (!(opening || active) || arrived.current) return
+    arrived.current = true
+    gameCommands.arrive()
+  }, [opening, active])
   useEffect(() => {
     gameCommands.setPaused(paused)
   }, [paused])

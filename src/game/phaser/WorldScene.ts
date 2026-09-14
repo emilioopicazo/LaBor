@@ -86,6 +86,13 @@ export abstract class WorldScene extends Phaser.Scene implements GameCommands {
   private markers: Record<string, MarkerState> = {}
   private guideTarget: string | null = null
   private guideGfx!: Phaser.GameObjects.Graphics
+  private sparks!: Phaser.GameObjects.Particles.ParticleEmitter
+  private sparksOchre!: Phaser.GameObjects.Particles.ParticleEmitter
+  /** balizas que se completaron con un panel abierto: saltan al cerrarlo */
+  private pendingPops: string[] = []
+  private fxLog: string[] = []
+  private resizes = 0
+  private lastArrive = -Infinity
 
   protected abstract buildWorld(data: Record<string, unknown>): WorldBuild
   /** las subclases reaccionan a banderas de mundo (etapas de la escultura) */
@@ -128,12 +135,15 @@ export abstract class WorldScene extends Phaser.Scene implements GameCommands {
 
     this.setupCamera()
     this.setupInput()
+    this.setupFx()
     this.createBeacons()
     this.guideGfx = this.add.graphics()
     this.guideGfx.setDepth(9500)
     this.markers = (this.registry.get("markers") as Record<string, MarkerState> | undefined) ?? {}
     this.guideTarget = (this.registry.get("guide") as string | null | undefined) ?? null
     this.applyMarkers()
+    // cuartos y regresos al patio: la llegada se ve tras el fundido (el primer patio la repite al abrirse el portón)
+    this.arrive()
 
     if (this.mapDebug) {
       this.debugGfx = this.add.graphics()
@@ -160,7 +170,67 @@ export abstract class WorldScene extends Phaser.Scene implements GameCommands {
     this.scale.on(Phaser.Scale.Events.RESIZE, this.onResize, this)
   }
 
+  /** llegada: el visitante "aterriza" con un pop y la cámara asienta desde un poco más lejos */
+  arrive() {
+    if (this.reducedMotion) return
+    // create() y el portón pueden pedirla casi juntas: una sola llegada por segundo
+    if (this.time.now - this.lastArrive < 1000) return
+    this.lastArrive = this.time.now
+    const cam = this.cameras.main
+    const rest = this.restZoom()
+    cam.setZoom(rest * 0.86)
+    cam.zoomTo(rest, 900, "Sine.easeOut", true)
+    this.player.setScale(PLAYER_SCALE * 0.5)
+    this.tweens.add({ targets: this.player, scaleX: PLAYER_SCALE, scaleY: PLAYER_SCALE, duration: 460, delay: 180, ease: "Back.easeOut" })
+    this.time.delayedCall(220, () => this.ringPulse(this.px, this.py - 6, 24, 0xf4efe4, 520))
+  }
+
+  // ---- efectos ----------------------------------------------------------------
+  private setupFx() {
+    const cfg = {
+      speed: { min: 60, max: 190 },
+      angle: { min: 0, max: 360 },
+      gravityY: 220,
+      lifespan: { min: 450, max: 900 },
+      scale: { start: 1.6, end: 0 },
+      alpha: { start: 1, end: 0.2 },
+      emitting: false,
+    }
+    this.sparks = this.add.particles(0, 0, "spark-paper", cfg)
+    this.sparks.setDepth(7000)
+    this.sparksOchre = this.add.particles(0, 0, "spark-ochre", cfg)
+    this.sparksOchre.setDepth(7000)
+  }
+
+  /** ráfaga de chispas en un punto del mundo */
+  protected burst(x: number, y: number, count = 18, ochre = false) {
+    if (this.reducedMotion) return
+    ;(ochre ? this.sparksOchre : this.sparks).explode(count, x, y)
+    this.logFx(`burst:${Math.round(x)},${Math.round(y)}`)
+  }
+
+  private logFx(entry: string) {
+    this.fxLog.push(entry)
+    if (this.fxLog.length > 40) this.fxLog.shift()
+  }
+
+  /** anillo que se expande y se desvanece (instalar, completar, entrar) */
+  protected ringPulse(x: number, y: number, radius = 40, color = 0xe08a3c, duration = 700) {
+    if (this.reducedMotion) return
+    const g = this.add.graphics()
+    g.lineStyle(4, color, 0.9)
+    g.strokeCircle(0, 0, radius)
+    g.setPosition(x, y).setDepth(6500).setScale(0.3)
+    this.tweens.add({ targets: g, scaleX: 1.6, scaleY: 1.6, alpha: 0, duration, ease: "Cubic.easeOut", onComplete: () => g.destroy() })
+    this.logFx(`ring:${Math.round(x)},${Math.round(y)}`)
+  }
+
+  protected get reducedMotion(): boolean {
+    return typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  }
+
   private onResize() {
+    this.resizes++
     this.applyZoom()
   }
 
@@ -172,8 +242,15 @@ export abstract class WorldScene extends Phaser.Scene implements GameCommands {
     // el viewport nunca debe ser mayor que los límites (sin vacío fuera del predio)
     z = Math.max(z, w / this.bounds.width, h / this.bounds.height)
     this.baseZoom = z
-    cam.setZoom(this.focused ? z * FOCUS_ZOOM_MULT : z)
+    // si hay un zoom animado en curso, se le cambia el destino; si no, se aplica directo
+    if (cam.zoomEffect.isRunning) cam.zoomEffect.destination = this.restZoom()
+    else cam.setZoom(this.restZoom())
     cam.setDeadzone((w * DEADZONE_W) / z, (h * DEADZONE_H) / z)
+  }
+
+  /** zoom "en reposo": el base, o un poco más cerca si hay algo enfocado */
+  protected restZoom() {
+    return this.focused ? this.baseZoom * FOCUS_ZOOM_MULT : this.baseZoom
   }
 
   // ---- input --------------------------------------------------------------
@@ -529,9 +606,25 @@ export abstract class WorldScene extends Phaser.Scene implements GameCommands {
 
   // ---- comandos (React → mundo) --------------------------------------------
   setMarkers(states: Record<string, MarkerState>) {
+    const previous = this.markers
     this.markers = states
     this.registry.set("markers", states)
     this.applyMarkers()
+    if (Object.keys(previous).length === 0) return
+    // algo se acaba de completar: la baliza salta y suelta chispas (con un panel abierto, al cerrarlo)
+    Object.entries(states).forEach(([id, st]) => {
+      if (st !== "done" || previous[id] === "done" || !this.beacons.has(id)) return
+      if (this.paused) this.pendingPops.push(id)
+      else this.popBeacon(id)
+    })
+  }
+
+  private popBeacon(id: string) {
+    const b = this.beacons.get(id)
+    if (!b) return
+    if (!this.reducedMotion) this.tweens.add({ targets: b, scaleX: b.scaleX * 1.7, scaleY: b.scaleY * 1.7, duration: 180, yoyo: true, ease: "Quad.easeOut" })
+    this.burst(b.x, b.y, 16)
+    this.ringPulse(b.x, b.y, 22, 0x3f9c96, 600)
   }
 
   setGuide(targetId: string | null) {
@@ -552,9 +645,14 @@ export abstract class WorldScene extends Phaser.Scene implements GameCommands {
     this.joystick.end()
     this.emitJoystick()
     gameEvents.emit("action", { target: null })
+    const door = this.current
     this.current = null
-    this.cameras.main.fadeOut(220, 24, 21, 17)
-    this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
+    const cam = this.cameras.main
+    // cruzar la puerta: la cámara se acerca mientras funde
+    cam.zoomTo(cam.zoom * 1.18, 240, "Sine.easeIn", true)
+    if (door) this.ringPulse(door.x, door.y, 30, 0xf4efe4, 420)
+    cam.fadeOut(220, 24, 21, 17)
+    cam.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
       this.scene.start(key, data)
     })
   }
@@ -585,6 +683,10 @@ export abstract class WorldScene extends Phaser.Scene implements GameCommands {
 
   setPaused(paused: boolean) {
     this.paused = paused
+    if (!paused && this.pendingPops.length > 0) {
+      const ids = this.pendingPops.splice(0)
+      this.time.delayedCall(160, () => ids.forEach((id) => this.popBeacon(id)))
+    }
     if (paused) {
       this.joystick.end()
       this.emitJoystick()
@@ -629,6 +731,9 @@ export abstract class WorldScene extends Phaser.Scene implements GameCommands {
       guide: this.guideTarget,
       beacons: [...this.beacons.entries()].map(([id, b]) => ({ id, texture: b.texture.key, scale: b.scaleX })),
       guideVisible: this.guideGfx ? this.guideGfx.commandBuffer.length > 0 : false,
+      fx: this.fxLog.slice(-20),
+      clock: { now: Math.round(this.time.now), paused: this.time.paused },
+      resizes: this.resizes,
     }
   }
 

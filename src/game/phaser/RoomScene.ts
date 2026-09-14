@@ -7,7 +7,7 @@ import { ROOMS, type RoomDef } from "../../data/rooms"
 import { getSpace } from "../../data/spaces"
 import type { Interactable } from "../bridge"
 import type { Circle, Rect, Vec } from "../map/tiled"
-import { ROOM_MARGIN, ROOM_ZOOM_MULT } from "./config"
+import { ROOM_MARGIN, ROOM_ZOOM_MULT, FOCUS_ZOOM_MULT } from "./config"
 import { WorldScene, type WorldBuild } from "./WorldScene"
 
 const TEXT_STYLE: Phaser.Types.GameObjects.Text.TextStyle = {
@@ -75,7 +75,17 @@ export class RoomScene extends WorldScene {
     return { geo, interactables, spawn: d.spawn, facing: d.spawnFacing, bounds, zoomMult: ROOM_ZOOM_MULT }
   }
 
+  /** textos que deben caber en el ancho visible: en vertical, los cuartos chicos fuerzan un zoom alto */
+  private fitTexts: Phaser.GameObjects.Text[] = []
+
+  protected applyZoom() {
+    super.applyZoom()
+    const maxW = (this.scale.width / (this.baseZoom * FOCUS_ZOOM_MULT)) * 0.88
+    this.fitTexts.forEach((t) => t.setScale(Math.min(1, maxW / Math.max(t.width, 1))))
+  }
+
   private render() {
+    this.fitTexts = []
     const d = this.def
     const f = FLOORS[d.style]
     const space = getSpace(d.spaceId)
@@ -105,6 +115,7 @@ export class RoomScene extends WorldScene {
 
     const title = this.add.text(d.width / 2, d.wall + 20, d.name, { ...TEXT_STYLE, fontSize: "16px", color: "#f4efe4", letterSpacing: 4 })
     title.setOrigin(0.5).setDepth(-9).setResolution(2)
+    this.fitTexts.push(title)
     const exitLabel = this.add.text(d.exit.x, d.height - d.wall - 30, "SALIR ↓", { ...TEXT_STYLE, fontSize: "11px", color: "#181411", letterSpacing: 2 })
     exitLabel.setOrigin(0.5).setAlpha(0.7).setDepth(-9).setResolution(2)
 
@@ -113,10 +124,15 @@ export class RoomScene extends WorldScene {
       const from = space.plans && space.plans.length ? Math.min(...space.plans.map((p) => p.monthlyMxn)) : null
       const reserved = space.status === "reserved"
       const price = reserved ? "LISTA DE ESPERA · PREGUNTA POR WHATSAPP" : from ? `DESDE $${from.toLocaleString("es-MX")} MXN / MES` : "RENTA A COTIZAR"
-      const t1 = this.add.text(d.sign.x, d.sign.y - 34, `${reserved ? "RESERVADO" : "ESPACIO DISPONIBLE"} · ${space.areaM2} M²`, { ...TEXT_STYLE, fontSize: "15px", letterSpacing: 2 })
-      t1.setOrigin(0.5).setAlpha(0.75).setDepth(-9).setResolution(2)
+      const t1 = this.add.text(d.sign.x, d.sign.y - 34, `${reserved ? "RESERVADO" : "ESPACIO DISPONIBLE"} · ${space.areaM2} M²`, { ...TEXT_STYLE, fontSize: "15px", letterSpacing: 2, color: reserved ? "#f4efe4" : "#181411" })
+      t1.setOrigin(0.5).setAlpha(reserved ? 1 : 0.75).setDepth(-9).setResolution(2)
+      if (reserved) {
+        t1.setPadding(10, 4, 10, 4).setBackgroundColor("#b8663d")
+        if (!this.reducedMotion) this.tweens.add({ targets: t1, alpha: { from: 1, to: 0.5 }, duration: 900, yoyo: true, repeat: -1, ease: "Sine.easeInOut" })
+      }
       const t2 = this.add.text(d.sign.x, d.sign.y - 10, price, { ...TEXT_STYLE, fontSize: "13px", letterSpacing: 1 })
       t2.setOrigin(0.5).setAlpha(0.65).setDepth(-9).setResolution(2)
+      this.fitTexts.push(t1, t2)
       const ring = this.add.graphics()
       ring.lineStyle(2, 0x181411, 0.25)
       ring.strokeCircle(d.sign.x, d.sign.y, 46)
