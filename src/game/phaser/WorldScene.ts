@@ -554,7 +554,7 @@ export abstract class WorldScene extends Phaser.Scene implements GameCommands {
     this.beacons.clear()
     this.interactables.forEach((it) => {
       const y = it.y - this.beaconLift(it)
-      const img = this.add.image(it.x, y, "beacon-todo").setScale(1.5).setDepth(6000).setAlpha(0.8)
+      const img = this.add.image(it.x, y, "beacon-todo").setScale(1.3).setDepth(6000).setAlpha(0.8)
       this.tweens.add({ targets: img, y: y - 5, duration: 1100 + Math.random() * 300, yoyo: true, repeat: -1, ease: "Sine.easeInOut" })
       this.beacons.set(it.id, img)
     })
@@ -565,7 +565,8 @@ export abstract class WorldScene extends Phaser.Scene implements GameCommands {
       const state = this.markers[id] ?? "todo"
       const near = this.current?.id === id
       img.setTexture(state === "done" ? "beacon-done" : state === "target" ? "beacon-target" : "beacon-todo")
-      img.setScale(near ? 1.9 : state === "target" ? 1.7 : 1.5)
+      // un poco más discretas: no deben robarle protagonismo al patio
+      img.setScale(near ? 1.6 : state === "target" ? 1.45 : 1.3)
       img.setAlpha(near ? 1 : state === "done" ? 0.85 : state === "target" ? 1 : 0.75)
     })
   }

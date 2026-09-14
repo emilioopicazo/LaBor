@@ -258,6 +258,13 @@ export class OverworldScene extends WorldScene {
     const space = getSpace(b.spaceId)
     const cx = b.bounds.x + b.bounds.width / 2
     const cy = b.bounds.y + b.bounds.height / 2
+    if (!space) {
+      // bloque sin ficha (franja sur): aviso "PRÓXIMAMENTE", discreto y con respiración lenta
+      const soon = this.add.text(cx, cy, b.label, { ...TEXT_STYLE, fontSize: "13px", color: "#f4efe4", letterSpacing: 3, backgroundColor: "#2a2620" })
+      soon.setOrigin(0.5).setPadding(12, 6, 12, 6).setAlpha(0.95).setDepth(-3).setResolution(2)
+      if (!this.reducedMotion) this.tweens.add({ targets: soon, alpha: { from: 0.95, to: 0.55 }, duration: 2400, yoyo: true, repeat: -1, ease: "Sine.easeInOut" })
+      return
+    }
     const size = b.bounds.width < 300 ? 15 : 19
     const commercial = space?.type === "available"
     const name = this.add.text(cx, cy - (commercial ? 8 : 0), b.label, { ...TEXT_STYLE, fontSize: `${size}px`, color: style.text, letterSpacing: 2, align: "center" })

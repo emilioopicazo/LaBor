@@ -239,7 +239,7 @@
             {
               "name": "label",
               "type": "string",
-              "value": ""
+              "value": "PRÓXIMAMENTE"
             },
             {
               "name": "enterable",

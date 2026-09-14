@@ -182,6 +182,11 @@ Todo lo que pasa en el mundo se ve (y respeta `prefers-reduced-motion`):
 - **LA HORA completa**: tres anillos escalonados, chispas desde la punta de la
   aguja, acercamiento de cámara 2 s y regreso; el título de la recompensa se
   sella; empieza la música.
+- **PRÓXIMAMENTE**: la franja sur (bloque junto a MANNNO, no se entra) lleva un
+  letrero discreto con respiración lenta; el texto viene del mapa
+  (`franja-sur.label`, generador `scripts/build-overworld-map.mjs`).
+- **Balizas** (diamantes sobre puertas, estaciones y pedestal): escala
+  1.3 · objetivo 1.45 · cerca 1.6, para que no roben protagonismo.
 - **RESERVADO (FOMO)**: sello óxido con entrada tipo estampa y pulso continuo en
   la ficha, más la línea "QUEDAN N PABELLONES DE 4 · M YA RESERVADOS"; en el
   techo del patio y en el letrero del cuarto el texto va sobre fondo óxido con

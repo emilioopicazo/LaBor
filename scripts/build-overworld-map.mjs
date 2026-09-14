@@ -38,7 +38,7 @@ const BUILDINGS = {
   mannno: { name: "MANNNO", poly: [[0, 17.6], [5.65, 17.6], [5.65, 29.8], [0, 29.8]] },
   // Tramo sur de la franja (12.31 m): construido en el boceto del
   // plano maestro, sin uso confirmado. Bloquea, no se entra.
-  "franja-sur": { name: "", poly: [[0, 29.8], [5.5, 29.8], [5.5, 42.09], [0.32, 42.09]], enterable: false },
+  "franja-sur": { name: "PRÓXIMAMENTE", poly: [[0, 29.8], [5.5, 29.8], [5.5, 42.09], [0.32, 42.09]], enterable: false },
   "pabellon-04": { name: "PABELLÓN 04", rect: [5.5, 4.65, 11.55, 11.65] },
   contraste: { name: "CONTRASTE", rect: [11.55, 4.65, 17.6, 11.65] },
   "pabellon-01": { name: "PABELLÓN 01", rect: [22.9, 4.65, 34.9, 11.46] },
