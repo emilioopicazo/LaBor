@@ -259,10 +259,12 @@ export class OverworldScene extends WorldScene {
     const cx = b.bounds.x + b.bounds.width / 2
     const cy = b.bounds.y + b.bounds.height / 2
     const size = b.bounds.width < 300 ? 15 : 19
-    const name = this.add.text(cx, cy - (space?.status === "available" ? 8 : 0), b.label, { ...TEXT_STYLE, fontSize: `${size}px`, color: style.text, letterSpacing: 2, align: "center" })
+    const commercial = space?.type === "available"
+    const name = this.add.text(cx, cy - (commercial ? 8 : 0), b.label, { ...TEXT_STYLE, fontSize: `${size}px`, color: style.text, letterSpacing: 2, align: "center" })
     name.setOrigin(0.5).setDepth(-3).setResolution(2)
-    if (space?.status === "available") {
-      const meta = this.add.text(cx, cy + 14, `DISPONIBLE · ${space.areaM2} M²`, { ...TEXT_STYLE, fontSize: "11px", color: "#5b554a", letterSpacing: 1 })
+    if (space && commercial) {
+      const reserved = space.status === "reserved"
+      const meta = this.add.text(cx, cy + 14, `${reserved ? "RESERVADO" : "DISPONIBLE"} · ${space.areaM2} M²`, { ...TEXT_STYLE, fontSize: "11px", color: reserved ? "#8a5a2b" : "#5b554a", letterSpacing: 1 })
       meta.setOrigin(0.5).setDepth(-3).setResolution(2)
     }
   }

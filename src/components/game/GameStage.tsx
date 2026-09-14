@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { isCoarsePointer } from "../../config/world"
 import { DEFAULT_AVATAR } from "../../data/avatars"
+import { eventShortLabel, nextEvent } from "../../data/events"
 import { getSpace } from "../../data/spaces"
 import { gameCommands, gameEvents, type Interactable } from "../../game/bridge"
-import { mission, missionView, useMissionRun } from "../../game/mission"
+import { mission, missionView, toast, useMissionRun } from "../../game/mission"
 import { useProfile } from "../../game/profile"
 import { AvatarSelector } from "../experience/AvatarSelector"
 import { FastMenu } from "../experience/FastMenu"
@@ -134,6 +135,15 @@ export function GameStage({ active }: GameStageProps) {
   useEffect(() => {
     gameCommands.setPaused(paused)
   }, [paused])
+
+  // próximo evento: un aviso breve al entrar al patio (una vez por sesión)
+  const eventToasted = useRef(false)
+  useEffect(() => {
+    if (!active || !ready || eventToasted.current) return
+    eventToasted.current = true
+    const ev = nextEvent()
+    if (ev) window.setTimeout(() => toast(`${ev.kind} ${ev.name} · ${eventShortLabel(ev)} · MENÚ → EVENTOS`, "quest"), 2500)
+  }, [active, ready])
 
   useEffect(() => {
     gameCommands.setWorldFlags(run?.temporaryWorldFlags ?? [])

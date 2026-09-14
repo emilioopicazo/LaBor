@@ -10,7 +10,11 @@ al sureste, fondo transparente, nombres de `docs/LABOR_ART_DIRECTION_ASSETS.md`.
 - [x] Geometría real desde el PDF TRAMA (48 px/m), editable en Tiled.
 - [x] MANNNO (no MANNINO) en código, mapa y UI.
 - [x] Contacto real: WhatsApp +52 55 3037 4167 · labortulum@gmail.com.
-- [x] Renta visible: pabellones chicos $10,000, grandes $15,000 MXN/mes; naves a cotizar; CTA ENVIAR PROPUESTA.
+- [x] Planes de renta por contrato (chicos $8,000/1 año · $10,000/6 meses; grandes
+      $12,000/1 año · $15,000/6 meses; naves a cotizar), leyenda de confirmación por
+      WhatsApp o correo, P01 y P03 reservados (recorribles, lista de espera).
+- [x] CTAs de conversión: plan + uso por botones → WhatsApp prellenado; visita; correo.
+- [x] Evento PATIO (bazar, dom 20 sep, 5–11 pm) en menú, tablero, tótem, recompensa y aviso.
 - [x] Cinco avatares (placeholder) con selector.
 - [x] Tres minijuegos reales en lugar de "mantener presionado".
 
@@ -63,6 +67,9 @@ al sureste, fondo transparente, nombres de `docs/LABOR_ART_DIRECTION_ASSETS.md`.
 - [ ] Room tone del patio + efectos (martillo, sierra, metal, pasos, fichas).
 
 ## Decisiones pendientes (no inventar geometría)
+- [ ] Precios: se interpretaron como renta MENSUAL según duración del contrato
+      (1 año = $8,000/mes chicos, $12,000/mes grandes). Si son totales por periodo, cambiar `planLabel` en `src/data/leads.ts`.
+- [ ] Eventos: al pasar el bazar PATIO, agregar el siguiente en `src/data/events.ts` (si no hay, el tablero ofrece proponer uno).
 - [ ] Uso real de la franja sur de la franja oeste (12.31 m, hoy bloqueada sin nombre).
 - [ ] Acceso por Cobá: el plano solo abre el INGRESO en Calle 12 Sur. Si hay
       acceso peatonal por Cobá, agregar `opening` + `spawn` en el TMJ (1 min).

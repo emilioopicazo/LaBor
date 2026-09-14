@@ -8,7 +8,14 @@
 // ============================================================
 
 export type SpaceType = "resident" | "available" | "event" | "navigation" | "installation"
-export type SpaceStatus = "active" | "coming-soon" | "available"
+export type SpaceStatus = "active" | "coming-soon" | "available" | "reserved"
+
+/** plan de renta: renta mensual según la duración del contrato */
+export interface RentPlan {
+  id: "6m" | "12m"
+  label: "6 MESES" | "1 AÑO"
+  monthlyMxn: number
+}
 
 export interface SpaceCta {
   label: string
@@ -33,8 +40,10 @@ export interface WorkshopSpace {
   type: SpaceType
   status: SpaceStatus
   areaM2?: number
-  /** renta mensual (MXN); sin valor = a cotizar */
-  rentMxn?: number
+  /** planes de renta (vacío = a cotizar) */
+  plans?: RentPlan[]
+  /** qué incluye / datos duros del espacio */
+  includes?: string[]
   /** acción principal del overlay */
   cta?: SpaceCta
   /** acción secundaria del overlay */
@@ -59,32 +68,49 @@ export function mailLink(subject: string, body = ""): string {
   return `mailto:${CONTACT.email}?subject=${encodeURIComponent(subject)}${body ? `&body=${encodeURIComponent(body)}` : ""}`
 }
 
-/** CTA de propuesta para un espacio disponible (WhatsApp, mensaje prellenado) */
-export function proposalCta(space: Pick<WorkshopSpace, "name" | "areaM2">): SpaceCta {
-  const msg = `Hola La Bor, me interesa ${space.name} (${space.areaM2} m²). Mi propuesta: uso: ___, plazo: ___, fecha de entrada: ___.`
-  return { label: "ENVIAR PROPUESTA", href: whatsappLink(msg) }
-}
+// Planes (renta mensual según duración del contrato). Pabellones chicos
+// (03, 04): $8,000 a 1 año · $10,000 a 6 meses. Grandes (01, 02):
+// $12,000 a 1 año · $15,000 a 6 meses. Naves: a cotizar.
+export const PLANS_CHICO: RentPlan[] = [
+  { id: "12m", label: "1 AÑO", monthlyMxn: 8000 },
+  { id: "6m", label: "6 MESES", monthlyMxn: 10000 },
+]
+export const PLANS_GRANDE: RentPlan[] = [
+  { id: "12m", label: "1 AÑO", monthlyMxn: 12000 },
+  { id: "6m", label: "6 MESES", monthlyMxn: 15000 },
+]
 
-const PROPOSAL_HINT = "Cuéntanos qué harías ahí, por cuánto tiempo y desde cuándo. Las mejores propuestas se quedan con el espacio."
+const SHARED = "Patio compartido con VETA, MANNNO y CONTRASTE, y programa de eventos en el patio."
 
-function available(id: string, name: string, number: string, areaM2: number, rentMxn: number | undefined, details: string[] = []): WorkshopSpace {
-  const space: WorkshopSpace = {
+function available(
+  id: string,
+  name: string,
+  number: string,
+  areaM2: number,
+  plans: RentPlan[],
+  status: "available" | "reserved",
+  details: string[] = [],
+  includes: string[] = [],
+): WorkshopSpace {
+  return {
     id,
     name,
     shortName: name,
     number,
     type: "available",
-    status: "available",
+    status,
     areaM2,
-    rentMxn,
-    description: rentMxn
-      ? `Renta mensual: $${rentMxn.toLocaleString("es-MX")} MXN. ${PROPOSAL_HINT}`
-      : `Renta a cotizar según uso y plazo. ${PROPOSAL_HINT}`,
+    plans,
     details,
+    includes: [...includes, SHARED],
+    description:
+      status === "reserved"
+        ? "Este espacio ya está apartado. Si se libera, avisamos primero a la lista de espera y te enseñamos otros parecidos."
+        : plans.length
+          ? "Elige el plan que te acomode y escríbenos: te respondemos por WhatsApp con disponibilidad y fecha de entrada."
+          : "Las naves se cotizan según uso y plazo. Escríbenos y te mandamos propuesta.",
     cta: { label: "RECORRER EL ESPACIO", enterSceneId: `${id}-room` },
   }
-  space.cta2 = proposalCta(space)
-  return space
 }
 
 export const SPACES: WorkshopSpace[] = [
@@ -126,15 +152,14 @@ export const SPACES: WorkshopSpace[] = [
   },
 
   // ---- ESPACIOS DISPONIBLES --------------------------------
-  // Pabellones chicos: $10,000 MXN / mes · grandes: $15,000 MXN / mes.
-  // Naves: a cotizar. Sin "negociable": se piden propuestas.
-  available("pabellon-04", "PABELLÓN 04", "P04", 42, 10000, ["Planta libre — 6.05 × 6.85 m", "Junto a CONTRASTE, frente al patio"]),
-  available("pabellon-01", "PABELLÓN 01", "P01", 80, 15000, ["Interior — 45.6 m²", "Terraza exterior — 33.3 m²"]),
-  available("pabellon-02", "PABELLÓN 02", "P02", 80, 15000, ["Interior — 45.7 m²", "Terraza exterior — 33.3 m²"]),
-  available("pabellon-03", "PABELLÓN 03", "P03", 46, 10000, ["Planta libre — 6.85 × 6.67 m", "Junto al ingreso por Calle 12 Sur"]),
-  available("nave-03", "NAVE 03", "N03", 95, undefined, ["Nave — 7.85 × 12.06 m", "Frente al patio, acceso desde Calle Cobá"]),
-  available("nave-02", "NAVE 02", "N02", 117, undefined, ["Nave — 9.70 × 12.06 m", "Frente al patio"]),
-  available("nave-01", "NAVE 01", "N01", 117, undefined, ["Nave — 9.70 × 12.06 m", "Esquina Calle Cobá / Calle 12 Sur"]),
+  // Estado: 01 y 03 reservados (se pueden recorrer); 02, 04 y naves disponibles.
+  available("pabellon-04", "PABELLÓN 04", "P04", 42, PLANS_CHICO, "available", ["Planta libre — 6.05 × 6.85 m", "Junto a CONTRASTE, frente al patio"]),
+  available("pabellon-01", "PABELLÓN 01", "P01", 80, PLANS_GRANDE, "reserved", ["Interior — 45.6 m²", "Terraza exterior — 33.3 m²"]),
+  available("pabellon-02", "PABELLÓN 02", "P02", 80, PLANS_GRANDE, "available", ["Interior — 45.7 m²", "Terraza exterior — 33.3 m²"]),
+  available("pabellon-03", "PABELLÓN 03", "P03", 46, PLANS_CHICO, "reserved", ["Planta libre — 6.85 × 6.67 m", "Junto al ingreso por Calle 12 Sur"]),
+  available("nave-03", "NAVE 03", "N03", 95, [], "available", ["Nave — 7.85 × 12.06 m", "Frente al patio, acceso desde Calle Cobá"]),
+  available("nave-02", "NAVE 02", "N02", 117, [], "available", ["Nave — 9.70 × 12.06 m", "Frente al patio"]),
+  available("nave-01", "NAVE 01", "N01", 117, [], "available", ["Nave — 9.70 × 12.06 m", "Esquina Calle Cobá / Calle 12 Sur"]),
 
   // ---- PATIO / PROGRAMA ------------------------------------
   {
@@ -150,33 +175,28 @@ export const SPACES: WorkshopSpace[] = [
     name: "EVENTOS",
     shortName: "EVENTOS",
     subtitle: "Programa del patio",
-    description: "El patio se abre a bazares, exhibiciones, activaciones y encuentros. ¿Tienes un evento? Propónlo.",
-    details: ["Bazares", "Exhibiciones", "Activaciones", "Encuentros"],
+    description: "El patio se abre a bazares, exhibiciones, activaciones y encuentros.",
     type: "event",
     status: "active",
-    cta: { label: "PROPONER UN EVENTO", href: whatsappLink("Hola La Bor, quiero proponer un evento en el patio: ___ (fecha: ___).") },
-    cta2: { label: "VER AGENDA", targetSpaceId: "agenda" },
   },
   {
     id: "info-totem",
     name: "CONTACTO",
     shortName: "INFORMACIÓN",
     subtitle: "La Bor — Talleres",
-    description: `${CONTACT.address}. Espacios disponibles desde $10,000 MXN al mes; naves a cotizar. Escríbenos para visitar.`,
+    description: `${CONTACT.address}. Pabellones desde $8,000 MXN al mes; naves a cotizar. Escríbenos y te respondemos por WhatsApp.`,
     details: [`WhatsApp — ${CONTACT.phoneDisplay}`, `Email — ${CONTACT.email}`],
     type: "navigation",
     status: "active",
-    cta: { label: "WHATSAPP", href: whatsappLink("Hola La Bor, quiero información sobre los espacios disponibles.") },
-    cta2: { label: "EMAIL", href: mailLink("Información La Bor — espacios disponibles") },
   },
   {
     id: "agenda",
     name: "AGENDA",
     shortName: "AGENDA",
     subtitle: "Calendario de talleres y eventos",
-    description: "Cursos, experiencias y eventos impartidos por los talleres residentes. Escríbenos para enterarte de las próximas fechas.",
+    description: "Cursos, experiencias y eventos de los talleres residentes. Escríbenos y te avisamos de las próximas fechas.",
     type: "navigation",
-    status: "coming-soon",
+    status: "active",
     cta: { label: "AVÍSAME POR WHATSAPP", href: whatsappLink("Hola La Bor, quiero enterarme de los próximos talleres y eventos.") },
   },
 ]

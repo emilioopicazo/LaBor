@@ -110,8 +110,10 @@ export class RoomScene extends WorldScene {
 
     // letrero / ficha
     if (d.style === "empty" && space) {
-      const price = space.rentMxn ? `$${space.rentMxn.toLocaleString("es-MX")} MXN / MES` : "RENTA A COTIZAR"
-      const t1 = this.add.text(d.sign.x, d.sign.y - 34, `ESPACIO DISPONIBLE · ${space.areaM2} M²`, { ...TEXT_STYLE, fontSize: "15px", letterSpacing: 2 })
+      const from = space.plans && space.plans.length ? Math.min(...space.plans.map((p) => p.monthlyMxn)) : null
+      const reserved = space.status === "reserved"
+      const price = reserved ? "LISTA DE ESPERA · PREGUNTA POR WHATSAPP" : from ? `DESDE $${from.toLocaleString("es-MX")} MXN / MES` : "RENTA A COTIZAR"
+      const t1 = this.add.text(d.sign.x, d.sign.y - 34, `${reserved ? "RESERVADO" : "ESPACIO DISPONIBLE"} · ${space.areaM2} M²`, { ...TEXT_STYLE, fontSize: "15px", letterSpacing: 2 })
       t1.setOrigin(0.5).setAlpha(0.75).setDepth(-9).setResolution(2)
       const t2 = this.add.text(d.sign.x, d.sign.y - 10, price, { ...TEXT_STYLE, fontSize: "13px", letterSpacing: 1 })
       t2.setOrigin(0.5).setAlpha(0.65).setDepth(-9).setResolution(2)

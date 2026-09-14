@@ -1,4 +1,6 @@
 import { AVAILABLE, CONTACT, RESIDENTS, mailLink, whatsappLink } from "../../data/spaces"
+import { eventShortLabel, nextEvent } from "../../data/events"
+import { fromPrice, mxn } from "../../data/leads"
 import { PIEZA_CENTRAL } from "../../data/missions"
 import { UNLOCK_MISSION_ID } from "../../data/music"
 import { currentTrack, music, useMusic } from "../../game/audio"
@@ -28,6 +30,7 @@ export function FastMenu({ open, setOpen, onTravel, onDirect, onChangeAvatar }: 
   const prof = useProfile()
   // la pista se desbloquea al terminar LA PIEZA CENTRAL (queda en el perfil)
   const unlocked = (prof.completed[UNLOCK_MISSION_ID] ?? 0) > 0 || run?.completed === true
+  const ev = nextEvent()
 
   const Item = ({ id, label, meta, direct }: { id: string; label: string; meta?: string; direct?: boolean }) => (
     <li>
@@ -64,6 +67,22 @@ export function FastMenu({ open, setOpen, onTravel, onDirect, onChangeAvatar }: 
               </button>
             </header>
 
+            {ev && (
+              <>
+                <p className="menu__section">PRÓXIMO EN EL PATIO</p>
+                <ul className="menu__list">
+                  <li>
+                    <button type="button" className="menu__item menu__item--event" onClick={() => onDirect("eventos-board")}>
+                      <span>
+                        {ev.kind} · {ev.name}
+                      </span>
+                      <span className="menu__item-meta">{eventShortLabel(ev)} →</span>
+                    </button>
+                  </li>
+                </ul>
+              </>
+            )}
+
             <p className="menu__section">MISIÓN</p>
             <ul className="menu__list">
               <Item id="pieza-central" label={PIEZA_CENTRAL.title} meta={view ? (view.complete ? "COMPLETA" : view.progress) : "INICIAR"} direct />
@@ -78,9 +97,11 @@ export function FastMenu({ open, setOpen, onTravel, onDirect, onChangeAvatar }: 
 
             <p className="menu__section">ESPACIOS DISPONIBLES</p>
             <ul className="menu__list">
-              {AVAILABLE.map((s) => (
-                <Item key={s.id} id={s.id} label={s.name} meta={`${s.areaM2} M² · ${s.rentMxn ? `$${(s.rentMxn / 1000).toFixed(0)}K` : "COTIZAR"}`} />
-              ))}
+              {AVAILABLE.map((s) => {
+                const from = fromPrice(s)
+                const meta = s.status === "reserved" ? `${s.areaM2} M² · RESERVADO` : from ? `${s.areaM2} M² · DESDE ${mxn(from)}` : `${s.areaM2} M² · COTIZAR`
+                return <Item key={s.id} id={s.id} label={s.name} meta={meta} />
+              })}
             </ul>
 
             <p className="menu__section">PATIO</p>

@@ -2,8 +2,10 @@ import { useEffect, useRef, useState } from "react"
 import { ASSETS } from "../../data/assets"
 import { PIEZA_CENTRAL } from "../../data/missions"
 import { MINIGAMES } from "../../game/minigames/contract"
+import { eventDateLabel, nextEvent } from "../../data/events"
+import { rsvpLink, visitLink } from "../../data/leads"
 import { TRACKS } from "../../data/music"
-import { getSpace, whatsappLink } from "../../data/spaces"
+import { getSpace } from "../../data/spaces"
 import { mission, missionView, useMissionRun } from "../../game/mission"
 import { useProfile } from "../../game/profile"
 
@@ -38,6 +40,7 @@ export function MissionOverlay({ onClose, onGoTo }: MissionOverlayProps) {
 
   const timesDone = prof.completed[def.id] ?? 0
   const next = view?.targetSpaceId ? getSpace(view.targetSpaceId) : null
+  const ev = nextEvent()
 
   return (
     <div className="overlay" role="dialog" aria-modal="true" aria-label={def.title}>
@@ -142,14 +145,14 @@ export function MissionOverlay({ onClose, onGoTo }: MissionOverlayProps) {
             <p className="overlay__description">{def.reward.text}</p>
             <p className="overlay__kicker">SUENA · {TRACKS[0].title.toUpperCase()} · {TRACKS[0].artist.toUpperCase()}</p>
             <div className="overlay__cta-row">
-              <a
-                className="overlay__cta overlay__cta--primary"
-                href={whatsappLink("Hola La Bor, completé LA PIEZA CENTRAL en el recorrido digital y quiero agendar una visita a los talleres.")}
-                target="_blank"
-                rel="noreferrer"
-              >
+              <a className="overlay__cta overlay__cta--primary overlay__cta--wa" href={visitLink(null)} target="_blank" rel="noreferrer">
                 AGENDAR VISITA ↗
               </a>
+              {ev && (
+                <a className="overlay__cta overlay__cta--wa" href={rsvpLink(ev)} target="_blank" rel="noreferrer">
+                  VOY AL {ev.kind} {ev.name} · {eventDateLabel(ev).slice(0, 3)} {ev.date.slice(8)} ↗
+                </a>
+              )}
               <button type="button" className="overlay__cta" onClick={() => mission.restartMission()}>
                 JUGAR DE NUEVO
               </button>

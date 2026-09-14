@@ -278,6 +278,139 @@
   }
 }
 
+/* ---- conversión: planes, usos, CTAs, evento ------------------- */
+.lead {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 6px;
+}
+.lead__label {
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  color: var(--ochre);
+  margin-top: 6px;
+}
+.lead__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.lead__chip {
+  min-height: 44px;
+  padding: 8px 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--paper);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  cursor: pointer;
+  touch-action: manipulation;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+.lead__chip.is-selected {
+  border-color: var(--ochre);
+  background: rgba(201, 143, 66, 0.16);
+}
+.lead__chip:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+.lead__chip--plan {
+  flex: 1 1 140px;
+}
+.lead__chip-price {
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+}
+.lead__chip-meta {
+  font-size: 9.5px;
+  color: var(--muted);
+  letter-spacing: 0.16em;
+}
+.lead__chip.is-selected .lead__chip-meta {
+  color: var(--paper);
+}
+.lead__quote {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: var(--paper);
+}
+.lead__includes {
+  margin-top: 4px;
+}
+.lead__ctas .overlay__cta {
+  width: 100%;
+  justify-content: center;
+  text-align: center;
+}
+.overlay__cta--wa.overlay__cta--primary {
+  background: var(--ochre-2);
+  border-color: var(--ochre-2);
+  color: var(--ink);
+}
+.lead__legend {
+  font-size: 10.5px;
+  line-height: 1.5;
+  color: var(--muted-2);
+  letter-spacing: 0.04em;
+  margin-top: 4px;
+}
+.overlay__rent--reserved {
+  color: var(--rust);
+}
+.overlay__status--reserved {
+  border-color: var(--rust);
+  color: var(--rust);
+}
+.event {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 6px;
+  padding: 16px;
+  border: 1px solid var(--ochre);
+  background: rgba(201, 143, 66, 0.08);
+}
+.event__kicker {
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.24em;
+  color: var(--ochre);
+}
+.event__name {
+  font-size: clamp(30px, 9vw, 44px);
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  color: var(--paper);
+}
+.event__when {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: var(--paper);
+}
+.event__place {
+  font-size: 12px;
+  color: var(--body);
+}
+.menu__item--event span:first-child {
+  color: var(--ochre);
+}
+
 /* ---- overlays: extras ---------------------------------------- */
 /* la cabecera (con ×) se queda fija mientras el panel hace scroll (teléfono horizontal) */
 .overlay__header {

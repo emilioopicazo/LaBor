@@ -133,10 +133,22 @@ menú no toca la misión.
 ## Comercial
 
 Contacto real en `src/data/spaces.ts` (`CONTACT`): WhatsApp +52 55 3037 4167 y
-labortulum@gmail.com. Pabellones chicos $10,000 MXN / mes (P03, P04), grandes
-$15,000 (P01, P02), naves a cotizar. Cada ficha y cada cuarto vacío muestra la
-renta y el CTA **ENVIAR PROPUESTA** (WhatsApp prellenado); completar la misión
-ofrece **AGENDAR VISITA**.
+labortulum@gmail.com. Sin formularios: cada botón abre WhatsApp (o el correo) con
+el mensaje ya escrito según lo que el interesado eligió (`src/data/leads.ts`).
+
+- **Planes** (renta mensual según contrato, `PLANS_CHICO` / `PLANS_GRANDE`):
+  pabellones chicos (03, 04) $8,000 a 1 año · $10,000 a 6 meses; grandes (01, 02)
+  $12,000 a 1 año · $15,000 a 6 meses; naves a cotizar. Toda ficha con precio lleva
+  la leyenda `PRICE_LEGEND`: todo se confirma por WhatsApp o correo.
+- **Ficha de espacio**: chips de plan (6 MESES / 1 AÑO) y de uso (TALLER, ESTUDIO,
+  OFICINA…) → **ME INTERESA** (WhatsApp con espacio + plan + uso), **AGENDAR
+  VISITA**, **PEDIR INFO POR CORREO**, y **RECORRER EL ESPACIO**.
+- **Reservado** (`status: "reserved"`, hoy P01 y P03): se sigue recorriendo; la
+  ficha ofrece **AVISARME SI SE LIBERA** (lista de espera) y ver los disponibles.
+- **Eventos** (`src/data/events.ts`): el próximo evento aparece en el menú, en el
+  tablero de EVENTOS (VOY · PONER UN STAND · AGREGAR AL CALENDARIO), en el tótem
+  de información, en la recompensa de la misión y como aviso al entrar. Ahora:
+  bazar **PATIO**, domingo 20 de septiembre, 5 a 11 pm.
 
 ## Música de recompensa
 
