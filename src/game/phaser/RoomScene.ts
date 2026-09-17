@@ -175,7 +175,8 @@ export class RoomScene extends WorldScene {
     const row = facing === "up" ? 1 : facing === "down" ? 0 : 2
     const s = this.add.sprite(x, y, `avatar-${c.avatarId}`, row * 4).setOrigin(0.5, 1).setScale(PLAYER_SCALE).setDepth(y)
     s.setFlipX(facing === "left")
-    const tag = this.add.text(x, y - 92, `${c.name.toUpperCase()} · ${d.name.toUpperCase()}`, { ...TEXT_STYLE, fontSize: "10px", color: "#f4efe4", letterSpacing: 2, backgroundColor: "#181411" })
+    // solo el nombre: el taller ya se lee en el título del cuarto y así nunca se corta en pantalla
+    const tag = this.add.text(x, y - 92, c.name.toUpperCase(), { ...TEXT_STYLE, fontSize: "10px", color: "#f4efe4", letterSpacing: 2, backgroundColor: "#181411" })
     tag.setOrigin(0.5).setPadding(6, 3, 6, 3).setDepth(y + 200).setResolution(2)
     this.fitTexts.push(tag)
     if (this.reducedMotion) return
