@@ -194,8 +194,12 @@ su ficha (`PersonOverlay.tsx`) con **WhatsApp a su número con el mensaje ya
 escrito** ("Hola Pablo, … me interesa más información sobre el taller de
 carpintería VETA"), llamada directa y la ficha del espacio. Números: VETA
 Pablo +52 33 3350 7799 · MANNNO Azul +52 33 1266 3462 · CONTRASTE Emilio
-+52 55 3037 4167. Para agregar más interacciones con esa persona, el punto de
-entrada es `workshopInfoMessage()` en `src/data/leads.ts`.
++52 55 3037 4167. Instagram (VETA @vetatallermx, CONTRASTE @contraste_atelier; MANNNO no
+tiene) y la ficha propia de CONTRASTE en Google Maps viven en
+`contact.instagram` / `contact.maps` y salen en la ficha de la persona, en la
+ficha del taller, en `/acerca/` y en el JSON-LD (`sameAs`, `hasMap`). Para
+agregar más interacciones con esa persona, el punto de entrada es
+`workshopInfoMessage()` en `src/data/leads.ts`.
 
 ## Interfaz (guías de Apple / HIG)
 

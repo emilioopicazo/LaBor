@@ -37,6 +37,10 @@ export interface WorkshopContact {
   phoneWa: string
   /** avatar que la representa de pie dentro del taller */
   avatarId: string
+  /** perfil de Instagram del taller (sin parámetros de rastreo) */
+  instagram?: string
+  /** ficha propia del taller en Google Maps */
+  maps?: string
 }
 
 export interface WorkshopSpace {
@@ -156,6 +160,8 @@ export const SPACES: WorkshopSpace[] = [
       phoneDisplay: "+52 55 3037 4167",
       phoneWa: "525530374167",
       avatarId: "nomada-nocturno",
+      instagram: "https://www.instagram.com/contraste_atelier",
+      maps: "https://maps.app.goo.gl/iADtLSqQsbCzESX18",
     },
   },
   {
@@ -176,6 +182,7 @@ export const SPACES: WorkshopSpace[] = [
       phoneDisplay: "+52 33 3350 7799",
       phoneWa: "523333507799",
       avatarId: "playero",
+      instagram: "https://www.instagram.com/vetatallermx",
     },
   },
   {

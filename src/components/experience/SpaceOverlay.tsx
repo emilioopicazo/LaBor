@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 import { calendarUrl, eventDateLabel, eventTimeLabel, nextEvent } from "../../data/events"
-import { PRICE_LEGEND, USE_OPTIONS, eventProposalLink, fromPrice, infoLink, interestLink, interestMail, mapsLink, mxn, planLabel, rsvpLink, vendorLink, visitLink, waitlistLink, type UseOption } from "../../data/leads"
+import { PRICE_LEGEND, USE_OPTIONS, eventProposalLink, fromPrice, infoLink, instagramHandle, interestLink, interestMail, mapsLink, mxn, planLabel, rsvpLink, vendorLink, visitLink, waitlistLink, workshopInfoLink, type UseOption } from "../../data/leads"
 import { AVAILABLE, CONTACT, mailLink, spaceKindLabel, type RentPlan, type SpaceCta, type WorkshopSpace } from "../../data/spaces"
 
 interface SpaceOverlayProps {
@@ -264,10 +264,13 @@ export function SpaceOverlay({ space, onClose, onNavigate, onEnterScene, current
         {space.id === "eventos-board" && <EventCard />}
         {space.id === "info-totem" && <InfoPanel />}
 
-        {(space.cta || space.cta2) && (
+        {(space.cta || space.cta2 || space.contact) && (
           <div className="overlay__cta-row">
             {space.cta && renderCta(space.cta, !commercial)}
+            {space.contact && workshopInfoLink(space) && <CtaLink href={workshopInfoLink(space)!} label={`WHATSAPP · ${space.contact.name.toUpperCase()}`} />}
+            {space.contact?.instagram && <CtaLink href={space.contact.instagram} label={`INSTAGRAM · ${instagramHandle(space.contact.instagram)}`} />}
             {space.cta2 && renderCta(space.cta2, false)}
+            {space.contact?.maps && <CtaLink href={space.contact.maps} label="VER EN GOOGLE MAPS" />}
           </div>
         )}
       </article>

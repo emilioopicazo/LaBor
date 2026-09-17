@@ -95,3 +95,9 @@ export function callLink(phoneWa: string): string {
 export function mapsLink(): string {
   return CONTACT.maps
 }
+
+/** "@contraste_atelier" a partir de la URL del perfil */
+export function instagramHandle(url: string): string {
+  const m = url.match(/instagram\.com\/([^/?#]+)/)
+  return m ? `@${m[1]}` : "INSTAGRAM"
+}

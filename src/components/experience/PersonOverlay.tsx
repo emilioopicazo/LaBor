@@ -1,5 +1,5 @@
 import { AVATARS } from "../../data/avatars"
-import { callLink, workshopInfoLink, workshopInfoMessage } from "../../data/leads"
+import { callLink, instagramHandle, workshopInfoLink, workshopInfoMessage } from "../../data/leads"
 import type { WorkshopSpace } from "../../data/spaces"
 import { AvatarSprite } from "./AvatarSprite"
 
@@ -55,9 +55,19 @@ export function PersonOverlay({ space, onClose, onViewSpace }: PersonOverlayProp
               ESCRIBIR A {c.name.toUpperCase()} POR WHATSAPP
             </a>
           )}
+          {c.instagram && (
+            <a className="overlay__cta" href={c.instagram} target="_blank" rel="noreferrer">
+              INSTAGRAM · {instagramHandle(c.instagram)}
+            </a>
+          )}
           <a className="overlay__cta" href={callLink(c.phoneWa)}>
             LLAMAR · {c.phoneDisplay}
           </a>
+          {c.maps && (
+            <a className="overlay__cta overlay__cta--plain" href={c.maps} target="_blank" rel="noreferrer">
+              {short} EN GOOGLE MAPS
+            </a>
+          )}
           <button type="button" className="overlay__cta overlay__cta--plain" onClick={() => onViewSpace(space.id)}>
             VER FICHA DE {short}
           </button>
