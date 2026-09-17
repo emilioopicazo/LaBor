@@ -29,3 +29,9 @@
 - **`→ PIEZA` instala sola al llegar** (`arrived` → `triggerAction`): una prueba
   no debe contar toques de INSTALAR; hay que leer `installed.length` y no tocar
   "VER" después de completar, porque abre el overlay y pausa la escena.
+- **El servidor `vite preview` no sobrevive entre días de sesión**: antes de
+  correr pruebas, comprobar `curl -s -o /dev/null -w "%{http_code}" :4173` y
+  relanzarlo con `nohup` si no responde (la primera prueba del día falló con
+  `ERR_CONNECTION_REFUSED`).
+- **Capturas de overlays**: esperar ≥ 500 ms tras abrirlos; si no, salen a
+  media animación de entrada (opacidad parcial) y parecen translúcidos sin serlo.

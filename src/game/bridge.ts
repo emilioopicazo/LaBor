@@ -9,7 +9,7 @@
 export type InteractKind = "door" | "poi" | "station" | "exit" | "sign"
 
 /** estado visual de la baliza de un interactuable */
-export type MarkerState = "todo" | "done" | "target"
+export type MarkerState = "todo" | "done" | "target" | "notice"
 
 export interface Interactable {
   id: string

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { isCoarsePointer } from "../../config/world"
 import { DEFAULT_AVATAR } from "../../data/avatars"
 import { eventShortLabel, nextEvent } from "../../data/events"
+import { EventPopup } from "../experience/EventPopup"
 import { ROOMS } from "../../data/rooms"
 import { SPACES, getSpace } from "../../data/spaces"
 import { gameCommands, gameEvents, type Interactable, type MarkerState } from "../../game/bridge"
@@ -26,6 +27,7 @@ type Overlay =
   | { type: "mission" }
   | { type: "minigame"; minigameId: MinigameId; stationId: string }
   | { type: "avatar" }
+  | { type: "event" }
 
 interface GameStageProps {
   /** el mundo recibe input (intro y selector cerrados) */
@@ -50,6 +52,12 @@ export function GameStage({ active, opening = false }: GameStageProps) {
   const [sceneId, setSceneId] = useState("overworld")
   const [target, setTarget] = useState<Interactable | null>(null)
   const [overlay, setOverlay] = useState<Overlay | null>(null)
+  // el "!" del letrero de eventos se apaga cuando se abre el anuncio (una vez por visita)
+  const [noticeSeen, setNoticeSeen] = useState(false)
+  const openEvent = useCallback(() => {
+    setNoticeSeen(true)
+    setOverlay({ type: "event" })
+  }, [])
   const [menuOpen, setMenuOpen] = useState(false)
   const [hasMoved, setHasMoved] = useState(false)
   const pendingTravel = useRef<string | null>(null)
@@ -94,6 +102,10 @@ export function GameStage({ active, opening = false }: GameStageProps) {
           setOverlay({ type: "mission" })
           return
         }
+        if (t.id === "eventos-board") {
+          openEvent()
+          return
+        }
         setOverlay({ type: "space", id: t.id })
         return
       case "station":
@@ -107,7 +119,7 @@ export function GameStage({ active, opening = false }: GameStageProps) {
         if (t.spaceId) setOverlay({ type: "space", id: t.spaceId })
         return
     }
-  }, [])
+  }, [openEvent])
 
   useEffect(() => {
     const offs = [
@@ -170,6 +182,8 @@ export function GameStage({ active, opening = false }: GameStageProps) {
       if (view?.complete) states["pieza-central"] = "done"
       else if (!run || finalStep) states["pieza-central"] = "target"
       guide = !run ? "pieza-central" : view?.complete ? null : finalStep ? "pieza-central" : targetSpace ? `${targetSpace}-door` : null
+      // novedad en el letrero de eventos: "!" hasta que se abre el anuncio
+      if (nextEvent() && !noticeSeen) states["eventos-board"] = "notice"
     } else {
       const spaceId = sceneId.replace(/-room$/, "")
       const st = ROOMS[sceneId]?.stations[0]
@@ -181,7 +195,7 @@ export function GameStage({ active, opening = false }: GameStageProps) {
     }
     gameCommands.setMarkers(states)
     gameCommands.setGuide(guide)
-  }, [view, run, sceneId, prof.visited, ready])
+  }, [view, run, sceneId, prof.visited, ready, noticeSeen])
 
   // próximo evento: un aviso breve al entrar al patio (una vez por sesión)
   const eventToasted = useRef(false)
@@ -189,7 +203,7 @@ export function GameStage({ active, opening = false }: GameStageProps) {
     if (!active || !ready || eventToasted.current) return
     eventToasted.current = true
     const ev = nextEvent()
-    if (ev) window.setTimeout(() => toast(`${ev.kind} ${ev.name} · ${eventShortLabel(ev)} · MENÚ → EVENTOS`, "quest"), 2500)
+    if (ev) window.setTimeout(() => toast(`${ev.kind} ${ev.name} · ${eventShortLabel(ev)} · ¡MIRA EL LETRERO!`, "quest"), 2500)
   }, [active, ready])
 
   useEffect(() => {
@@ -231,8 +245,9 @@ export function GameStage({ active, opening = false }: GameStageProps) {
   const openDirect = useCallback((id: string) => {
     setMenuOpen(false)
     if (id === "pieza-central") setOverlay({ type: "mission" })
+    else if (id === "eventos-board") openEvent()
     else setOverlay({ type: "space", id })
-  }, [])
+  }, [openEvent])
 
   const closeOverlay = useCallback(() => setOverlay(null), [])
 
@@ -276,6 +291,8 @@ export function GameStage({ active, opening = false }: GameStageProps) {
       )}
 
       {overlay?.type === "mission" && <MissionOverlay onClose={closeOverlay} onGoTo={travelTo} />}
+
+      {overlay?.type === "event" && <EventPopup onClose={closeOverlay} />}
 
       {overlay?.type === "minigame" && (
         <MinigameHost minigameId={overlay.minigameId} onClose={closeOverlay} onExitRoom={() => { setOverlay(null); gameCommands.exitRoom() }} />

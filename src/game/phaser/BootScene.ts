@@ -67,6 +67,17 @@ export class BootScene extends Phaser.Scene {
     g.fillStyle(0xe08a3c, 1)
     g.fillRect(0, 0, 4, 4)
     g.generateTexture("spark-ochre", 4, 4)
+    // caja de madera (la gente que monta el bazar la carga y la apila)
+    g.clear()
+    g.fillStyle(0x6e4a28, 1)
+    g.fillRect(0, 0, 14, 11)
+    g.fillStyle(0xa5713f, 1)
+    g.fillRect(1, 1, 12, 9)
+    g.fillStyle(0x6e4a28, 1)
+    g.fillRect(1, 5, 12, 1)
+    g.fillRect(4, 1, 1, 9)
+    g.fillRect(9, 1, 1, 9)
+    g.generateTexture("crate", 14, 11)
     g.destroy()
   }
 

@@ -162,6 +162,28 @@ menú, sección MÚSICA, aparece bloqueada hasta entonces y después se pausa y 
 pausar se recuerda en `labor.audio.v1`. Para agregar pistas basta añadirlas a `TRACKS`
 (el selector de 3–4 canciones queda para después).
 
+## Anuncio del bazar (PATIO)
+
+- **Pop-up del cartel** (`EventPopup.tsx`): se abre desde el letrero de
+  EVENTOS del patio (acción VER) y desde el menú → PRÓXIMO EN EL PATIO. Muestra
+  el cartel (`public/assets/events/<id>.jpg`, campo `poster` en `EVENTS`,
+  900 px / ~250 KB), la fecha relativa ("ESTE DOMINGO"), lugar, lineup y tres
+  CTAs: VOY (WhatsApp prellenado), AGREGAR AL CALENDARIO y QUIERO PONER UN
+  STAND (WhatsApp). En horizontal el cartel va a la izquierda y los CTAs a la
+  derecha. Cuando el evento pasa, `nextEvent()` devuelve null y todo esto se
+  apaga solo (el "!" incluido).
+- **"!" en el letrero** (estado de marcador `notice`): al entrar, un signo de
+  exclamación ocre entra con pop, rebota y manda un anillo cada 2.4 s sobre el
+  letrero de eventos; el aviso de entrada dice "¡MIRA EL LETRERO!". Se disuelve
+  con chispas al abrir el anuncio (una vez por visita).
+- **Montaje del bazar** (`NPC_ROUTES` en `OverworldScene.ts`): dos personas
+  (avatares distintos al del visitante) cargan cajas de la madera y las tarimas
+  al centro del patio en loop: esperan, cargan, caminan, dejan la caja (se
+  desvanece) y regresan. Rutas verificadas como pisables con `canStand`; con
+  `prefers-reduced-motion` se quedan quietas. `__LABOR__.getState().npcs` las
+  expone para pruebas. Cuando el layout del bazar quede definido, el reloj de
+  sol puede moverse; por ahora sigue en su lugar.
+
 ## Animaciones y señales
 
 Todo lo que pasa en el mundo se ve (y respeta `prefers-reduced-motion`):

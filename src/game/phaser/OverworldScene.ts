@@ -6,12 +6,13 @@
 // ============================================================
 
 import Phaser from "phaser"
+import { AVATARS } from "../../data/avatars"
 import { getSpace } from "../../data/spaces"
 import type { Interactable } from "../bridge"
 import { boundsOf, type BuildingDef, type OverworldMap, type PropDef, type Rect, type Vec } from "../map/tiled"
 import { nearestStandable } from "../world/collision"
 import { SHADOW_MAX_DEG, sundialReading } from "../world/sundial"
-import { PLAYER_RADIUS, WORLD_MARGIN_M } from "./config"
+import { PLAYER_RADIUS, PLAYER_SCALE, WORLD_MARGIN_M } from "./config"
 import { WorldScene, type WorldBuild } from "./WorldScene"
 
 const INK = 0x181411
@@ -48,10 +49,39 @@ const TEXT_STYLE: Phaser.Types.GameObjects.Text.TextStyle = {
   color: "#181411",
 }
 
+interface NpcRoute {
+  from: Vec
+  to: Vec
+  /** px/s (más lento que el visitante: van cargando) */
+  speed: number
+}
+
+interface Npc {
+  avatarId: string
+  route: NpcRoute
+  sprite: Phaser.GameObjects.Sprite
+  shadow: Phaser.GameObjects.Ellipse
+  crate: Phaser.GameObjects.Image
+  x: number
+  y: number
+  target: Vec
+  phase: "walk" | "wait"
+  wait: number
+  carrying: boolean
+  facing: "up" | "down" | "left" | "right"
+}
+
+/** Montaje del bazar: de la madera y las tarimas al centro del patio (rutas verificadas como pisables). */
+const NPC_ROUTES: NpcRoute[] = [
+  { from: { x: 415, y: 800 }, to: { x: 585, y: 1085 }, speed: 78 },
+  { from: { x: 410, y: 1305 }, to: { x: 770, y: 1100 }, speed: 84 },
+]
+
 export class OverworldScene extends WorldScene {
   private map!: OverworldMap
   private sculpture: Phaser.GameObjects.GameObject[] = []
   private pedestal: PropDef | null = null
+  private npcs: Npc[] = []
   private shadowSprite: Phaser.GameObjects.Image | null = null
   private previousFlags: string[] = []
 
@@ -228,6 +258,7 @@ export class OverworldScene extends WorldScene {
       if (p.missionAnchor) this.pedestal = p
     })
 
+    this.setupNpcs()
     this.previousFlags = this.worldFlags
     this.renderSculpture()
     this.time.addEvent({ delay: 60000, loop: true, callback: () => this.updateSundial() })
@@ -279,6 +310,95 @@ export class OverworldScene extends WorldScene {
         if (!this.reducedMotion) this.tweens.add({ targets: meta, alpha: { from: 1, to: 0.45 }, scaleX: { from: 1, to: 1.08 }, scaleY: { from: 1, to: 1.08 }, duration: 900, yoyo: true, repeat: -1, ease: "Sine.easeInOut" })
       }
     }
+  }
+
+  // ---- personas montando el bazar (loop: cargan cajas al centro del patio) ----
+  private setupNpcs() {
+    this.npcs = []
+    const mine = this.registry.get("avatarId") as string | undefined
+    const pool = ["creativa", "tuluminati", "sporty", "playero", "nomada-nocturno"].filter((id) => id !== mine && AVATARS.some((a) => a.id === id))
+    NPC_ROUTES.forEach((route, i) => {
+      const avatarId = pool[i % pool.length]
+      if (!this.textures.exists(`avatar-${avatarId}`)) return
+      const shadow = this.add.ellipse(route.from.x, route.from.y, 30, 11, 0x000000, 0.28)
+      const sprite = this.add.sprite(route.from.x, route.from.y, `avatar-${avatarId}`, 0).setOrigin(0.5, 1).setScale(PLAYER_SCALE)
+      const crate = this.add.image(route.from.x, route.from.y - 28, "crate").setOrigin(0.5, 1).setScale(2.6)
+      const npc: Npc = { avatarId, route, sprite, shadow, crate, x: route.from.x, y: route.from.y, target: route.to, phase: "wait", wait: 0.6 + i * 0.9, carrying: true, facing: "down" }
+      this.npcs.push(npc)
+      // lo que ya llevaron: una pila junto a cada punto de descarga
+      ;[0, 1].forEach((k) => this.add.image(route.to.x + 30 + k * 12, route.to.y + 8 - k * 9, "crate").setOrigin(0.5, 1).setScale(3).setDepth(route.to.y + 8 - k * 9))
+      this.placeNpc(npc)
+      this.npcIdle(npc)
+    })
+  }
+
+  private placeNpc(n: Npc) {
+    n.sprite.setPosition(n.x, n.y).setDepth(n.y)
+    n.shadow.setPosition(n.x, n.y).setDepth(n.y - 0.5)
+    // la caja va al pecho: tapa el torso, no la cara
+    n.crate.setPosition(n.x + (n.facing === "left" ? -8 : n.facing === "right" ? 8 : 0), n.y - 28).setDepth(n.y + 1).setVisible(n.carrying)
+  }
+
+  private npcIdle(n: Npc) {
+    n.sprite.anims.stop()
+    const row = n.facing === "up" ? 1 : n.facing === "down" ? 0 : 2
+    n.sprite.setFlipX(n.facing === "left")
+    n.sprite.setFrame(row * 4)
+  }
+
+  private updateNpcs(deltaMs: number) {
+    if (this.reducedMotion) return
+    const dt = Math.min(deltaMs, 50) / 1000
+    this.npcs.forEach((n) => {
+      if (n.phase === "wait") {
+        n.wait -= dt
+        if (n.wait > 0) return
+        n.phase = "walk"
+        // sale del punto de carga con caja; regresa del centro sin ella
+        n.carrying = n.target === n.route.to
+      }
+      const dx = n.target.x - n.x
+      const dy = n.target.y - n.y
+      const d = Math.hypot(dx, dy)
+      const step = n.route.speed * dt
+      if (d <= step) {
+        n.x = n.target.x
+        n.y = n.target.y
+        const atCenter = n.target === n.route.to
+        if (atCenter) this.dropCrate(n.x + 16, n.y + 4)
+        n.carrying = false
+        n.target = atCenter ? n.route.from : n.route.to
+        n.phase = "wait"
+        n.wait = atCenter ? 0.9 : 1.2
+        n.facing = atCenter ? "down" : "left"
+        this.npcIdle(n)
+        this.placeNpc(n)
+        return
+      }
+      n.x += (dx / d) * step
+      n.y += (dy / d) * step
+      n.facing = Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? "right" : "left") : dy > 0 ? "down" : "up"
+      const dir = n.facing === "left" || n.facing === "right" ? "side" : n.facing
+      n.sprite.setFlipX(n.facing === "left")
+      const key = `${n.avatarId}-walk-${dir}`
+      if (n.sprite.anims.currentAnim?.key !== key || !n.sprite.anims.isPlaying) n.sprite.play(key, true)
+      this.placeNpc(n)
+    })
+  }
+
+  /** caja recién dejada en el centro: se queda un rato y se desvanece (el montaje sigue en loop) */
+  private dropCrate(x: number, y: number) {
+    const c = this.add.image(x, y, "crate").setOrigin(0.5, 1).setScale(3).setDepth(y)
+    this.tweens.add({ targets: c, alpha: 0, delay: 2600, duration: 700, onComplete: () => c.destroy() })
+  }
+
+  update(time: number, deltaMs: number) {
+    super.update(time, deltaMs)
+    this.updateNpcs(deltaMs)
+  }
+
+  debugState() {
+    return { ...super.debugState(), npcs: this.npcs.map((n) => ({ avatar: n.avatarId, x: Math.round(n.x), y: Math.round(n.y), phase: n.phase, carrying: n.carrying })) }
   }
 
   /**

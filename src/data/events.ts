@@ -17,6 +17,10 @@ export interface LaborEvent {
   end: string
   place: string
   description: string
+  /** cartel (ruta pública), para el pop-up de anuncios */
+  poster?: string
+  tagline?: string
+  lineup?: string
 }
 
 export const EVENTS: LaborEvent[] = [
@@ -27,7 +31,10 @@ export const EVENTS: LaborEvent[] = [
     date: "2026-09-20",
     start: "17:00",
     end: "23:00",
-    place: "El patio de La Bor · Calle Cobá esq. Calle 12 Sur, Tulum",
+    place: "El patio de La Bor · Calle Cobá esq. Calle 12 Sur, La Veleta, Tulum",
+    poster: "/assets/events/patio-2026-09-20.jpg",
+    tagline: "OPEN WORKSHOP / CREATIVE BAZAAR",
+    lineup: "DESIGN · OBJECTS · FOOD · PEOPLE · JEWELRY · ART · FASHION & MORE",
     description:
       "Bazar en el patio con los talleres abiertos: joyería de CONTRASTE, madera de VETA, metal de MANNNO y marcas invitadas. Entrada libre.",
   },
@@ -89,4 +96,17 @@ export function calendarUrl(ev: LaborEvent): string {
     location: ev.place,
   })
   return `https://calendar.google.com/calendar/render?${params.toString()}`
+}
+
+/** "HOY", "MAÑANA", "ESTE DOMINGO" o la fecha completa (calendario de Tulum). */
+export function eventRelativeLabel(ev: LaborEvent, now: Date = new Date()): string {
+  const tulumNow = new Date(now.getTime() - 5 * 3600 * 1000)
+  const today = Date.UTC(tulumNow.getUTCFullYear(), tulumNow.getUTCMonth(), tulumNow.getUTCDate())
+  const [y, m, d] = ev.date.split("-").map(Number)
+  const day = Date.UTC(y, m - 1, d)
+  const days = Math.round((day - today) / 86400000)
+  if (days === 0) return "HOY"
+  if (days === 1) return "MAÑANA"
+  if (days > 1 && days <= 6) return `ESTE ${DAYS[new Date(day).getUTCDay()]}`
+  return eventDateLabel(ev)
 }

@@ -47,6 +47,15 @@ interface TapCandidate {
   t: number
 }
 
+const NOTICE_STYLE: Phaser.Types.GameObjects.Text.TextStyle = {
+  fontFamily: '"Archivo", "Helvetica Neue", Arial, sans-serif',
+  fontSize: "34px",
+  fontStyle: "900",
+  color: "#e08a3c",
+  stroke: "#181411",
+  strokeThickness: 6,
+}
+
 export abstract class WorldScene extends Phaser.Scene implements GameCommands {
   /** id lógico de la escena (overworld / veta-room…) y espacio al que pertenece */
   sceneId = "overworld"
@@ -83,6 +92,8 @@ export abstract class WorldScene extends Phaser.Scene implements GameCommands {
   protected mapDebug = isMapDebug()
   /** balizas por id de interactuable */
   private beacons = new Map<string, Phaser.GameObjects.Image>()
+  /** "!" que rebota sobre un letrero con novedad (estado "notice") */
+  private notices = new Map<string, Phaser.GameObjects.Text>()
   private markers: Record<string, MarkerState> = {}
   private guideTarget: string | null = null
   private guideGfx!: Phaser.GameObjects.Graphics
@@ -215,14 +226,15 @@ export abstract class WorldScene extends Phaser.Scene implements GameCommands {
   }
 
   /** anillo que se expande y se desvanece (instalar, completar, entrar) */
-  protected ringPulse(x: number, y: number, radius = 40, color = 0xe08a3c, duration = 700) {
+  protected ringPulse(x: number, y: number, radius = 40, color = 0xe08a3c, duration = 700, silent = false) {
     if (this.reducedMotion) return
     const g = this.add.graphics()
     g.lineStyle(4, color, 0.9)
     g.strokeCircle(0, 0, radius)
     g.setPosition(x, y).setDepth(6500).setScale(0.3)
     this.tweens.add({ targets: g, scaleX: 1.6, scaleY: 1.6, alpha: 0, duration, ease: "Cubic.easeOut", onComplete: () => g.destroy() })
-    this.logFx(`ring:${Math.round(x)},${Math.round(y)}`)
+    // los anillos periódicos (avisos) no cuentan como efecto de juego
+    if (!silent) this.logFx(`ring:${Math.round(x)},${Math.round(y)}`)
   }
 
   protected get reducedMotion(): boolean {
@@ -552,6 +564,7 @@ export abstract class WorldScene extends Phaser.Scene implements GameCommands {
   private createBeacons() {
     this.beacons.forEach((b) => b.destroy())
     this.beacons.clear()
+    this.notices.clear()
     this.interactables.forEach((it) => {
       const y = it.y - this.beaconLift(it)
       const img = this.add.image(it.x, y, "beacon-todo").setScale(1.3).setDepth(6000).setAlpha(0.8)
@@ -564,11 +577,44 @@ export abstract class WorldScene extends Phaser.Scene implements GameCommands {
     this.beacons.forEach((img, id) => {
       const state = this.markers[id] ?? "todo"
       const near = this.current?.id === id
+      const notice = state === "notice"
+      img.setVisible(!notice)
       img.setTexture(state === "done" ? "beacon-done" : state === "target" ? "beacon-target" : "beacon-todo")
       // un poco más discretas: no deben robarle protagonismo al patio
       img.setScale(near ? 1.6 : state === "target" ? 1.45 : 1.3)
       img.setAlpha(near ? 1 : state === "done" ? 0.85 : state === "target" ? 1 : 0.75)
+      const it = this.interactables.find((i) => i.id === id)
+      if (notice && it) this.showNotice(id, it.x, it.y - this.beaconLift(it))
+      else this.hideNotice(id)
     })
+  }
+
+  /** novedad en un letrero: "!" ocre que entra con pop, rebota y manda un anillo cada rato */
+  private showNotice(id: string, x: number, y: number) {
+    if (this.notices.has(id)) return
+    const t = this.add.text(x, y + 2, "!", NOTICE_STYLE)
+    t.setOrigin(0.5, 1).setDepth(7100).setResolution(2)
+    this.notices.set(id, t)
+    if (this.reducedMotion) return
+    t.setScale(0)
+    this.tweens.add({ targets: t, scaleX: 1, scaleY: 1, duration: 420, ease: "Back.easeOut" })
+    this.tweens.add({ targets: t, y: y - 16, duration: 520, yoyo: true, repeat: -1, ease: "Quad.easeOut", delay: 420 })
+    const ring = this.time.addEvent({ delay: 2400, loop: true, callback: () => this.ringPulse(x, y - 6, 22, 0xe08a3c, 800, true) })
+    t.once(Phaser.GameObjects.Events.DESTROY, () => ring.remove(false))
+  }
+
+  private hideNotice(id: string) {
+    const t = this.notices.get(id)
+    if (!t) return
+    this.notices.delete(id)
+    this.tweens.killTweensOf(t)
+    if (this.reducedMotion) {
+      t.destroy()
+      return
+    }
+    // visto: se disuelve con chispas ocres
+    this.burst(t.x, t.y - 12, 12, true)
+    this.tweens.add({ targets: t, scaleX: 1.6, scaleY: 1.6, alpha: 0, duration: 260, ease: "Quad.easeIn", onComplete: () => t.destroy() })
   }
 
   /** chevrón en el borde de la pantalla hacia el objetivo cuando queda fuera de vista */
@@ -733,6 +779,7 @@ export abstract class WorldScene extends Phaser.Scene implements GameCommands {
       beacons: [...this.beacons.entries()].map(([id, b]) => ({ id, texture: b.texture.key, scale: b.scaleX })),
       guideVisible: this.guideGfx ? this.guideGfx.commandBuffer.length > 0 : false,
       fx: this.fxLog.slice(-20),
+      notices: [...this.notices.keys()],
       clock: { now: Math.round(this.time.now), paused: this.time.paused },
       resizes: this.resizes,
     }
