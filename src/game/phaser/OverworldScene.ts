@@ -7,6 +7,7 @@
 
 import Phaser from "phaser"
 import { AVATARS } from "../../data/avatars"
+import { eventSoonLabel, nextEvent } from "../../data/events"
 import { getSpace } from "../../data/spaces"
 import type { Interactable } from "../bridge"
 import { boundsOf, type BuildingDef, type OverworldMap, type PropDef, type Rect, type Vec } from "../map/tiled"
@@ -82,6 +83,8 @@ export class OverworldScene extends WorldScene {
   private sculpture: Phaser.GameObjects.GameObject[] = []
   private pedestal: PropDef | null = null
   private npcs: Npc[] = []
+  /** leyenda del montaje ("MONTANDO EL BAZAR · PRÓXIMO DOMINGO") */
+  private bazaarCaption: Phaser.GameObjects.Text | null = null
   private shadowSprite: Phaser.GameObjects.Image | null = null
   private previousFlags: string[] = []
 
@@ -315,6 +318,10 @@ export class OverworldScene extends WorldScene {
   // ---- personas montando el bazar (loop: cargan cajas al centro del patio) ----
   private setupNpcs() {
     this.npcs = []
+    this.bazaarCaption = null
+    // el montaje solo tiene sentido mientras hay un bazar por venir
+    const ev = nextEvent()
+    if (!ev) return
     const mine = this.registry.get("avatarId") as string | undefined
     const pool = ["creativa", "tuluminati", "sporty", "playero", "nomada-nocturno"].filter((id) => id !== mine && AVATARS.some((a) => a.id === id))
     NPC_ROUTES.forEach((route, i) => {
@@ -330,6 +337,11 @@ export class OverworldScene extends WorldScene {
       this.placeNpc(npc)
       this.npcIdle(npc)
     })
+    // leyenda en el piso, entre las dos pilas: da contexto a la gente que carga cajas
+    const cap = this.add.text(700, 1150, `MONTANDO EL ${ev.kind} · ${eventSoonLabel(ev)}`, { ...TEXT_STYLE, fontSize: "10px", color: "#f4efe4", letterSpacing: 2, backgroundColor: "#2a2620" })
+    cap.setOrigin(0.5).setPadding(8, 4, 8, 4).setAlpha(0.92).setDepth(-3).setResolution(2)
+    if (!this.reducedMotion) this.tweens.add({ targets: cap, alpha: { from: 0.92, to: 0.6 }, duration: 2600, yoyo: true, repeat: -1, ease: "Sine.easeInOut" })
+    this.bazaarCaption = cap
   }
 
   private placeNpc(n: Npc) {
@@ -398,7 +410,7 @@ export class OverworldScene extends WorldScene {
   }
 
   debugState() {
-    return { ...super.debugState(), npcs: this.npcs.map((n) => ({ avatar: n.avatarId, x: Math.round(n.x), y: Math.round(n.y), phase: n.phase, carrying: n.carrying })) }
+    return { ...super.debugState(), npcs: this.npcs.map((n) => ({ avatar: n.avatarId, x: Math.round(n.x), y: Math.round(n.y), phase: n.phase, carrying: n.carrying })), bazaarCaption: this.bazaarCaption?.text ?? null }
   }
 
   /**

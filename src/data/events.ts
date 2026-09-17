@@ -99,14 +99,27 @@ export function calendarUrl(ev: LaborEvent): string {
 }
 
 /** "HOY", "MAÑANA", "ESTE DOMINGO" o la fecha completa (calendario de Tulum). */
-export function eventRelativeLabel(ev: LaborEvent, now: Date = new Date()): string {
+/** días que faltan para el evento (calendario de Tulum) y su día de la semana */
+function daysUntil(ev: LaborEvent, now: Date): { days: number; weekday: string } {
   const tulumNow = new Date(now.getTime() - 5 * 3600 * 1000)
   const today = Date.UTC(tulumNow.getUTCFullYear(), tulumNow.getUTCMonth(), tulumNow.getUTCDate())
   const [y, m, d] = ev.date.split("-").map(Number)
   const day = Date.UTC(y, m - 1, d)
-  const days = Math.round((day - today) / 86400000)
+  return { days: Math.round((day - today) / 86400000), weekday: DAYS[new Date(day).getUTCDay()] }
+}
+
+export function eventRelativeLabel(ev: LaborEvent, now: Date = new Date()): string {
+  const { days, weekday } = daysUntil(ev, now)
   if (days === 0) return "HOY"
   if (days === 1) return "MAÑANA"
-  if (days > 1 && days <= 6) return `ESTE ${DAYS[new Date(day).getUTCDay()]}`
+  if (days > 1 && days <= 6) return `ESTE ${weekday}`
   return eventDateLabel(ev)
+}
+
+/** "PRÓXIMO DOMINGO", "MAÑANA" u "HOY": para la leyenda del montaje en el patio */
+export function eventSoonLabel(ev: LaborEvent, now: Date = new Date()): string {
+  const { days, weekday } = daysUntil(ev, now)
+  if (days <= 0) return "HOY"
+  if (days === 1) return "MAÑANA"
+  return `PRÓXIMO ${weekday}`
 }
