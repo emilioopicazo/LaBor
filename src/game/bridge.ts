@@ -6,7 +6,7 @@
 // hablan a través de este módulo, que no depende de Phaser ni de React.
 // ============================================================
 
-export type InteractKind = "door" | "poi" | "station" | "exit" | "sign"
+export type InteractKind = "door" | "poi" | "station" | "exit" | "sign" | "person"
 
 /** estado visual de la baliza de un interactuable */
 export type MarkerState = "todo" | "done" | "target" | "notice"

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 import { calendarUrl, eventDateLabel, eventTimeLabel, nextEvent } from "../../data/events"
-import { PRICE_LEGEND, USE_OPTIONS, eventProposalLink, fromPrice, infoLink, interestLink, interestMail, mxn, planLabel, rsvpLink, vendorLink, visitLink, waitlistLink, type UseOption } from "../../data/leads"
+import { PRICE_LEGEND, USE_OPTIONS, eventProposalLink, fromPrice, infoLink, interestLink, interestMail, mapsLink, mxn, planLabel, rsvpLink, vendorLink, visitLink, waitlistLink, type UseOption } from "../../data/leads"
 import { AVAILABLE, CONTACT, mailLink, spaceKindLabel, type RentPlan, type SpaceCta, type WorkshopSpace } from "../../data/spaces"
 
 interface SpaceOverlayProps {
@@ -17,7 +17,7 @@ const isWa = (href: string) => href.startsWith("https://wa.me/")
 function CtaLink({ href, label, primary = false }: { href: string; label: string; primary?: boolean }) {
   return (
     <a className={`overlay__cta${primary ? " overlay__cta--primary" : ""}${isWa(href) ? " overlay__cta--wa" : ""}`} href={href} target="_blank" rel="noreferrer">
-      {label} ↗
+      {label}
     </a>
   )
 }
@@ -144,6 +144,7 @@ function InfoPanel() {
         <CtaLink href={visitLink(null)} label="AGENDAR VISITA" />
         {ev && <CtaLink href={rsvpLink(ev)} label={`${ev.kind} ${ev.name} · ${eventDateLabel(ev).slice(0, 3)} ${ev.date.slice(8)}`} />}
         <CtaLink href={mailLink("Información La Bor — espacios disponibles")} label="ESCRIBIR POR CORREO" />
+        <CtaLink href={mapsLink()} label="CÓMO LLEGAR · GOOGLE MAPS" />
       </div>
       <p className="lead__legend">
         WhatsApp {CONTACT.phoneDisplay} · {CONTACT.email}
@@ -183,21 +184,21 @@ export function SpaceOverlay({ space, onClose, onNavigate, onEnterScene, current
       if (cta.enterSceneId === currentSceneId) return null
       return (
         <button key={cta.label} type="button" className={cls} onClick={() => onEnterScene(cta.enterSceneId!)}>
-          {cta.label} ↗
+          {cta.label}
         </button>
       )
     }
     if (cta.targetSpaceId) {
       return (
         <button key={cta.label} type="button" className={cls} onClick={() => onNavigate(cta.targetSpaceId!)}>
-          {cta.label} ↗
+          {cta.label}
         </button>
       )
     }
     if (cta.href) return <CtaLink key={cta.label} href={cta.href} label={cta.label} primary={primary} />
     return (
       <span key={cta.label} className="overlay__cta overlay__cta--soon">
-        {cta.label} ↗
+        {cta.label}
       </span>
     )
   }

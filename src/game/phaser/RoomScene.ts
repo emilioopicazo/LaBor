@@ -7,7 +7,7 @@ import { ROOMS, type RoomDef } from "../../data/rooms"
 import { getSpace } from "../../data/spaces"
 import type { Interactable } from "../bridge"
 import type { Circle, Rect, Vec } from "../map/tiled"
-import { ROOM_MARGIN, ROOM_ZOOM_MULT, FOCUS_ZOOM_MULT } from "./config"
+import { FOCUS_ZOOM_MULT, PLAYER_SCALE, ROOM_MARGIN, ROOM_ZOOM_MULT } from "./config"
 import { WorldScene, type WorldBuild } from "./WorldScene"
 
 const TEXT_STYLE: Phaser.Types.GameObjects.Text.TextStyle = {
@@ -50,10 +50,13 @@ export class RoomScene extends WorldScene {
     const obstacles: Circle[] = d.props
       .filter((p) => p.obstacleR)
       .map((p) => ({ id: p.id, x: p.x, y: p.y + (p.obstacleDy ?? 0), r: p.obstacleR! }))
+    const space = getSpace(d.spaceId)
+    const host = d.host && space?.contact ? { ...d.host, contact: space.contact } : null
+    if (host) obstacles.push({ id: "host", x: host.x, y: host.y - 12, r: 20 })
     const geo = { walkable, obstacles, blocked: [] as Rect[] }
 
-    const space = getSpace(d.spaceId)
     const interactables: Interactable[] = [
+      ...(host ? [{ id: "host", kind: "person" as const, action: "HABLAR", label: host.contact.name.toUpperCase(), x: host.x, y: host.y, radius: 76, spaceId: d.spaceId }] : []),
       { id: "exit", kind: "exit", action: "SALIR", label: "PATIO", x: d.exit.x, y: d.exit.y, radius: d.exit.radius, spaceId: d.spaceId },
       { id: "sign", kind: "sign", action: d.sign.action, label: space?.shortName ?? d.sign.label, x: d.sign.x, y: d.sign.y, radius: d.sign.radius, spaceId: d.spaceId },
       ...d.stations.map((s) => ({
@@ -158,6 +161,26 @@ export class RoomScene extends WorldScene {
       const s = this.add.image(p.x, p.y, p.sprite).setOrigin(0.5, 1).setScale(p.scale).setDepth(p.y)
       if (p.tint !== undefined) s.setTint(p.tint)
     })
+
+    this.renderHost()
+  }
+
+  /** la persona del taller: de pie con su nombre; al acercarse aparece HABLAR */
+  private renderHost() {
+    const d = this.def
+    const c = getSpace(d.spaceId)?.contact
+    if (!d.host || !c || !this.textures.exists(`avatar-${c.avatarId}`)) return
+    const { x, y, facing } = d.host
+    this.add.ellipse(x, y, 30, 11, 0x000000, 0.28).setDepth(y - 0.5)
+    const row = facing === "up" ? 1 : facing === "down" ? 0 : 2
+    const s = this.add.sprite(x, y, `avatar-${c.avatarId}`, row * 4).setOrigin(0.5, 1).setScale(PLAYER_SCALE).setDepth(y)
+    s.setFlipX(facing === "left")
+    const tag = this.add.text(x, y - 92, `${c.name.toUpperCase()} · ${d.name.toUpperCase()}`, { ...TEXT_STYLE, fontSize: "10px", color: "#f4efe4", letterSpacing: 2, backgroundColor: "#181411" })
+    tag.setOrigin(0.5).setPadding(6, 3, 6, 3).setDepth(y + 200).setResolution(2)
+    this.fitTexts.push(tag)
+    if (this.reducedMotion) return
+    // respira: vaivén mínimo para que se note que está viva
+    this.tweens.add({ targets: s, y: y - 2, duration: 1400, yoyo: true, repeat: -1, ease: "Sine.easeInOut" })
   }
 
   exitRoom() {

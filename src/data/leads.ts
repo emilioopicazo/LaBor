@@ -5,7 +5,7 @@
 // ============================================================
 
 import { eventDateLabel, eventTimeLabel, type LaborEvent } from "./events"
-import { CONTACT, mailLink, whatsappLink, type RentPlan, type WorkshopSpace } from "./spaces"
+import { CONTACT, mailLink, whatsappLink, whatsappLinkTo, type RentPlan, type WorkshopSpace } from "./spaces"
 
 export const PRICE_LEGEND = `Precios de referencia en MXN. Todo se confirma por WhatsApp al ${CONTACT.phoneDisplay} o por correo a ${CONTACT.email}.`
 
@@ -72,4 +72,26 @@ export function vendorLink(ev: LaborEvent): string {
 
 export function eventProposalLink(): string {
   return whatsappLink("Hola La Bor, quiero proponer un evento en el patio: ___ (fecha tentativa: ___).")
+}
+
+/** Mensaje a la persona del taller: "Hola Pablo, … el taller de carpintería VETA". */
+export function workshopInfoMessage(space: WorkshopSpace): string | null {
+  const c = space.contact
+  if (!c) return null
+  return `Hola ${c.name}, vengo del recorrido de La Bor (labortulum.com) y me interesa más información sobre el taller de ${c.craft} ${space.name}.`
+}
+
+export function workshopInfoLink(space: WorkshopSpace): string | null {
+  const msg = workshopInfoMessage(space)
+  return msg && space.contact ? whatsappLinkTo(space.contact.phoneWa, msg) : null
+}
+
+/** llamada directa (teléfono) */
+export function callLink(phoneWa: string): string {
+  return `tel:+${phoneWa}`
+}
+
+/** cómo llegar: ubicación en Google Maps */
+export function mapsLink(): string {
+  return CONTACT.maps
 }

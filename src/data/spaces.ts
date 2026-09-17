@@ -26,6 +26,19 @@ export interface SpaceCta {
   enterSceneId?: string
 }
 
+/** persona del taller: a quién escribirle y de qué es el taller (mensaje prellenado) */
+export interface WorkshopContact {
+  name: string
+  role: string
+  /** "carpintería" / "herrería" / "joyería" (va dentro del mensaje) */
+  craft: string
+  blurb: string
+  phoneDisplay: string
+  phoneWa: string
+  /** avatar que la representa de pie dentro del taller */
+  avatarId: string
+}
+
 export interface WorkshopSpace {
   id: string
   name: string
@@ -49,6 +62,7 @@ export interface WorkshopSpace {
   /** acción secundaria del overlay */
   cta2?: SpaceCta
   image?: string
+  contact?: WorkshopContact
 }
 
 // ---- contacto real ------------------------------------------------------
@@ -58,10 +72,17 @@ export const CONTACT = {
   phoneWa: "525530374167",
   instagram: "",
   address: "Calle Cobá esq. Calle 12 Sur · Tulum, Quintana Roo, México",
+  /** ubicación en Google Maps (compartir / cómo llegar) */
+  maps: "https://maps.app.goo.gl/6VRuvk6EfHDT1byW8",
 }
 
 export function whatsappLink(message: string): string {
-  return `https://wa.me/${CONTACT.phoneWa}?text=${encodeURIComponent(message)}`
+  return whatsappLinkTo(CONTACT.phoneWa, message)
+}
+
+/** WhatsApp a un número específico (la persona de cada taller) */
+export function whatsappLinkTo(phoneWa: string, message: string): string {
+  return `https://wa.me/${phoneWa}?text=${encodeURIComponent(message)}`
 }
 
 export function mailLink(subject: string, body = ""): string {
@@ -127,6 +148,15 @@ export const SPACES: WorkshopSpace[] = [
     status: "active",
     cta: { label: "ENTRAR AL TALLER", enterSceneId: "contraste-room" },
     cta2: { label: "VER AGENDA", targetSpaceId: "agenda" },
+    contact: {
+      name: "Emilio",
+      role: "Joyería · CONTRASTE",
+      craft: "joyería",
+      blurb: "Joyería en plata, producción para marcas y talleres presenciales. Pregúntale por piezas a medida o por las próximas fechas de taller.",
+      phoneDisplay: "+52 55 3037 4167",
+      phoneWa: "525530374167",
+      avatarId: "nomada-nocturno",
+    },
   },
   {
     id: "veta",
@@ -138,6 +168,15 @@ export const SPACES: WorkshopSpace[] = [
     type: "resident",
     status: "active",
     cta: { label: "ENTRAR AL TALLER", enterSceneId: "veta-room" },
+    contact: {
+      name: "Pablo",
+      role: "Carpintería · VETA",
+      craft: "carpintería",
+      blurb: "Muebles y piezas a medida, producción en madera y diseño. Pregúntale por un proyecto o por tiempos y precios.",
+      phoneDisplay: "+52 33 3350 7799",
+      phoneWa: "523333507799",
+      avatarId: "playero",
+    },
   },
   {
     id: "mannno",
@@ -149,6 +188,15 @@ export const SPACES: WorkshopSpace[] = [
     type: "resident",
     status: "active",
     cta: { label: "ENTRAR AL TALLER", enterSceneId: "mannno-room" },
+    contact: {
+      name: "Azul",
+      role: "Herrería · MANNNO",
+      craft: "herrería",
+      blurb: "Herrería y metal: estructuras, piezas a medida y producción. Pregúntale por un proyecto o por lo que se puede fabricar aquí.",
+      phoneDisplay: "+52 33 1266 3462",
+      phoneWa: "523312663462",
+      avatarId: "creativa",
+    },
   },
 
   // ---- ESPACIOS DISPONIBLES --------------------------------

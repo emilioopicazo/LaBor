@@ -450,31 +450,7 @@ button {
   }
 }
 
-.hud__menu-button {
-  position: fixed;
-  top: 22px;
-  right: 24px;
-  z-index: 25;
-  background: rgba(24, 20, 17, 0.7);
-  border: 1px solid var(--line-strong);
-  padding: 10px 14px;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.3em;
-  text-indent: 0.3em;
-  color: var(--paper);
-  cursor: pointer;
-  transition:
-    border-color 150ms ease,
-    background 150ms ease,
-    color 150ms ease;
-}
 
-.hud__menu-button:hover,
-.hud__menu-button:focus-visible {
-  border-color: var(--ochre);
-  outline: none;
-}
 
 @keyframes hint-pulse {
   0%,
@@ -598,32 +574,7 @@ button {
   color: var(--muted-2);
 }
 
-.overlay__close,
-.menu__close {
-  flex: none;
-  width: 34px;
-  height: 34px;
-  border: 1px solid var(--line-strong);
-  background: none;
-  font-size: 19px;
-  line-height: 1;
-  cursor: pointer;
-  color: var(--paper);
-  transition:
-    background 140ms ease,
-    color 140ms ease,
-    border-color 140ms ease;
-}
 
-.overlay__close:hover,
-.overlay__close:focus-visible,
-.menu__close:hover,
-.menu__close:focus-visible {
-  background: var(--paper);
-  color: var(--ink);
-  border-color: var(--paper);
-  outline: none;
-}
 
 .overlay__lead {
   margin-bottom: 14px;
@@ -757,173 +708,28 @@ button {
   color: var(--muted-2);
 }
 
-.overlay__cta-row {
-  margin-top: auto;
-  padding-top: 34px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
 
-.overlay__cta {
-  display: inline-block;
-  border: 1px solid var(--paper);
-  background: none;
-  padding: 14px 22px;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.26em;
-  text-indent: 0.26em;
-  text-decoration: none;
-  color: var(--paper);
-  cursor: pointer;
-  transition:
-    background 150ms ease,
-    color 150ms ease;
-}
 
-.overlay__cta:hover,
-.overlay__cta:focus-visible {
-  background: var(--paper);
-  color: var(--ink);
-  outline: none;
-}
 
-.overlay__cta--primary {
-  background: var(--ochre-2);
-  border-color: var(--ochre-2);
-  color: var(--ink);
-}
 
-.overlay__cta--primary:hover,
-.overlay__cta--primary:focus-visible {
-  background: var(--ochre-3);
-  border-color: var(--ochre-3);
-  color: var(--ink);
-}
 
-.overlay__cta--soon {
-  opacity: 0.45;
-  cursor: default;
-  border-color: var(--line-strong);
-}
 
-.overlay__cta--soon:hover {
-  background: none;
-  color: var(--paper);
-}
 
 /* ============================================================
    MENÚ — índice / viaje rápido
    ============================================================ */
 
-.menu {
-  position: fixed;
-  inset: 0;
-  z-index: 40;
-}
 
-.menu__panel {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: min(410px, 100vw);
-  background: var(--charcoal);
-  border-left: 1px solid var(--ochre);
-  padding: 28px 32px 34px;
-  overflow-y: auto;
-  color: var(--paper);
-  animation: panel-right 230ms cubic-bezier(0.3, 0.9, 0.3, 1);
-}
 
-@keyframes panel-right {
-  from {
-    transform: translateX(26px);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
 
-.menu__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 8px;
-}
 
-.menu__title {
-  font-size: 13px;
-  font-weight: 900;
-  letter-spacing: 0.34em;
-}
 
-.menu__section {
-  margin-top: 30px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--line-strong);
-  font-size: 9px;
-  font-weight: 800;
-  letter-spacing: 0.36em;
-  color: var(--muted-2);
-}
 
-.menu__list {
-  list-style: none;
-}
 
-.menu__item {
-  width: 100%;
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 14px;
-  padding: 13px 6px 12px 2px;
-  border: none;
-  border-bottom: 1px solid var(--line);
-  background: none;
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  color: var(--paper);
-  cursor: pointer;
-  transition:
-    background 130ms ease,
-    color 130ms ease,
-    padding 130ms ease;
-}
 
-.menu__item:hover,
-.menu__item:focus-visible {
-  background: var(--paper);
-  color: var(--ink);
-  padding-left: 10px;
-  padding-right: 10px;
-  outline: none;
-}
 
-.menu__item:hover .menu__item-meta,
-.menu__item:focus-visible .menu__item-meta {
-  color: var(--ink);
-}
 
-.menu__item-meta {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.18em;
-  color: var(--ochre-2);
-  white-space: nowrap;
-}
 
-.menu__foot {
-  margin-top: 44px;
-  font-size: 8.5px;
-  letter-spacing: 0.3em;
-  color: var(--muted-2);
-}
 
 /* ============================================================
    DEBUG
@@ -977,14 +783,33 @@ button {
     align-items: flex-end;
   }
 
+  .overlay {
+    justify-content: center;
+  }
+
   .overlay__panel {
-    width: 100%;
+    width: min(600px, 100%);
     height: auto;
-    max-height: 82%;
-    border-right: none;
-    border-top: 1px solid var(--ochre);
-    padding: 24px 24px 30px;
-    animation: panel-up 240ms cubic-bezier(0.3, 0.9, 0.3, 1);
+    max-height: 88dvh;
+    border: 1px solid var(--line-strong);
+    border-bottom: none;
+    border-radius: 22px 22px 0 0;
+    padding: 6px 20px calc(24px + env(safe-area-inset-bottom, 0px));
+    box-shadow: 0 -24px 60px rgba(0, 0, 0, 0.5);
+    overscroll-behavior: contain;
+    animation: sheet-up 300ms cubic-bezier(0.32, 0.72, 0, 1);
+  }
+
+  /* agarradera de hoja (patrón iOS) */
+  .overlay__panel::before {
+    content: "";
+    display: block;
+    flex: none;
+    width: 36px;
+    height: 5px;
+    border-radius: 3px;
+    background: rgba(244, 239, 228, 0.3);
+    margin: 6px auto 10px;
   }
 
   .overlay__header {
@@ -1000,9 +825,6 @@ button {
     padding-top: 0;
   }
 
-  .menu__panel {
-    padding: 24px 24px 30px;
-  }
 }
 
 @keyframes panel-up {
@@ -1057,4 +879,331 @@ button {
   .toast {
     animation: none;
   }
+}
+
+/* ============================================================
+   HOJAS, BOTONES Y MENÚ — guías de Apple (HIG): hoja inferior con
+   agarradera, listas agrupadas con separadores insertados y chevrón,
+   filas de 52 pt, objetivos táctiles ≥ 44 pt, botones llenos de
+   ancho completo, zonas seguras, resaltado al presionar.
+   ============================================================ */
+
+@keyframes sheet-up {
+  from {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* botón MENÚ (píldora con desenfoque) */
+.hud__menu-button {
+  position: fixed;
+  top: 22px;
+  right: 24px;
+  z-index: 25;
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(244, 239, 228, 0.18);
+  background: rgba(24, 20, 17, 0.72);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  display: inline-flex;
+  align-items: center;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.24em;
+  text-indent: 0.24em;
+  color: var(--paper);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    border-color 140ms ease,
+    background 140ms ease;
+}
+
+.hud__menu-button:hover,
+.hud__menu-button:focus-visible {
+  border-color: var(--ochre);
+  outline: none;
+}
+
+.hud__menu-button:active {
+  background: rgba(24, 20, 17, 0.92);
+}
+
+/* cerrar: círculo de 44 pt */
+.overlay__close,
+.menu__close {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(244, 239, 228, 0.12);
+  color: var(--paper);
+  font: inherit;
+  font-size: 22px;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 140ms ease;
+}
+
+.overlay__close:hover,
+.overlay__close:focus-visible,
+.menu__close:hover,
+.menu__close:focus-visible {
+  background: rgba(244, 239, 228, 0.24);
+  outline: none;
+}
+
+/* botones de acción: llenos, ancho completo, 50 pt, esquinas 12 */
+.overlay__cta-row {
+  margin-top: auto;
+  padding-top: 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.overlay__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 50px;
+  padding: 12px 18px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  background: rgba(244, 239, 228, 0.1);
+  color: var(--paper);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.25;
+  letter-spacing: 0.14em;
+  text-indent: 0.14em;
+  text-decoration: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background 150ms ease,
+    color 150ms ease,
+    transform 120ms ease;
+}
+
+.overlay__cta:hover,
+.overlay__cta:focus-visible {
+  background: rgba(244, 239, 228, 0.18);
+  outline: none;
+}
+
+.overlay__cta:focus-visible {
+  box-shadow: 0 0 0 3px rgba(224, 138, 60, 0.45);
+}
+
+.overlay__cta:active {
+  transform: scale(0.98);
+}
+
+.overlay__cta--primary {
+  background: var(--ochre-2);
+  color: var(--ink);
+}
+
+.overlay__cta--primary:hover,
+.overlay__cta--primary:focus-visible {
+  background: var(--ochre-3);
+  color: var(--ink);
+}
+
+.overlay__cta--plain {
+  background: none;
+  border-color: rgba(244, 239, 228, 0.22);
+}
+
+.overlay__cta--soon {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.overlay__cta--soon:hover {
+  background: rgba(244, 239, 228, 0.1);
+}
+
+/* menú: hoja inferior */
+.menu {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.menu__panel {
+  position: relative;
+  width: min(600px, 100%);
+  max-height: min(88dvh, 100%);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  background: var(--charcoal);
+  color: var(--paper);
+  border: 1px solid var(--line-strong);
+  border-bottom: none;
+  border-radius: 22px 22px 0 0;
+  padding: 6px 16px calc(20px + env(safe-area-inset-bottom, 0px));
+  box-shadow: 0 -24px 60px rgba(0, 0, 0, 0.5);
+  animation: sheet-up 300ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.menu__grabber {
+  flex: none;
+  width: 36px;
+  height: 5px;
+  border-radius: 3px;
+  background: rgba(244, 239, 228, 0.3);
+  margin: 6px auto 8px;
+}
+
+.menu__header {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 4px 10px;
+}
+
+.menu__title {
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: 0.24em;
+  text-indent: 0.24em;
+}
+
+.menu__section {
+  margin: 18px 14px 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--muted-2);
+}
+
+.menu__list {
+  flex: none;
+  list-style: none;
+  background: var(--charcoal-2);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.menu__item {
+  position: relative;
+  width: 100%;
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 38px 12px 16px;
+  border: none;
+  background: none;
+  color: var(--paper);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 120ms ease;
+}
+
+/* separador insertado (no toca el borde izquierdo) */
+.menu__list > li + li .menu__item::before {
+  content: "";
+  position: absolute;
+  left: 16px;
+  right: 0;
+  top: 0;
+  height: 1px;
+  background: rgba(244, 239, 228, 0.08);
+}
+
+/* chevrón de navegación */
+.menu__item::after {
+  content: "";
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid var(--muted-2);
+  border-bottom: 2px solid var(--muted-2);
+  transform: translateY(-50%) rotate(-45deg);
+}
+
+.menu__item:hover,
+.menu__item:focus-visible {
+  background: rgba(244, 239, 228, 0.07);
+  outline: none;
+}
+
+.menu__item:active {
+  background: rgba(244, 239, 228, 0.13);
+}
+
+.menu__item-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.menu__item-meta {
+  flex: none;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.menu__check {
+  color: var(--teal);
+  font-weight: 900;
+  font-size: 13px;
+}
+
+.menu__item--event {
+  background: rgba(224, 138, 60, 0.14);
+}
+
+.menu__item--event .menu__item-label {
+  color: var(--ochre-3);
+}
+
+.menu__item--event .menu__item-meta {
+  color: var(--paper);
+}
+
+.menu__foot {
+  margin: 24px 0 4px;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-indent: 0.22em;
+  color: var(--muted-2);
+  text-align: center;
 }

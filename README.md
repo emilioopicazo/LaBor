@@ -184,6 +184,54 @@ pausar se recuerda en `labor.audio.v1`. Para agregar pistas basta añadirlas a `
   expone para pruebas. Cuando el layout del bazar quede definido, el reloj de
   sol puede moverse; por ahora sigue en su lugar.
 
+## Personas de los talleres (contacto directo)
+
+Dentro de VETA, MANNNO y CONTRASTE hay una persona de pie (`RoomDef.host`,
+`WorkshopSpace.contact`): al acercarte el botón dice HABLAR · NOMBRE y se abre
+su ficha (`PersonOverlay.tsx`) con **WhatsApp a su número con el mensaje ya
+escrito** ("Hola Pablo, … me interesa más información sobre el taller de
+carpintería VETA"), llamada directa y la ficha del espacio. Números: VETA
+Pablo +52 33 3350 7799 · MANNNO Azul +52 33 1266 3462 · CONTRASTE Emilio
++52 55 3037 4167. Para agregar más interacciones con esa persona, el punto de
+entrada es `workshopInfoMessage()` en `src/data/leads.ts`.
+
+## Interfaz (guías de Apple / HIG)
+
+- **Hojas inferiores** con agarradera, esquinas de 22 px, zonas seguras y
+  `overscroll-behavior: contain` para el menú y todos los overlays en
+  teléfono; en escritorio la ficha sigue siendo panel lateral.
+- **Menú** como listas agrupadas (`.menu__list`): filas de 52 pt, separadores
+  insertados, chevrón de navegación, resaltado al presionar (no inversión),
+  fila destacada para el evento, iconos de música en CSS (sin glifos).
+- **Botones** (`.overlay__cta`): llenos, ancho completo, 50 pt, esquinas de
+  12 px; primario ocre, secundario tintado, terciario delineado
+  (`--plain`), destructivo rojo. **Sin emojis ni flechas** en botones (iOS
+  renderizaba "↗" como emoji).
+- **Cerrar**: círculo de 44 pt. Objetivo táctil mínimo 44 pt en todo.
+
+## SEO · GEO · AEO
+
+- `index.html`: título y descripción con intención de búsqueda (talleres,
+  carpintería, herrería, joyería, renta de taller/nave en Tulum, La Veleta),
+  canonical `https://www.labortulum.com/`, robots, geo/ICBM, Open Graph y
+  Twitter (`public/og/labor-og.jpg` 1200×630), PWA (`manifest.webmanifest`,
+  iconos 192/512/180) y `<noscript>` con resumen y enlace a `/acerca/`.
+- **JSON-LD** (`@graph`): WebSite, Organization+LocalBusiness (dirección,
+  geo, `hasMap` a Google Maps, teléfonos, los tres talleres como
+  `department`, ofertas con precio por pabellón y naves a cotizar), Event
+  (bazar PATIO) y FAQPage (7 preguntas con respuestas directas: qué es, dónde
+  está, precios, talleres, bazar, cómo agendar, qué es el recorrido). Es lo
+  que leen Google, Bing y los motores generativos (GEO/AEO).
+- **`/acerca/`** (`public/acerca/index.html`): página estática indexable con
+  todo el contenido en HTML semántico (talleres con WhatsApp, tabla de
+  espacios y precios, bazar con cartel, ubicación con Google Maps y
+  coordenadas, FAQ en `<details>`, contacto) y enlace al recorrido. El juego
+  en sí es canvas, así que esta página es la fuente de texto para buscadores.
+- `robots.txt` + `sitemap.xml` (con imágenes). Ubicación de Google Maps
+  (`CONTACT.maps`) en menú → CÓMO LLEGAR, información y anuncio del bazar.
+- Cuando cambien precios, fechas o teléfonos hay que actualizar tres lugares:
+  `src/data`, el JSON-LD de `index.html` y `public/acerca/index.html`.
+
 ## Animaciones y señales
 
 Todo lo que pasa en el mundo se ve (y respeta `prefers-reduced-motion`):

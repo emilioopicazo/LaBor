@@ -3,6 +3,7 @@ import { isCoarsePointer } from "../../config/world"
 import { DEFAULT_AVATAR } from "../../data/avatars"
 import { eventShortLabel, nextEvent } from "../../data/events"
 import { EventPopup } from "../experience/EventPopup"
+import { PersonOverlay } from "../experience/PersonOverlay"
 import { ROOMS } from "../../data/rooms"
 import { SPACES, getSpace } from "../../data/spaces"
 import { gameCommands, gameEvents, type Interactable, type MarkerState } from "../../game/bridge"
@@ -28,6 +29,7 @@ type Overlay =
   | { type: "minigame"; minigameId: MinigameId; stationId: string }
   | { type: "avatar" }
   | { type: "event" }
+  | { type: "person"; spaceId: string }
 
 interface GameStageProps {
   /** el mundo recibe input (intro y selector cerrados) */
@@ -117,6 +119,9 @@ export function GameStage({ active, opening = false }: GameStageProps) {
         return
       case "sign":
         if (t.spaceId) setOverlay({ type: "space", id: t.spaceId })
+        return
+      case "person":
+        if (t.spaceId) setOverlay({ type: "person", spaceId: t.spaceId })
         return
     }
   }, [openEvent])
@@ -293,6 +298,10 @@ export function GameStage({ active, opening = false }: GameStageProps) {
       {overlay?.type === "mission" && <MissionOverlay onClose={closeOverlay} onGoTo={travelTo} />}
 
       {overlay?.type === "event" && <EventPopup onClose={closeOverlay} />}
+
+      {overlay?.type === "person" && getSpace(overlay.spaceId) && (
+        <PersonOverlay space={getSpace(overlay.spaceId)!} onClose={closeOverlay} onViewSpace={(id) => setOverlay({ type: "space", id })} />
+      )}
 
       {overlay?.type === "minigame" && (
         <MinigameHost minigameId={overlay.minigameId} onClose={closeOverlay} onExitRoom={() => { setOverlay(null); gameCommands.exitRoom() }} />

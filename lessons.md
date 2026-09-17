@@ -35,3 +35,15 @@
   `ERR_CONNECTION_REFUSED`).
 - **Capturas de overlays**: esperar ≥ 500 ms tras abrirlos; si no, salen a
   media animación de entrada (opacidad parcial) y parecen translúcidos sin serlo.
+- **iOS pinta "↗" (U+2197) como emoji** en botones; también "▶"/"❚❚" pueden
+  salir como emoji. En botones: texto sin glifos; iconos con CSS (chevrón,
+  triángulo de play, barras de pausa).
+- **Orden de hojas CSS**: `game.css` se importa después de `experience.css`;
+  una regla en un `@media` de `experience.css` no gana a una regla normal de
+  `game.css` con la misma especificidad. Las anulaciones de móvil van al final
+  de `game.css`.
+- **No reconstruir `dist/` mientras corre el gate de 6 viewports**: vite
+  preview sirve archivos con hash y las páginas abiertas fallarían al cargar
+  chunks viejos. Editar código sí; `npm run build` solo cuando termine.
+- **El servidor de preview hay que lanzarlo con `setsid nohup … &`**; con
+  `nohup` a secas muere al cerrar la llamada de la herramienta.

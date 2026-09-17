@@ -1,6 +1,6 @@
 import { AVAILABLE, CONTACT, RESIDENTS, mailLink, whatsappLink } from "../../data/spaces"
 import { eventShortLabel, nextEvent } from "../../data/events"
-import { fromPrice, mxn } from "../../data/leads"
+import { fromPrice, mapsLink, mxn } from "../../data/leads"
 import { PIEZA_CENTRAL } from "../../data/missions"
 import { UNLOCK_MISSION_ID } from "../../data/music"
 import { currentTrack, music, useMusic } from "../../game/audio"
@@ -12,14 +12,16 @@ interface FastMenuProps {
   setOpen: (open: boolean) => void
   /** Fast travel: camina rápido hasta la puerta del espacio */
   onTravel: (id: string) => void
-  /** Abre un overlay directo (misión, agenda, contacto) */
+  /** Abre un overlay directo (misión, anuncio, agenda) */
   onDirect: (id: string) => void
   onChangeAvatar: () => void
 }
 
 /**
- * Menú (arriba-derecha): índice de viaje rápido + misión + personaje +
- * contacto. Respaldo para quien no quiere caminar; no sustituye al mundo.
+ * Menú como hoja inferior (patrón de iOS): agarradera, título, listas
+ * agrupadas con separadores insertados y chevrón, filas de 52 pt, zonas
+ * seguras. Es el índice de viaje rápido + misión + personaje + contacto;
+ * no sustituye al mundo, lo ataja.
  */
 export function FastMenu({ open, setOpen, onTravel, onDirect, onChangeAvatar }: FastMenuProps) {
   const run = useMissionRun()
@@ -28,7 +30,7 @@ export function FastMenu({ open, setOpen, onTravel, onDirect, onChangeAvatar }: 
   const track = currentTrack()
   const playing = audio.enabled && audio.playing
   const prof = useProfile()
-  // la pista se desbloquea al terminar LA PIEZA CENTRAL (queda en el perfil)
+  // la pista se desbloquea al terminar LA HORA (queda en el perfil)
   const unlocked = (prof.completed[UNLOCK_MISSION_ID] ?? 0) > 0 || run?.completed === true
   const ev = nextEvent()
 
@@ -37,11 +39,15 @@ export function FastMenu({ open, setOpen, onTravel, onDirect, onChangeAvatar }: 
     return (
       <li>
         <button type="button" className={`menu__item${visited ? " is-visited" : ""}`} onClick={() => (direct ? onDirect(id) : onTravel(id))}>
-          <span>
-            {visited && <span className="menu__check" aria-label="Visitado">✓ </span>}
+          <span className="menu__item-label">
+            {visited && (
+              <span className="menu__check" aria-label="Visitado">
+                ✓
+              </span>
+            )}
             {label}
           </span>
-          <span className={`menu__item-meta${reserved ? " menu__item-meta--reserved" : ""}`}>{meta ? `${meta} →` : "→"}</span>
+          {meta && <span className={`menu__item-meta${reserved ? " menu__item-meta--reserved" : ""}`}>{meta}</span>}
         </button>
       </li>
     )
@@ -58,14 +64,16 @@ export function FastMenu({ open, setOpen, onTravel, onDirect, onChangeAvatar }: 
           setOpen(!open)
         }}
         aria-expanded={open}
+        aria-haspopup="dialog"
       >
-        MENÚ&nbsp;+
+        MENÚ
       </button>
 
       {open && (
-        <div className="menu" role="dialog" aria-modal="true" aria-label="Índice de La Bor">
+        <div className="menu" role="dialog" aria-modal="true" aria-label="Menú de La Bor">
           <button type="button" className="menu__backdrop" aria-label="Cerrar menú" onClick={() => setOpen(false)} />
           <nav className="menu__panel">
+            <div className="menu__grabber" aria-hidden="true" />
             <header className="menu__header">
               <p className="menu__title">ÍNDICE</p>
               <button type="button" className="menu__close" onClick={() => setOpen(false)} aria-label="Cerrar">
@@ -79,10 +87,10 @@ export function FastMenu({ open, setOpen, onTravel, onDirect, onChangeAvatar }: 
                 <ul className="menu__list">
                   <li>
                     <button type="button" className="menu__item menu__item--event" onClick={() => onDirect("eventos-board")}>
-                      <span>
+                      <span className="menu__item-label">
                         {ev.kind} · {ev.name}
                       </span>
-                      <span className="menu__item-meta">{eventShortLabel(ev)} →</span>
+                      <span className="menu__item-meta">{eventShortLabel(ev)}</span>
                     </button>
                   </li>
                 </ul>
@@ -94,10 +102,10 @@ export function FastMenu({ open, setOpen, onTravel, onDirect, onChangeAvatar }: 
               <Item id="pieza-central" label={PIEZA_CENTRAL.title} meta={view ? (view.complete ? "COMPLETA" : view.progress) : "INICIAR"} direct />
             </ul>
 
-            <p className="menu__section">RESIDENTES</p>
+            <p className="menu__section">TALLERES</p>
             <ul className="menu__list">
               {RESIDENTS.map((s) => (
-                <Item key={s.id} id={s.id} label={s.name} />
+                <Item key={s.id} id={s.id} label={s.name} meta={s.subtitle?.split(" / ")[0]} />
               ))}
             </ul>
 
@@ -112,13 +120,13 @@ export function FastMenu({ open, setOpen, onTravel, onDirect, onChangeAvatar }: 
 
             <p className="menu__section">PATIO</p>
             <ul className="menu__list">
-              <Item id="eventos-board" label="EVENTOS" />
-              <Item id="info-totem" label="INFORMACIÓN" />
+              <Item id="eventos-board" label="EVENTOS" meta="LETRERO" />
+              <Item id="info-totem" label="INFORMACIÓN" meta="TÓTEM" />
               <Item id="agenda" label="AGENDA" direct />
             </ul>
 
             <p className="menu__section">MÚSICA</p>
-            <div className={`menu__music${unlocked ? "" : " is-locked"}`}>
+            <div className={`menu__list menu__music${unlocked ? "" : " is-locked"}`}>
               <button
                 type="button"
                 className={`menu__music-toggle${playing ? " is-playing" : ""}`}
@@ -127,14 +135,14 @@ export function FastMenu({ open, setOpen, onTravel, onDirect, onChangeAvatar }: 
                 aria-label={!unlocked ? "Pista bloqueada" : playing ? "Pausar música" : "Reproducir música"}
                 aria-pressed={playing}
               >
-                <span aria-hidden="true">{!unlocked ? "·" : playing ? "❚❚" : "▶"}</span>
+                <span className={`menu__music-icon ${!unlocked ? "is-locked" : playing ? "is-pause" : "is-play"}`} aria-hidden="true" />
               </button>
               <span className="menu__music-text">
                 <span className="menu__music-title">{unlocked ? track.title : "PISTA DE LA PIEZA"}</span>
                 <span className="menu__music-meta">
                   {!unlocked
                     ? "SE DESBLOQUEA AL TERMINAR LA HORA"
-                    : `${track.artist} · ${playing ? "SONANDO · VOLUMEN AMBIENTE" : audio.unsupported ? "NO DISPONIBLE EN ESTE NAVEGADOR" : audio.blocked ? "TOCA ▶ PARA ESCUCHAR" : "EN PAUSA"}`}
+                    : `${track.artist} · ${playing ? "SONANDO · VOLUMEN AMBIENTE" : audio.unsupported ? "NO DISPONIBLE EN ESTE NAVEGADOR" : audio.blocked ? "TOCA PARA ESCUCHAR" : "EN PAUSA"}`}
                 </span>
               </span>
             </div>
@@ -143,8 +151,7 @@ export function FastMenu({ open, setOpen, onTravel, onDirect, onChangeAvatar }: 
             <ul className="menu__list">
               <li>
                 <button type="button" className="menu__item" onClick={onChangeAvatar}>
-                  <span>CAMBIAR PERSONAJE</span>
-                  <span className="menu__item-meta">→</span>
+                  <span className="menu__item-label">CAMBIAR PERSONAJE</span>
                 </button>
               </li>
             </ul>
@@ -153,14 +160,20 @@ export function FastMenu({ open, setOpen, onTravel, onDirect, onChangeAvatar }: 
             <ul className="menu__list menu__list--links">
               <li>
                 <a className="menu__item" href={whatsappLink("Hola La Bor, quiero información sobre los espacios disponibles.")} target="_blank" rel="noreferrer">
-                  <span>WHATSAPP</span>
-                  <span className="menu__item-meta">{CONTACT.phoneDisplay} ↗</span>
+                  <span className="menu__item-label">WHATSAPP</span>
+                  <span className="menu__item-meta">{CONTACT.phoneDisplay}</span>
+                </a>
+              </li>
+              <li>
+                <a className="menu__item" href={mapsLink()} target="_blank" rel="noreferrer">
+                  <span className="menu__item-label">CÓMO LLEGAR</span>
+                  <span className="menu__item-meta">GOOGLE MAPS</span>
                 </a>
               </li>
               <li>
                 <a className="menu__item" href={mailLink("Información La Bor")}>
-                  <span>EMAIL</span>
-                  <span className="menu__item-meta">{CONTACT.email} ↗</span>
+                  <span className="menu__item-label">EMAIL</span>
+                  <span className="menu__item-meta">{CONTACT.email}</span>
                 </a>
               </li>
             </ul>

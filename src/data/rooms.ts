@@ -49,6 +49,8 @@ export interface RoomDef {
   spawnFacing: Facing
   exit: { x: number; y: number; radius: number; label: string }
   sign: { x: number; y: number; radius: number; label: string; action: string }
+  /** la persona del taller (si el espacio tiene contacto): dónde está de pie */
+  host?: { x: number; y: number; facing: Facing }
   stations: RoomStation[]
   props: RoomProp[]
 }
@@ -80,6 +82,8 @@ function room(spaceId: string, width: number, height: number, style: RoomStyle, 
 export const ROOMS: Record<string, RoomDef> = Object.fromEntries(
   [
     room("veta", 720, 480, "wood", "#c98f42", {
+      // de pie a la derecha de la entrada, de frente al visitante
+      host: { x: 440, y: 396, facing: "left" },
       stations: [{ id: "veta-bench", x: 360, y: 236, radius: 84, label: "BANCO DE CARPINTERO", minigameIds: ["gato", "corte"] }],
       props: [
         { id: "veta-bench", sprite: "worktable", x: 360, y: 232, scale: 3, obstacleR: 46, obstacleDy: -26 },
@@ -92,6 +96,7 @@ export const ROOMS: Record<string, RoomDef> = Object.fromEntries(
       ],
     }),
     room("mannno", 720, 480, "concrete-dark", "#8e9299", {
+      host: { x: 440, y: 396, facing: "left" },
       stations: [{ id: "mannno-forge", x: 360, y: 236, radius: 84, label: "FRAGUA", minigameIds: ["conecta4", "ritmo"] }],
       props: [
         { id: "mannno-anvil", sprite: "worktable", x: 360, y: 232, scale: 3, obstacleR: 46, obstacleDy: -26, tint: 0x6f7378 },
@@ -102,6 +107,7 @@ export const ROOMS: Record<string, RoomDef> = Object.fromEntries(
       ],
     }),
     room("contraste", 640, 440, "concrete-light", "#3f9c96", {
+      host: { x: 405, y: 360, facing: "left" },
       stations: [{ id: "contraste-bench", x: 320, y: 216, radius: 84, label: "BANCO DE JOYERO", minigameIds: ["memoria", "balanza"] }],
       props: [
         { id: "contraste-bench", sprite: "worktable", x: 320, y: 212, scale: 3, obstacleR: 46, obstacleDy: -26 },

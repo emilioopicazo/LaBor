@@ -1,5 +1,5 @@
 import { calendarUrl, eventDateLabel, eventRelativeLabel, eventTimeLabel, nextEvent } from "../../data/events"
-import { eventProposalLink, rsvpLink, vendorLink } from "../../data/leads"
+import { eventProposalLink, mapsLink, rsvpLink, vendorLink } from "../../data/leads"
 import { CONTACT } from "../../data/spaces"
 
 interface EventPopupProps {
@@ -41,6 +41,9 @@ export function EventPopup({ onClose }: EventPopupProps) {
                 </a>
                 <a className="overlay__cta" href={vendorLink(ev)} target="_blank" rel="noreferrer">
                   QUIERO PONER UN STAND
+                </a>
+                <a className="overlay__cta overlay__cta--plain" href={mapsLink()} target="_blank" rel="noreferrer">
+                  CÓMO LLEGAR · GOOGLE MAPS
                 </a>
               </div>
               <p className="popup__legend">Entrada libre · Dudas por WhatsApp {CONTACT.phoneDisplay}</p>

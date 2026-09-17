@@ -68,7 +68,7 @@ export function MinigameHost({ minigameId, onClose, onExitRoom }: MinigameHostPr
             <div className="minigame__actions">
               {result.rewarded ? (
                 <button type="button" className="overlay__cta overlay__cta--primary" onClick={onExitRoom}>
-                  VOLVER AL PATIO ↗
+                  VOLVER AL PATIO
                 </button>
               ) : (
                 <button type="button" className="overlay__cta overlay__cta--primary" onClick={() => setRound((r) => r + 1)}>

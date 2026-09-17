@@ -558,6 +558,8 @@ export abstract class WorldScene extends Phaser.Scene implements GameCommands {
         return 96
       case "exit":
         return 44
+      case "person":
+        return 116
     }
   }
 

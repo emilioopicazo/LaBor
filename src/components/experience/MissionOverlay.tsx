@@ -73,7 +73,7 @@ export function MissionOverlay({ onClose, onGoTo }: MissionOverlayProps) {
             </ul>
             <div className="overlay__cta-row">
               <button type="button" className="overlay__cta overlay__cta--primary" onClick={() => mission.startMission(def.id)}>
-                INICIAR MISIÓN ↗
+                INICIAR MISIÓN
               </button>
             </div>
           </>
@@ -105,12 +105,12 @@ export function MissionOverlay({ onClose, onGoTo }: MissionOverlayProps) {
             <div className="overlay__cta-row">
               {view.installable.length > 0 && (
                 <button type="button" className="overlay__cta overlay__cta--primary" onClick={() => mission.installNext()}>
-                  INSTALAR {def.components.find((c) => c.id === view.installable[0])?.short} ↗
+                  INSTALAR {def.components.find((c) => c.id === view.installable[0])?.short}
                 </button>
               )}
               {next && view.installable.length === 0 && (
                 <button type="button" className="overlay__cta overlay__cta--primary" onClick={() => onGoTo(next.id)}>
-                  IR A {next.shortName ?? next.name} ↗
+                  IR A {next.shortName ?? next.name}
                 </button>
               )}
               {!confirmRestart ? (
@@ -146,11 +146,11 @@ export function MissionOverlay({ onClose, onGoTo }: MissionOverlayProps) {
             <p className="overlay__kicker">SUENA · {TRACKS[0].title.toUpperCase()} · {TRACKS[0].artist.toUpperCase()}</p>
             <div className="overlay__cta-row">
               <a className="overlay__cta overlay__cta--primary overlay__cta--wa" href={visitLink(null)} target="_blank" rel="noreferrer">
-                AGENDAR VISITA ↗
+                AGENDAR VISITA
               </a>
               {ev && (
                 <a className="overlay__cta overlay__cta--wa" href={rsvpLink(ev)} target="_blank" rel="noreferrer">
-                  VOY AL {ev.kind} {ev.name} · {eventDateLabel(ev).slice(0, 3)} {ev.date.slice(8)} ↗
+                  VOY AL {ev.kind} {ev.name} · {eventDateLabel(ev).slice(0, 3)} {ev.date.slice(8)}
                 </a>
               )}
               <button type="button" className="overlay__cta" onClick={() => mission.restartMission()}>

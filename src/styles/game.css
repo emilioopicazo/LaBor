@@ -403,12 +403,6 @@
   font-size: 12px;
   color: var(--body);
 }
-.menu__item--event span:first-child {
-  color: var(--ochre);
-}
-.menu__check {
-  color: var(--teal);
-}
 
 /* ---- animaciones de señal ------------------------------------------- */
 @keyframes stamp-in {
@@ -1192,67 +1186,10 @@
 }
 
 /* ---- menú: música ---------------------------------------------------- */
-.menu__music {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 10px 0 14px;
-  border-bottom: 1px solid var(--line);
-}
-.menu__music-toggle {
-  width: 46px;
-  height: 46px;
-  flex: 0 0 auto;
-  border-radius: 50%;
-  border: 1px solid var(--paper);
-  background: transparent;
-  color: var(--paper);
-  font: inherit;
-  font-size: 13px;
-  letter-spacing: 0;
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-}
-.menu__music-toggle.is-playing {
-  background: var(--paper);
-  color: var(--ink);
-}
-.menu__music.is-locked .menu__music-toggle {
-  border-style: dashed;
-  border-color: var(--line-strong);
-  color: var(--muted-2);
-  cursor: default;
-}
-.menu__music.is-locked .menu__music-title {
-  color: var(--muted);
-}
-.menu__music-text {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  min-width: 0;
-}
-.menu__music-title {
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  color: var(--paper);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.menu__music-meta {
-  font-size: 9.5px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  color: var(--muted-2);
-}
+
 
 /* ---- menú: enlaces ------------------------------------------------ */
-.menu__list--links .menu__item {
-  text-decoration: none;
-}
+
 
 /* ---- intro oculta bajo el selector -------------------------------- */
 .entrance--hidden .entrance__content,
@@ -1521,5 +1458,143 @@
 @media (prefers-reduced-motion: reduce) {
   .popup__card {
     animation: none;
+  }
+}
+
+/* ---- menú: fila de música (hoja) ------------------------------------ */
+.menu__music {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+}
+.menu__music-toggle {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: var(--ochre-2);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.menu__music-toggle:disabled {
+  background: rgba(244, 239, 228, 0.1);
+  cursor: default;
+}
+.menu__music-icon {
+  display: block;
+  width: 0;
+  height: 0;
+}
+.menu__music-icon.is-play {
+  border-left: 14px solid var(--ink);
+  border-top: 9px solid transparent;
+  border-bottom: 9px solid transparent;
+  margin-left: 3px;
+}
+.menu__music-icon.is-pause {
+  width: 12px;
+  height: 14px;
+  border-left: 4px solid var(--ink);
+  border-right: 4px solid var(--ink);
+}
+.menu__music-icon.is-locked {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(244, 239, 228, 0.35);
+}
+.menu__music-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.menu__music-title {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+.menu__music-meta {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--muted-2);
+}
+.menu__music.is-locked .menu__music-title {
+  color: var(--muted-2);
+}
+
+/* ---- persona del taller ---------------------------------------------- */
+.person__hero {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-top: 6px;
+}
+.person__figure {
+  flex: none;
+  width: 84px;
+  height: 124px;
+  display: grid;
+  place-items: end center;
+  padding-bottom: 6px;
+  background: rgba(244, 239, 228, 0.06);
+  border-radius: 16px;
+  overflow: hidden;
+}
+.person__name {
+  font-size: clamp(30px, 8vw, 40px);
+}
+.person__role {
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ochre-2);
+}
+.person__preview {
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-left: 3px solid var(--ochre);
+  border-radius: 0 10px 10px 0;
+  background: rgba(244, 239, 228, 0.05);
+  font-size: 13px;
+  line-height: 1.5;
+  font-style: italic;
+  color: var(--muted);
+}
+
+/* ---- ajustes HIG: esquinas y cuerpo legible --------------------------- */
+.overlay__description {
+  font-size: 15px;
+  line-height: 1.55;
+}
+.popup__card {
+  border-radius: 20px;
+}
+.selector__confirm {
+  border-radius: 14px;
+}
+.overlay__cta--danger {
+  background: #9c3a32;
+  border-color: transparent;
+  color: var(--paper);
+}
+.overlay__cta--danger:hover,
+.overlay__cta--danger:focus-visible {
+  background: #b5463d;
+  color: var(--paper);
+}
+
+/* hoja móvil: la cabecera pegajosa no debe tapar la agarradera (esta regla va después de la de arriba) */
+@media (max-width: 820px) {
+  .overlay__header {
+    top: 0;
+    margin-top: 0;
+    padding-top: 4px;
   }
 }
