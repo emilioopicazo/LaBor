@@ -176,7 +176,15 @@ pausar se recuerda en `labor.audio.v1`. Para agregar pistas basta añadirlas a `
   exclamación ocre entra con pop, rebota y manda un anillo cada 2.4 s sobre el
   letrero de eventos; el aviso de entrada dice "¡MIRA EL LETRERO!". Se disuelve
   con chispas al abrir el anuncio (una vez por visita).
-- **Montaje del bazar** (`NPC_ROUTES` en `OverworldScene.ts`): solo mientras
+- **Bazar montado** (interpretación, sin marcas ni links): el día del evento
+  (o con `mounted: true` en el evento) el patio muestra dos filas de puestos
+  genéricos al sur del reloj (`STALL_ROWS` / `STALL_XS`, texturas `stall-a` y
+  `stall-b`), series de luces con focos que titilan, tres paseantes que
+  recorren los pasillos y se paran a curiosear (`VISITOR_ROUTES`) y la
+  leyenda "BAZAR PATIO · HOY · 5 A 11 PM". Los puestos bloquean el paso (solo
+  la mesa); los pasillos entre filas y entre puestos quedan libres. Cuando el
+  evento termina, todo desaparece solo.
+- **Montaje del bazar** (`NPC_ROUTES` en `OverworldScene.ts`): antes del día del evento, mientras
   hay bazar por venir (`nextEvent()`); una leyenda en el piso entre las pilas
   dice "MONTANDO EL BAZAR · PRÓXIMO DOMINGO" (o MAÑANA / HOY). Dos personas
   (avatares distintos al del visitante) cargan cajas de la madera y las tarimas

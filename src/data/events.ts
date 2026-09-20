@@ -21,6 +21,8 @@ export interface LaborEvent {
   poster?: string
   tagline?: string
   lineup?: string
+  /** el patio ya muestra el evento montado (si no, se monta solo el día del evento) */
+  mounted?: boolean
 }
 
 export const EVENTS: LaborEvent[] = [
@@ -35,6 +37,7 @@ export const EVENTS: LaborEvent[] = [
     poster: "/assets/events/patio-2026-09-20.jpg",
     tagline: "OPEN WORKSHOP / CREATIVE BAZAAR",
     lineup: "DESIGN · OBJECTS · FOOD · PEOPLE · JEWELRY · ART · FASHION & MORE",
+    mounted: true,
     description:
       "Bazar en el patio con los talleres abiertos: joyería de CONTRASTE, madera de VETA, metal de MANNNO y marcas invitadas. Entrada libre.",
   },
@@ -122,4 +125,9 @@ export function eventSoonLabel(ev: LaborEvent, now: Date = new Date()): string {
   if (days <= 0) return "HOY"
   if (days === 1) return "MAÑANA"
   return `PRÓXIMO ${weekday}`
+}
+
+/** el evento ya está montado en el patio: forzado con `mounted` o el mismo día */
+export function isEventMounted(ev: LaborEvent, now: Date = new Date()): boolean {
+  return ev.mounted === true || daysUntil(ev, now).days <= 0
 }

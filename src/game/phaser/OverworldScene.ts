@@ -7,7 +7,7 @@
 
 import Phaser from "phaser"
 import { AVATARS } from "../../data/avatars"
-import { eventSoonLabel, nextEvent } from "../../data/events"
+import { eventSoonLabel, eventTimeLabel, isEventMounted, nextEvent, type LaborEvent } from "../../data/events"
 import { getSpace } from "../../data/spaces"
 import type { Interactable } from "../bridge"
 import { boundsOf, type BuildingDef, type OverworldMap, type PropDef, type Rect, type Vec } from "../map/tiled"
@@ -53,8 +53,10 @@ const TEXT_STYLE: Phaser.Types.GameObjects.Text.TextStyle = {
 interface NpcRoute {
   from: Vec
   to: Vec
-  /** px/s (más lento que el visitante: van cargando) */
+  /** px/s (más lento que el visitante) */
   speed: number
+  /** cargan cajas de ida (montaje) o solo pasean (bazar montado) */
+  carry: boolean
 }
 
 interface Npc {
@@ -70,21 +72,37 @@ interface Npc {
   wait: number
   carrying: boolean
   facing: "up" | "down" | "left" | "right"
+  /** px caminados desde la última parada a curiosear (solo paseantes) */
+  walked: number
 }
 
 /** Montaje del bazar: de la madera y las tarimas al centro del patio (rutas verificadas como pisables). */
 const NPC_ROUTES: NpcRoute[] = [
-  { from: { x: 415, y: 800 }, to: { x: 585, y: 1085 }, speed: 78 },
-  { from: { x: 410, y: 1305 }, to: { x: 770, y: 1100 }, speed: 84 },
+  { from: { x: 415, y: 800 }, to: { x: 585, y: 1085 }, speed: 78, carry: true },
+  { from: { x: 410, y: 1305 }, to: { x: 770, y: 1100 }, speed: 84, carry: true },
 ]
+
+/** Bazar montado: paseantes por los pasillos entre las dos filas de puestos. */
+const VISITOR_ROUTES: NpcRoute[] = [
+  { from: { x: 430, y: 1160 }, to: { x: 950, y: 1160 }, speed: 46, carry: false },
+  { from: { x: 950, y: 1010 }, to: { x: 430, y: 1010 }, speed: 52, carry: false },
+  { from: { x: 440, y: 1340 }, to: { x: 940, y: 1340 }, speed: 40, carry: false },
+]
+
+/** Puestos genéricos (interpretación, sin marcas): dos filas al sur del reloj. */
+const STALL_ROWS = [1090, 1250]
+const STALL_XS = [450, 600, 750, 900]
+const STALL_SCALE = 2.5
 
 export class OverworldScene extends WorldScene {
   private map!: OverworldMap
   private sculpture: Phaser.GameObjects.GameObject[] = []
   private pedestal: PropDef | null = null
   private npcs: Npc[] = []
-  /** leyenda del montaje ("MONTANDO EL BAZAR · PRÓXIMO DOMINGO") */
+  /** leyenda del montaje ("MONTANDO EL BAZAR · PRÓXIMO DOMINGO") o del bazar ("BAZAR PATIO · HOY") */
   private bazaarCaption: Phaser.GameObjects.Text | null = null
+  private bazaarStage: "none" | "setup" | "mounted" = "none"
+  private stalls: Vec[] = []
   private shadowSprite: Phaser.GameObjects.Image | null = null
   private previousFlags: string[] = []
 
@@ -105,7 +123,16 @@ export class OverworldScene extends WorldScene {
     const geo = {
       walkable,
       obstacles: map.obstacles.map((o) => ({ ...o })),
-      blocked: map.obstacleRects,
+      blocked: [...map.obstacleRects],
+    }
+    // bazar montado: los puestos bloquean el paso (la mesa, no el toldo)
+    this.stalls = []
+    const ev = nextEvent()
+    if (ev && isEventMounted(ev)) {
+      STALL_ROWS.forEach((y) => STALL_XS.forEach((x) => {
+        this.stalls.push({ x, y })
+        geo.blocked.push({ x: x - 44, y: y - 26, width: 88, height: 26 })
+      }))
     }
 
     // límites de cámara: predio + banqueta del ingreso + margen de calle
@@ -319,36 +346,80 @@ export class OverworldScene extends WorldScene {
   private setupNpcs() {
     this.npcs = []
     this.bazaarCaption = null
-    // el montaje solo tiene sentido mientras hay un bazar por venir
+    this.bazaarStage = "none"
+    // el montaje y el bazar solo existen mientras hay un evento por venir
     const ev = nextEvent()
     if (!ev) return
+    const mounted = isEventMounted(ev)
+    this.bazaarStage = mounted ? "mounted" : "setup"
     const mine = this.registry.get("avatarId") as string | undefined
     const pool = ["creativa", "tuluminati", "sporty", "playero", "nomada-nocturno"].filter((id) => id !== mine && AVATARS.some((a) => a.id === id))
-    NPC_ROUTES.forEach((route, i) => {
+    const routes = mounted ? VISITOR_ROUTES : NPC_ROUTES
+    routes.forEach((route, i) => {
       const avatarId = pool[i % pool.length]
       if (!this.textures.exists(`avatar-${avatarId}`)) return
       const shadow = this.add.ellipse(route.from.x, route.from.y, 30, 11, 0x000000, 0.28)
       const sprite = this.add.sprite(route.from.x, route.from.y, `avatar-${avatarId}`, 0).setOrigin(0.5, 1).setScale(PLAYER_SCALE)
-      const crate = this.add.image(route.from.x, route.from.y - 28, "crate").setOrigin(0.5, 1).setScale(2.6)
-      const npc: Npc = { avatarId, route, sprite, shadow, crate, x: route.from.x, y: route.from.y, target: route.to, phase: "wait", wait: 0.6 + i * 0.9, carrying: true, facing: "down" }
+      const crate = this.add.image(route.from.x, route.from.y - 28, "crate").setOrigin(0.5, 1).setScale(2.6).setVisible(false)
+      const npc: Npc = { avatarId, route, sprite, shadow, crate, x: route.from.x, y: route.from.y, target: route.to, phase: "wait", wait: 0.6 + i * 0.9, carrying: route.carry, facing: "down", walked: 0 }
       this.npcs.push(npc)
-      // lo que ya llevaron: una pila junto a cada punto de descarga
-      ;[0, 1].forEach((k) => this.add.image(route.to.x + 30 + k * 12, route.to.y + 8 - k * 9, "crate").setOrigin(0.5, 1).setScale(3).setDepth(route.to.y + 8 - k * 9))
+      if (route.carry) {
+        // lo que ya llevaron: una pila junto a cada punto de descarga
+        ;[0, 1].forEach((k) => this.add.image(route.to.x + 30 + k * 12, route.to.y + 8 - k * 9, "crate").setOrigin(0.5, 1).setScale(3).setDepth(route.to.y + 8 - k * 9))
+      }
       this.placeNpc(npc)
       this.npcIdle(npc)
     })
-    // leyenda en el piso, entre las dos pilas: da contexto a la gente que carga cajas
-    const cap = this.add.text(700, 1150, `MONTANDO EL ${ev.kind} · ${eventSoonLabel(ev)}`, { ...TEXT_STYLE, fontSize: "10px", color: "#f4efe4", letterSpacing: 2, backgroundColor: "#2a2620" })
+    if (mounted) this.renderBazaar(ev)
+    // leyenda en el piso: contexto para la gente que carga cajas o pasea
+    const text = mounted ? `${ev.kind} ${ev.name} · ${eventSoonLabel(ev)} · ${eventTimeLabel(ev)}` : `MONTANDO EL ${ev.kind} · ${eventSoonLabel(ev)}`
+    const cap = this.add.text(690, mounted ? 1320 : 1150, text, { ...TEXT_STYLE, fontSize: "10px", color: "#f4efe4", letterSpacing: 2, backgroundColor: "#2a2620" })
     cap.setOrigin(0.5).setPadding(8, 4, 8, 4).setAlpha(0.92).setDepth(-3).setResolution(2)
     if (!this.reducedMotion) this.tweens.add({ targets: cap, alpha: { from: 0.92, to: 0.6 }, duration: 2600, yoyo: true, repeat: -1, ease: "Sine.easeInOut" })
     this.bazaarCaption = cap
+  }
+
+  /** Interpretación del bazar (sin marcas): dos filas de puestos, series de luces y sombra de los toldos. */
+  private renderBazaar(_ev: LaborEvent) {
+    this.stalls.forEach(({ x, y }, i) => {
+      // sombra suave del puesto en el piso
+      this.add.ellipse(x, y - 4, 96, 22, 0x000000, 0.16).setDepth(-4)
+      this.add.image(x, y, i % 2 === 0 ? "stall-a" : "stall-b").setOrigin(0.5, 1).setScale(STALL_SCALE).setDepth(y)
+    })
+    // series de luces sobre cada fila: poste en cada extremo y focos alternados con una leve caída
+    STALL_ROWS.forEach((rowY) => {
+      const x0 = STALL_XS[0] - 70
+      const x1 = STALL_XS[STALL_XS.length - 1] + 70
+      const top = rowY - 104
+      ;[x0, x1].forEach((px) => this.add.rectangle(px, rowY - 2, 4, 108, 0x3a332b).setOrigin(0.5, 1).setDepth(rowY - 1))
+      const g = this.add.graphics().setDepth(rowY - 2)
+      g.lineStyle(2, 0x2a2620, 0.9)
+      g.beginPath()
+      const n = 40
+      for (let k = 0; k <= n; k++) {
+        const t = k / n
+        const x = x0 + (x1 - x0) * t
+        const y = top + 16 * Math.sin(Math.PI * t)
+        if (k === 0) g.moveTo(x, y)
+        else g.lineTo(x, y)
+      }
+      g.strokePath()
+      const bulbs = 22
+      for (let k = 0; k <= bulbs; k++) {
+        const t = k / bulbs
+        const x = x0 + (x1 - x0) * t
+        const y = top + 16 * Math.sin(Math.PI * t) + 5
+        const b = this.add.image(x, y, k % 2 ? "bulb-ochre" : "bulb-paper").setScale(2).setDepth(rowY - 1)
+        if (!this.reducedMotion) this.tweens.add({ targets: b, alpha: { from: 1, to: 0.45 }, duration: 900 + (k % 5) * 160, yoyo: true, repeat: -1, delay: (k * 137) % 900, ease: "Sine.easeInOut" })
+      }
+    })
   }
 
   private placeNpc(n: Npc) {
     n.sprite.setPosition(n.x, n.y).setDepth(n.y)
     n.shadow.setPosition(n.x, n.y).setDepth(n.y - 0.5)
     // la caja va al pecho: tapa el torso, no la cara
-    n.crate.setPosition(n.x + (n.facing === "left" ? -8 : n.facing === "right" ? 8 : 0), n.y - 28).setDepth(n.y + 1).setVisible(n.carrying)
+    n.crate.setPosition(n.x + (n.facing === "left" ? -8 : n.facing === "right" ? 8 : 0), n.y - 28).setDepth(n.y + 1).setVisible(n.route.carry && n.carrying)
   }
 
   private npcIdle(n: Npc) {
@@ -366,8 +437,8 @@ export class OverworldScene extends WorldScene {
         n.wait -= dt
         if (n.wait > 0) return
         n.phase = "walk"
-        // sale del punto de carga con caja; regresa del centro sin ella
-        n.carrying = n.target === n.route.to
+        // montaje: sale del punto de carga con caja y regresa del centro sin ella
+        n.carrying = n.route.carry && n.target === n.route.to
       }
       const dx = n.target.x - n.x
       const dy = n.target.y - n.y
@@ -376,16 +447,30 @@ export class OverworldScene extends WorldScene {
       if (d <= step) {
         n.x = n.target.x
         n.y = n.target.y
-        const atCenter = n.target === n.route.to
-        if (atCenter) this.dropCrate(n.x + 16, n.y + 4)
+        const atEnd = n.target === n.route.to
+        if (n.route.carry && atEnd) this.dropCrate(n.x + 16, n.y + 4)
         n.carrying = false
-        n.target = atCenter ? n.route.from : n.route.to
+        n.target = atEnd ? n.route.from : n.route.to
         n.phase = "wait"
-        n.wait = atCenter ? 0.9 : 1.2
-        n.facing = atCenter ? "down" : "left"
+        n.wait = n.route.carry ? (atEnd ? 0.9 : 1.2) : 1.4 + Math.random() * 1.2
+        n.facing = n.route.carry ? (atEnd ? "down" : "left") : "up"
+        n.walked = 0
         this.npcIdle(n)
         this.placeNpc(n)
         return
+      }
+      // paseantes: cada tanto se paran a curiosear un puesto
+      if (!n.route.carry) {
+        n.walked += step
+        if (n.walked > 150 + Math.random() * 60 && d > 70) {
+          n.walked = 0
+          n.phase = "wait"
+          n.wait = 1.1 + Math.random() * 1.2
+          n.facing = Math.random() < 0.5 ? "up" : "down"
+          this.npcIdle(n)
+          this.placeNpc(n)
+          return
+        }
       }
       n.x += (dx / d) * step
       n.y += (dy / d) * step
@@ -410,7 +495,7 @@ export class OverworldScene extends WorldScene {
   }
 
   debugState() {
-    return { ...super.debugState(), npcs: this.npcs.map((n) => ({ avatar: n.avatarId, x: Math.round(n.x), y: Math.round(n.y), phase: n.phase, carrying: n.carrying })), bazaarCaption: this.bazaarCaption?.text ?? null }
+    return { ...super.debugState(), npcs: this.npcs.map((n) => ({ avatar: n.avatarId, x: Math.round(n.x), y: Math.round(n.y), phase: n.phase, carrying: n.carrying })), bazaarCaption: this.bazaarCaption?.text ?? null, bazaar: { stage: this.bazaarStage, stalls: this.stalls } }
   }
 
   /**

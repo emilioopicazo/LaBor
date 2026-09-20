@@ -78,6 +78,41 @@ export class BootScene extends Phaser.Scene {
     g.fillRect(4, 1, 1, 9)
     g.fillRect(9, 1, 1, 9)
     g.generateTexture("crate", 14, 11)
+    // puestos del bazar (genéricos: toldo, mesa y objetos) en dos variantes
+    ;[["stall-a", 0xe08a3c, [0xc47a3f, 0x3f9c96, 0xf4efe4]], ["stall-b", 0x3f9c96, [0x181411, 0xe08a3c, 0xe9dcc6]]].forEach(([key, trim, objs]) => {
+      g.clear()
+      g.fillStyle(0xe9dcc6, 1)
+      g.fillRect(0, 0, 40, 9)
+      g.fillStyle(trim as number, 1)
+      g.fillRect(0, 9, 40, 2)
+      for (let x = 2; x < 40; x += 8) g.fillRect(x, 11, 4, 2)
+      g.fillStyle(0x3a332b, 1)
+      g.fillRect(2, 11, 2, 18)
+      g.fillRect(36, 11, 2, 18)
+      g.fillStyle(0xa5713f, 1)
+      g.fillRect(3, 20, 34, 3)
+      g.fillStyle(0x6e4a28, 1)
+      g.fillRect(3, 23, 34, 3)
+      g.fillStyle(0x4e3a24, 1)
+      g.fillRect(5, 26, 2, 8)
+      g.fillRect(33, 26, 2, 8)
+      const colors = objs as number[]
+      g.fillStyle(colors[0], 1)
+      g.fillRect(8, 16, 5, 4)
+      g.fillStyle(colors[1], 1)
+      g.fillRect(16, 15, 6, 5)
+      g.fillStyle(colors[2], 1)
+      g.fillRect(26, 17, 6, 3)
+      g.generateTexture(key as string, 40, 34)
+    })
+    // focos de las series de luces
+    ;[["bulb-paper", 0xf4efe4], ["bulb-ochre", 0xf2a058]].forEach(([key, color]) => {
+      g.clear()
+      g.fillStyle(color as number, 1)
+      g.fillRect(1, 0, 2, 4)
+      g.fillRect(0, 1, 4, 2)
+      g.generateTexture(key as string, 4, 4)
+    })
     g.destroy()
   }
 
