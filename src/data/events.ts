@@ -23,7 +23,12 @@ export interface LaborEvent {
   lineup?: string
   /** el patio ya muestra el evento montado (si no, se monta solo el día del evento) */
   mounted?: boolean
+  /** edición ("1ª EDICIÓN") y resumen de cómo fue: se muestran cuando el evento ya pasó (evidencia) */
+  edition?: string
+  recap?: string
 }
+
+export type EventStatus = "upcoming" | "today" | "live" | "past"
 
 export const EVENTS: LaborEvent[] = [
   {
@@ -37,9 +42,11 @@ export const EVENTS: LaborEvent[] = [
     poster: "/assets/events/patio-2026-09-20.jpg",
     tagline: "OPEN WORKSHOP / CREATIVE BAZAAR",
     lineup: "DESIGN · OBJECTS · FOOD · PEOPLE · JEWELRY · ART · FASHION & MORE",
-    mounted: true,
+    edition: "1ª EDICIÓN",
     description:
       "Bazar en el patio con los talleres abiertos: joyería de CONTRASTE, madera de VETA, metal de MANNNO y marcas invitadas. Entrada libre.",
+    recap:
+      "La primera edición de PATIO abrió los tres talleres al público una tarde de domingo: diseño, objetos, comida, joyería, arte y moda en el patio de La Bor. Fue la prueba de que aquí pasan cosas. El próximo se anuncia aquí y por WhatsApp.",
   },
 ]
 
@@ -130,4 +137,29 @@ export function eventSoonLabel(ev: LaborEvent, now: Date = new Date()): string {
 /** el evento ya está montado en el patio: forzado con `mounted` o el mismo día */
 export function isEventMounted(ev: LaborEvent, now: Date = new Date()): boolean {
   return ev.mounted === true || daysUntil(ev, now).days <= 0
+}
+
+/** estado del evento según el calendario de Tulum: próximo, hoy, en curso o pasado */
+export function eventStatus(ev: LaborEvent, now: Date = new Date()): EventStatus {
+  const start = localDate(ev, ev.start).getTime()
+  const end = localDate(ev, ev.end).getTime()
+  const t = now.getTime()
+  if (t >= end) return "past"
+  if (t >= start) return "live"
+  return daysUntil(ev, now).days <= 0 ? "today" : "upcoming"
+}
+
+/** eventos que ya pasaron, del más reciente al más antiguo (ediciones anteriores) */
+export function pastEvents(now: Date = new Date()): LaborEvent[] {
+  return EVENTS.filter((e) => !isUpcoming(e, now)).sort((a, b) => b.date.localeCompare(a.date))
+}
+
+export function lastEvent(now: Date = new Date()): LaborEvent | null {
+  return pastEvents(now)[0] ?? null
+}
+
+/** "20 SEP 2026": fecha corta con año, para ediciones anteriores */
+export function eventArchiveLabel(ev: LaborEvent): string {
+  const [y, m, d] = ev.date.split("-").map(Number)
+  return `${d} ${MONTHS[m - 1].slice(0, 3)} ${y}`
 }

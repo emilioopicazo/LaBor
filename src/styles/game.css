@@ -1598,3 +1598,30 @@
     padding-top: 4px;
   }
 }
+
+/* ---- evento pasado: cartel con sello (evidencia) ----------------------- */
+.popup__poster-wrap {
+  position: relative;
+}
+.popup__poster--past {
+  filter: saturate(0.82) contrast(0.96);
+}
+.popup__stamp {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  transform: rotate(-7deg);
+  padding: 7px 11px;
+  border: 2px solid var(--rust);
+  border-radius: 4px;
+  background: rgba(244, 239, 228, 0.88);
+  color: var(--rust);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  text-indent: 0.18em;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+}
+.menu__item--past .menu__item-meta {
+  color: var(--muted-2);
+}

@@ -1,5 +1,5 @@
-import { calendarUrl, eventDateLabel, eventRelativeLabel, eventTimeLabel, nextEvent } from "../../data/events"
-import { eventProposalLink, mapsLink, rsvpLink, vendorLink } from "../../data/leads"
+import { calendarUrl, eventArchiveLabel, eventDateLabel, eventRelativeLabel, eventTimeLabel, lastEvent, nextEvent } from "../../data/events"
+import { eventProposalLink, mapsLink, notifyNextEventLink, rsvpLink, vendorLink, vendorNextEventLink } from "../../data/leads"
 import { CONTACT } from "../../data/spaces"
 
 interface EventPopupProps {
@@ -13,8 +13,10 @@ interface EventPopupProps {
  */
 export function EventPopup({ onClose }: EventPopupProps) {
   const ev = nextEvent()
+  // sin próximo: el último que pasó se queda como evidencia (cartel con sello YA PASÓ)
+  const past = ev ? null : lastEvent()
   return (
-    <div className="popup" role="dialog" aria-modal="true" aria-label={ev ? `${ev.kind} ${ev.name}` : "Eventos"}>
+    <div className="popup" role="dialog" aria-modal="true" aria-label={ev ? `${ev.kind} ${ev.name}` : past ? `${past.kind} ${past.name} · ya pasó` : "Eventos"}>
       <button type="button" className="popup__backdrop" onClick={onClose} aria-label="Cerrar" />
       <div className="popup__card">
         <button type="button" className="overlay__close popup__close" onClick={onClose} aria-label="Cerrar">
@@ -47,6 +49,38 @@ export function EventPopup({ onClose }: EventPopupProps) {
                 </a>
               </div>
               <p className="popup__legend">Entrada libre · Dudas por WhatsApp {CONTACT.phoneDisplay}</p>
+            </div>
+          </>
+        ) : past ? (
+          <>
+            {past.poster && (
+              <div className="popup__poster-wrap">
+                <img className="popup__poster popup__poster--past" src={past.poster} alt={`Cartel ${past.kind} ${past.name}, ${eventArchiveLabel(past)}`} />
+                <span className="popup__stamp">YA PASÓ · {eventArchiveLabel(past)}</span>
+              </div>
+            )}
+            <div className="popup__body">
+              <p className="popup__kicker">
+                ÚLTIMO EN EL PATIO · {past.kind}
+                {past.edition ? ` · ${past.edition}` : ""}
+              </p>
+              <p className="popup__when">
+                {eventDateLabel(past)} {past.date.slice(0, 4)} · {eventTimeLabel(past)}
+              </p>
+              {past.recap && <p className="popup__place">{past.recap}</p>}
+              {past.lineup && <p className="popup__lineup">{past.lineup}</p>}
+              <div className="popup__ctas">
+                <a className="overlay__cta overlay__cta--primary overlay__cta--wa" href={notifyNextEventLink()} target="_blank" rel="noreferrer">
+                  AVISARME DEL PRÓXIMO
+                </a>
+                <a className="overlay__cta" href={vendorNextEventLink()} target="_blank" rel="noreferrer">
+                  QUIERO UN STAND EN EL PRÓXIMO
+                </a>
+                <a className="overlay__cta overlay__cta--plain" href={eventProposalLink()} target="_blank" rel="noreferrer">
+                  PROPONER UN EVENTO
+                </a>
+              </div>
+              <p className="popup__legend">El próximo se anuncia aquí y por WhatsApp {CONTACT.phoneDisplay}</p>
             </div>
           </>
         ) : (

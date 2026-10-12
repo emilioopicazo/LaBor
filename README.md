@@ -176,6 +176,18 @@ pausar se recuerda en `labor.audio.v1`. Para agregar pistas basta añadirlas a `
   exclamación ocre entra con pop, rebota y manda un anillo cada 2.4 s sobre el
   letrero de eventos; el aviso de entrada dice "¡MIRA EL LETRERO!". Se disuelve
   con chispas al abrir el anuncio (una vez por visita).
+- **Ciclo de vida de eventos** (`src/data/events.ts`): cada evento pasa solo
+  por próximo → hoy → en curso → pasado (`eventStatus`, `nextEvent`,
+  `lastEvent`, `pastEvents`). Con un evento próximo: aviso al entrar, "!" en
+  el letrero, fila PRÓXIMO EN EL PATIO en el menú, pop-up con cartel y CTAs
+  (VOY, STAND, CALENDARIO, CÓMO LLEGAR) y montaje con cajas en el patio. El
+  día del evento: bazar montado. Cuando pasa: el patio vuelve a la normalidad
+  y el último evento se queda como **evidencia** (fila ÚLTIMO EN EL PATIO ·
+  YA PASÓ, pop-up con el cartel sellado "YA PASÓ · 20 SEP 2026", edición y
+  `recap`, CTAs AVISARME DEL PRÓXIMO / STAND EN EL PRÓXIMO / PROPONER). En
+  `/acerca/` vive la sección "Eventos en el patio · ediciones anteriores".
+  Para anunciar el siguiente basta agregar un objeto a `EVENTS` (y su cartel
+  en `public/assets/events/`), y actualizar `/acerca/` y el JSON-LD a mano.
 - **Bazar montado** (interpretación, sin marcas ni links): el día del evento
   (o con `mounted: true` en el evento) el patio muestra dos filas de puestos
   genéricos al sur del reloj (`STALL_ROWS` / `STALL_XS`, texturas `stall-a` y

@@ -1,5 +1,5 @@
 import { AVAILABLE, CONTACT, RESIDENTS, mailLink, whatsappLink } from "../../data/spaces"
-import { eventShortLabel, nextEvent } from "../../data/events"
+import { eventArchiveLabel, eventShortLabel, lastEvent, nextEvent } from "../../data/events"
 import { fromPrice, mapsLink, mxn } from "../../data/leads"
 import { PIEZA_CENTRAL } from "../../data/missions"
 import { UNLOCK_MISSION_ID } from "../../data/music"
@@ -33,6 +33,7 @@ export function FastMenu({ open, setOpen, onTravel, onDirect, onChangeAvatar }: 
   // la pista se desbloquea al terminar LA HORA (queda en el perfil)
   const unlocked = (prof.completed[UNLOCK_MISSION_ID] ?? 0) > 0 || run?.completed === true
   const ev = nextEvent()
+  const past = ev ? null : lastEvent()
 
   const Item = ({ id, label, meta, direct, reserved }: { id: string; label: string; meta?: string; direct?: boolean; reserved?: boolean }) => {
     const visited = prof.visited.includes(id)
@@ -91,6 +92,22 @@ export function FastMenu({ open, setOpen, onTravel, onDirect, onChangeAvatar }: 
                         {ev.kind} · {ev.name}
                       </span>
                       <span className="menu__item-meta">{eventShortLabel(ev)}</span>
+                    </button>
+                  </li>
+                </ul>
+              </>
+            )}
+
+            {!ev && past && (
+              <>
+                <p className="menu__section">ÚLTIMO EN EL PATIO</p>
+                <ul className="menu__list">
+                  <li>
+                    <button type="button" className="menu__item menu__item--past" onClick={() => onDirect("eventos-board")}>
+                      <span className="menu__item-label">
+                        {past.kind} · {past.name}
+                      </span>
+                      <span className="menu__item-meta">{eventArchiveLabel(past)} · YA PASÓ</span>
                     </button>
                   </li>
                 </ul>

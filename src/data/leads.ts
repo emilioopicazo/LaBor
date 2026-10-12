@@ -101,3 +101,12 @@ export function instagramHandle(url: string): string {
   const m = url.match(/instagram\.com\/([^/?#]+)/)
   return m ? `@${m[1]}` : "INSTAGRAM"
 }
+
+/** lista para el próximo evento del patio (cuando no hay fecha anunciada) */
+export function notifyNextEventLink(): string {
+  return whatsappLink("Hola La Bor, avísenme del próximo evento en el patio. Me interesa: ___ (ir / poner stand).")
+}
+
+export function vendorNextEventLink(): string {
+  return whatsappLink("Hola La Bor, quiero poner un stand en el próximo bazar PATIO. Mi marca / lo que vendo: ___.")
+}
