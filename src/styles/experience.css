@@ -1257,10 +1257,14 @@ button {
   fill: var(--accent-3);
 }
 .plan__facts {
-  display: grid;
-  gap: 8px;
   border-top: 1px solid var(--line-strong);
-  padding-top: 12px;
+  padding-top: 14px;
+  text-align: center;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  line-height: 1.8;
+  color: var(--muted);
   opacity: 0;
   transform: translateY(6px);
   transition:

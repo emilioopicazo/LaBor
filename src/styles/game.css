@@ -1735,8 +1735,8 @@
 /* zoom: control segmentado vertical sobre el botón de acción */
 .zoom {
   position: absolute;
-  right: calc(18px + env(safe-area-inset-right, 0px));
-  bottom: calc(118px + env(safe-area-inset-bottom, 0px));
+  right: calc(12px + env(safe-area-inset-right, 0px));
+  top: calc(72px + env(safe-area-inset-top, 0px));
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1780,14 +1780,9 @@
   width: 100%;
   text-align: center;
 }
-.stage--room .zoom {
-  bottom: calc(118px + env(safe-area-inset-bottom, 0px));
-}
 @media (max-height: 480px) {
   .zoom {
-    bottom: auto;
     top: calc(64px + env(safe-area-inset-top, 0px));
-    right: calc(12px + env(safe-area-inset-right, 0px));
     flex-direction: row;
   }
   .zoom__level {

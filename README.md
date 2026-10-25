@@ -58,8 +58,7 @@ Predio 34.90 × 42.09 m (chaflán en la esquina NO; **INGRESO** de 5.1 m en el
 muro este, Calle 12 Sur; sin abertura en Cobá en el plano).
 
 Capas: `00_REFERENCE_PLAN` (imagen a 48 px/m, solo calibración),
-`PROPERTY_BOUNDARY` (con las aberturas: INGRESO y las salidas de P02 y P03 a
-la calle), `BUILDING_COLLISION` (VETA / MANNNO / franja sur / Pabellón 04 /
+`PROPERTY_BOUNDARY` (con la abertura del INGRESO), `BUILDING_COLLISION` (VETA / MANNNO / franja sur / Pabellón 04 /
 CONTRASTE / Pabellones 01–03 / Naves 01–03, con propiedades `interior`,
 `construction`, `group`, `heightM`), `WALKABLE` (patio + pasillo del árbol +
 **interiores de P04, P02, P03 y la nave** + **Calle 12 Sur** completa: banqueta
@@ -147,22 +146,22 @@ Los espacios disponibles (P02, P03, P04 y los tres módulos de la nave) se
 recorren **dentro del patio**: la huella es caminable, los muros bloquean y la
 puerta es un hueco. Al pisar la huella (`pointInPolygon` en cada frame), el
 contenedor del techo —relleno, lámina, nombre y estado— baja a alfa 0.08 en
-420 ms y se ve el interior: losa con juntas, **subdivisión pre armada** (baño y
-bodega marcados con línea punteada) y una placa `INFO` en el piso que abre la
-ficha. En la nave, el techo es uno solo (lámina a dos aguas, "7 M · 3 MÓDULOS
-EN SUBDIVISIÓN") y la **carpa beduina** de la Nave 02 es un segundo techo
-(contenedor propio con postes que bloquean): se ve desde los otros módulos y se
-vuelve transparente solo cuando estás debajo. Al entrar se emite `space` y React
-muestra un aviso con m² y renta (una vez por espacio por sesión) y marca el
-espacio como visitado. El CTA de la ficha "CAMINAR AL PABELLÓN / A LA NAVE"
-lleva al letrero de adentro; ENTRAR en la puerta hace lo mismo.
+420 ms y se ve el interior: una losa lisa con juntas (a propósito ambigua: sin
+subdivisiones dibujadas) y una placa `INFO` en el piso que abre la ficha. No hay
+botón en la puerta ni balizas: se entra caminando. En la nave, el techo es uno
+solo (lámina a dos aguas) con la subdivisión en 3 módulos marcada en el piso, y
+la **carpa beduina** de la Nave 02 es un segundo techo (contenedor propio con
+postes que bloquean): se ve desde los otros módulos y se vuelve transparente solo
+cuando estás debajo. Al entrar se emite `space` y React muestra un aviso corto
+(nombre y m², una vez por espacio por sesión) y marca el espacio como visitado.
+El CTA de la ficha "CAMINAR AL PABELLÓN / A LA NAVE" lleva al letrero de adentro.
 
-**Pabellón 01 en obra** (`status: "coming-soon"`, abre en noviembre 2026): no se
+**Pabellón 01 en obra** (`status: "coming-soon"`, sin fecha pública): no se
 entra; afuera, en el pasillo del árbol, hay una cuadrilla en loop —uno carga
 bloques del montón a la puerta, otro martilla el muro ("TOC"), otro duerme sobre
-los costales ("z")—, conos, letrero EN OBRA y leyenda. Casco y chaleco son
-texturas generadas (`helmet`, `vest`, `block`, `sack`, `cone`, `hammer`,
-`site-sign`). La ficha ofrece **AVISARME CUANDO ABRA** y visita a la obra.
+los costales ("z")—, conos y letrero EN OBRA. Casco y chaleco son texturas
+generadas (`helmet`, `vest`, `block`, `sack`, `cone`, `hammer`, `site-sign`).
+La ficha ofrece **AVISARME CUANDO ABRA** y visita a la obra.
 
 ## Comercial
 
@@ -170,15 +169,14 @@ Contacto real en `src/data/spaces.ts` (`CONTACT`): WhatsApp +52 55 3037 4167 y
 labortulum@gmail.com. Sin formularios: cada botón abre WhatsApp (o el correo) con
 el mensaje ya escrito según lo que el interesado eligió (`src/data/leads.ts`).
 
-- **Planes** (renta mensual según contrato, `PLANS_CHICO` / `PLANS_GRANDE`):
-  pabellones chicos (03, 04) $8,000 a 1 año · $10,000 a 6 meses; grandes (01, 02)
-  $12,000 a 1 año · $15,000 a 6 meses; naves a cotizar. Toda ficha con precio lleva
-  la leyenda `PRICE_LEGEND`: todo se confirma por WhatsApp o correo.
-- **Ficha de espacio**: chips de plan (6 MESES / 1 AÑO) y de uso (TALLER, ESTUDIO,
-  OFICINA…) → **ME INTERESA** (WhatsApp con espacio + plan + uso), **AGENDAR
-  VISITA**, **PEDIR INFO POR CORREO**, y **RECORRER EL ESPACIO**.
+- **Sin precios publicados** (decisión comercial, oct 2026): ni en el juego, ni
+  en el intro, ni en `/acerca/`, ni en el JSON-LD. `plans` queda vacío; la renta
+  se platica por WhatsApp. La leyenda `PRICE_LEGEND` solo dice dónde preguntar.
+- **Ficha de espacio**: chips de uso (TALLER, ESTUDIO, OFICINA…) → **ME
+  INTERESA** (WhatsApp con espacio + uso), **AGENDAR VISITA**, **PEDIR INFO POR
+  CORREO** y **CAMINAR AL PABELLÓN / A LA NAVE**.
 - **Estados** (oct 2026): P02, P03, P04 y naves `available`; P01 `coming-soon`
-  (en obra, noviembre). `reserved` sigue soportado (lista de espera). La línea de
+  (en obra, sin fecha). `reserved` sigue soportado (lista de espera). La línea de
   escasez se calcula de los estados reales ("QUEDAN 3 PABELLONES DE 4 · 1 EN
   OBRA"). El CTA principal de la ficha es pegajoso al pie de la hoja.
 - **Eventos** (`src/data/events.ts`): el próximo evento aparece en el menú, en el
@@ -337,9 +335,11 @@ existiendo pero apuntan a grises y al acento. Hojas (`.overlay__panel`,
 degradados rayados. Favicon: "LB" negro sobre papel (`public/favicon.svg`, con
 animación SMIL para Firefox; en Chrome/Safari `src/favicon.ts` cambia unos
 frames cada 7 s: un subrayado que barre). Intro: hoja de plano —el predio se
-dibuja solo desde `plan.generated.ts`, etiquetas, "INGRESO", tres datos (talleres,
-renta, P01 en obra) y un botón; entra solo a los 7 s (2.6 s si ya viniste,
-`labor.intro.v2`), con liga directa a WhatsApp y a `/acerca/`.
+dibuja solo desde `plan.generated.ts`, etiquetas, "INGRESO", una línea de datos
+(oficios y renta, sin precios) y un botón; entra solo a los 7 s (2.6 s si ya
+viniste, `labor.intro.v2`), con liga directa a WhatsApp y a `/acerca/`.
+**Sin balizas**: no hay rombos ni palomitas sobre puertas o letreros; solo el
+"!" del tablero cuando hay evento. Los techos dicen nombre y estado, nada más.
 
 ## Archivos clave
 

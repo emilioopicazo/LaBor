@@ -97,22 +97,13 @@ export function mailLink(subject: string, body = ""): string {
   return `mailto:${CONTACT.email}?subject=${encodeURIComponent(subject)}${body ? `&body=${encodeURIComponent(body)}` : ""}`
 }
 
-// Planes (renta mensual según duración del contrato). Pabellones chicos
-// (03, 04): $8,000 a 1 año · $10,000 a 6 meses. Grandes (01, 02):
-// $12,000 a 1 año · $15,000 a 6 meses. Naves: a cotizar.
-export const PLANS_CHICO: RentPlan[] = [
-  { id: "12m", label: "1 AÑO", monthlyMxn: 8000 },
-  { id: "6m", label: "6 MESES", monthlyMxn: 10000 },
-]
-export const PLANS_GRANDE: RentPlan[] = [
-  { id: "12m", label: "1 AÑO", monthlyMxn: 12000 },
-  { id: "6m", label: "6 MESES", monthlyMxn: 15000 },
-]
+// Renta: NO se publica ningún precio ni plan en el sitio. Todo se pregunta
+// por WhatsApp (la razón para contactar). `plans` queda vacío a propósito.
 
 const SHARED = "Patio compartido con VETA, MANNNO y CONTRASTE, y programa de eventos en el patio."
 
-/** Pabellón 01: en obra, entrega en noviembre 2026 */
-export const OPENING_LABEL = "NOVIEMBRE 2026"
+/** Pabellón 01: en obra, sin fecha pública */
+export const OPENING_LABEL = "PRÓXIMAMENTE"
 
 /** La nave es una sola (7 m de altura) que se está subdividiendo en 3 módulos */
 const NAVE_SHARED = ["Módulo de una nave de 7 m de altura, en subdivisión (3 módulos)", "Pensada para artistas y artesanos: producción, estudio, exhibición"]
@@ -145,10 +136,10 @@ function available(
       (status === "reserved"
         ? "Este espacio ya está apartado. Si se libera, avisamos primero a la lista de espera y te enseñamos otros parecidos."
         : status === "coming-soon"
-          ? `En obra. Se entrega en ${OPENING_LABEL.toLowerCase()}: déjanos tu interés y te avisamos antes que a nadie cuando esté listo.`
+          ? "En obra. Déjanos tu interés y te avisamos antes que a nadie cuando esté listo."
           : nave
-            ? "Las naves se cotizan según uso y plazo. Camina adentro para ver el módulo y escríbenos: te mandamos propuesta."
-            : "Camina adentro para verlo. Elige el plan que te acomode y escríbenos: te respondemos por WhatsApp con disponibilidad y fecha de entrada."),
+            ? "Camina adentro para ver el módulo y escríbenos: te mandamos propuesta según uso y plazo."
+            : "Camina adentro para verlo y escríbenos: te respondemos por WhatsApp con condiciones, disponibilidad y fecha de entrada."),
     // los disponibles se recorren sin cambiar de escena: el CTA te lleva caminando a la puerta
     walkIn: status !== "coming-soon",
     cta: status === "coming-soon" ? undefined : { label: nave ? "CAMINAR A LA NAVE" : "CAMINAR AL PABELLÓN", travelTo: id },
@@ -226,11 +217,11 @@ export const SPACES: WorkshopSpace[] = [
 
   // ---- ESPACIOS DISPONIBLES --------------------------------
   // Estado (oct 2026): 02, 03, 04 y las tres naves disponibles (se entra
-  // caminando, el techo se vuelve transparente); 01 en obra, abre en noviembre.
-  available("pabellon-04", "PABELLÓN 04", "P04", 42, PLANS_CHICO, "available", ["Planta libre — 6.05 × 6.85 m", "Subdivisión pre armada: baño y bodega", "Junto a CONTRASTE, frente al patio"]),
-  available("pabellon-01", "PABELLÓN 01", "P01", 80, PLANS_GRANDE, "coming-soon", ["Interior — 45.6 m²", "Terraza exterior — 33.3 m²", `Entrega — ${OPENING_LABEL}`]),
-  available("pabellon-02", "PABELLÓN 02", "P02", 80, PLANS_GRANDE, "available", ["Interior — 45.7 m²", "Terraza exterior — 33.3 m²", "Subdivisión pre armada: baño y bodega", "Salida propia a Calle 12 Sur"]),
-  available("pabellon-03", "PABELLÓN 03", "P03", 46, PLANS_CHICO, "available", ["Planta libre — 6.85 × 6.67 m", "Subdivisión pre armada: baño y bodega", "Salida propia a Calle 12 Sur, junto al ingreso"]),
+  // caminando, el techo se vuelve transparente); 01 en obra, sin fecha pública.
+  available("pabellon-04", "PABELLÓN 04", "P04", 42, [], "available", ["Planta libre — 6.05 × 6.85 m", "Junto a CONTRASTE, frente al patio"]),
+  available("pabellon-01", "PABELLÓN 01", "P01", 80, [], "coming-soon", ["Interior — 45.6 m²", "Terraza exterior — 33.3 m²"]),
+  available("pabellon-02", "PABELLÓN 02", "P02", 80, [], "available", ["Interior — 45.7 m²", "Terraza exterior — 33.3 m²"]),
+  available("pabellon-03", "PABELLÓN 03", "P03", 46, [], "available", ["Planta libre — 6.85 × 6.67 m", "Junto al ingreso por Calle 12 Sur"]),
   available("nave-03", "NAVE 03", "N03", 95, [], "available", ["Módulo — 7.85 × 12.06 m", ...NAVE_SHARED, "Frente al patio, acceso desde Calle Cobá"]),
   available("nave-02", "NAVE 02", "N02", 117, [], "available", ["Módulo — 9.70 × 12.06 m", ...NAVE_SHARED, "Carpa beduina montada al centro: doble techo, lista para eventos"]),
   available("nave-01", "NAVE 01", "N01", 117, [], "available", ["Módulo — 9.70 × 12.06 m", ...NAVE_SHARED, "Esquina Calle Cobá / Calle 12 Sur"]),
@@ -258,7 +249,7 @@ export const SPACES: WorkshopSpace[] = [
     name: "CONTACTO",
     shortName: "INFORMACIÓN",
     subtitle: "La Bor — Talleres",
-    description: `${CONTACT.address}. Pabellones desde $8,000 MXN al mes; naves a cotizar. Escríbenos y te respondemos por WhatsApp.`,
+    description: `${CONTACT.address}. Pabellones y naves en renta. Escríbenos y te respondemos por WhatsApp.`,
     details: [`WhatsApp — ${CONTACT.phoneDisplay}`, `Email — ${CONTACT.email}`],
     type: "navigation",
     status: "active",
@@ -288,7 +279,7 @@ export function spaceKindLabel(space: WorkshopSpace): string {
     case "resident":
       return "RESIDENTE"
     case "available":
-      return space.status === "reserved" ? "ESPACIO RESERVADO" : space.status === "coming-soon" ? `EN OBRA · ABRE EN ${OPENING_LABEL}` : "ESPACIO DISPONIBLE"
+      return space.status === "reserved" ? "ESPACIO RESERVADO" : space.status === "coming-soon" ? `EN OBRA · ${OPENING_LABEL}` : "ESPACIO DISPONIBLE"
     case "event":
       return "PATIO"
     case "navigation":

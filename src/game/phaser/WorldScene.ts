@@ -659,31 +659,17 @@ export abstract class WorldScene extends Phaser.Scene implements GameCommands {
     }
   }
 
+  /** Sin balizas: el mundo se lee solo (puertas, placas, letreros). Solo queda el "!" de novedad. */
   private createBeacons() {
     this.beacons.forEach((b) => b.destroy())
     this.beacons.clear()
     this.notices.clear()
-    this.interactables.forEach((it) => {
-      const y = it.y - this.beaconLift(it)
-      const img = this.add.image(it.x, y, "beacon-todo").setScale(1.3).setDepth(6000).setAlpha(0.8)
-      this.tweens.add({ targets: img, y: y - 5, duration: 1100 + Math.random() * 300, yoyo: true, repeat: -1, ease: "Sine.easeInOut" })
-      this.beacons.set(it.id, img)
-    })
   }
 
   private applyMarkers() {
-    this.beacons.forEach((img, id) => {
-      const state = this.markers[id] ?? "todo"
-      const near = this.current?.id === id
-      const notice = state === "notice"
-      img.setVisible(!notice)
-      img.setTexture(state === "done" ? "beacon-done" : state === "target" ? "beacon-target" : "beacon-todo")
-      // un poco más discretas: no deben robarle protagonismo al patio
-      img.setScale(near ? 1.6 : state === "target" ? 1.45 : 1.3)
-      img.setAlpha(near ? 1 : state === "done" ? 0.85 : state === "target" ? 1 : 0.75)
-      const it = this.interactables.find((i) => i.id === id)
-      if (notice && it) this.showNotice(id, it.x, it.y - this.beaconLift(it))
-      else this.hideNotice(id)
+    this.interactables.forEach((it) => {
+      if (this.markers[it.id] === "notice") this.showNotice(it.id, it.x, it.y - this.beaconLift(it))
+      else this.hideNotice(it.id)
     })
   }
 
@@ -756,20 +742,18 @@ export abstract class WorldScene extends Phaser.Scene implements GameCommands {
     this.registry.set("markers", states)
     this.applyMarkers()
     if (Object.keys(previous).length === 0) return
-    // algo se acaba de completar: la baliza salta y suelta chispas (con un panel abierto, al cerrarlo)
+    // algo se acaba de completar: chispas discretas en el punto (con un panel abierto, al cerrarlo)
     Object.entries(states).forEach(([id, st]) => {
-      if (st !== "done" || previous[id] === "done" || !this.beacons.has(id)) return
+      if (st !== "done" || previous[id] === "done") return
       if (this.paused) this.pendingPops.push(id)
       else this.popBeacon(id)
     })
   }
 
   private popBeacon(id: string) {
-    const b = this.beacons.get(id)
-    if (!b) return
-    if (!this.reducedMotion) this.tweens.add({ targets: b, scaleX: b.scaleX * 1.7, scaleY: b.scaleY * 1.7, duration: 180, yoyo: true, ease: "Quad.easeOut" })
-    this.burst(b.x, b.y, 16)
-    this.ringPulse(b.x, b.y, 22, PALETTE.accent2, 600)
+    const it = this.interactables.find((i) => i.id === id)
+    if (!it) return
+    this.burst(it.x, it.y - this.beaconLift(it), 14)
   }
 
   setGuide(targetId: string | null) {

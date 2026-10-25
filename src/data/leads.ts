@@ -5,43 +5,28 @@
 // ============================================================
 
 import { eventDateLabel, eventTimeLabel, type LaborEvent } from "./events"
-import { CONTACT, mailLink, whatsappLink, whatsappLinkTo, type RentPlan, type WorkshopSpace } from "./spaces"
+import { CONTACT, mailLink, whatsappLink, whatsappLinkTo, type WorkshopSpace } from "./spaces"
 
-export const PRICE_LEGEND = `Precios de referencia en MXN. Todo se confirma por WhatsApp al ${CONTACT.phoneDisplay} o por correo a ${CONTACT.email}.`
+export const PRICE_LEGEND = `Condiciones y disponibilidad por WhatsApp al ${CONTACT.phoneDisplay} o por correo a ${CONTACT.email}.`
 
 export const USE_OPTIONS = ["TALLER", "ESTUDIO", "OFICINA", "MARCA / SHOWROOM", "BODEGA", "OTRO"] as const
 export type UseOption = (typeof USE_OPTIONS)[number]
-
-export const mxn = (n: number) => `$${n.toLocaleString("es-MX")}`
-
-export function planLabel(plan: RentPlan): string {
-  return `${mxn(plan.monthlyMxn)} MXN / MES · CONTRATO DE ${plan.label}`
-}
-
-/** precio más bajo del espacio (para menús y etiquetas) */
-export function fromPrice(space: WorkshopSpace): number | null {
-  if (!space.plans || space.plans.length === 0) return null
-  return Math.min(...space.plans.map((p) => p.monthlyMxn))
-}
 
 function spaceRef(space: WorkshopSpace): string {
   return `${space.name}${space.areaM2 ? ` (${space.areaM2} m²)` : ""}`
 }
 
-/** ME INTERESA: espacio + plan + uso elegidos */
-export function interestLink(space: WorkshopSpace, plan?: RentPlan | null, use?: UseOption | null): string {
-  const parts = [`Hola La Bor, me interesa ${spaceRef(space)}.`]
-  if (plan) parts.push(`Plan: ${plan.label} a ${mxn(plan.monthlyMxn)} MXN al mes.`)
-  else if (space.plans?.length) parts.push("Quiero saber qué plan me conviene (6 meses o 1 año).")
-  else parts.push("Quiero cotizarlo.")
+/** ME INTERESA: espacio + uso elegido (condiciones y renta se platican por WhatsApp) */
+export function interestLink(space: WorkshopSpace, use?: UseOption | null): string {
+  const parts = [`Hola La Bor, me interesa ${spaceRef(space)}. Quiero conocer condiciones y disponibilidad.`]
   if (use) parts.push(`Lo usaría como ${use.toLowerCase()}.`)
   parts.push("¿Podemos hablar?")
   return whatsappLink(parts.join(" "))
 }
 
-export function interestMail(space: WorkshopSpace, plan?: RentPlan | null, use?: UseOption | null): string {
-  const subject = `Me interesa ${space.name}${plan ? ` · plan ${plan.label}` : ""}`
-  const body = [`Hola La Bor,`, ``, `Me interesa ${spaceRef(space)}.`, plan ? `Plan: ${plan.label} a ${mxn(plan.monthlyMxn)} MXN al mes.` : "", use ? `Uso: ${use.toLowerCase()}.` : "", ``, `Mi nombre:`, `Mi teléfono:`].filter((l) => l !== "").join("\n")
+export function interestMail(space: WorkshopSpace, use?: UseOption | null): string {
+  const subject = `Me interesa ${space.name}`
+  const body = [`Hola La Bor,`, ``, `Me interesa ${spaceRef(space)}. Quiero conocer condiciones y disponibilidad.`, use ? `Uso: ${use.toLowerCase()}.` : "", ``, `Mi nombre:`, `Mi teléfono:`].filter((l) => l !== "").join("\n")
   return mailLink(subject, body)
 }
 
@@ -50,9 +35,9 @@ export function waitlistLink(space: WorkshopSpace): string {
   return whatsappLink(`Hola La Bor, ${spaceRef(space)} aparece reservado. Quiero entrar a la lista de espera por si se libera, y conocer otros espacios parecidos.`)
 }
 
-/** EN OBRA: avisarme cuando abra (Pabellón 01, noviembre) */
+/** EN OBRA: avisarme cuando abra (Pabellón 01) */
 export function openingLink(space: WorkshopSpace): string {
-  return whatsappLink(`Hola La Bor, me interesa ${spaceRef(space)}, que abre en noviembre. Avísenme antes que a nadie cuando esté listo y díganme si puedo apartarlo desde ahora.`)
+  return whatsappLink(`Hola La Bor, me interesa ${spaceRef(space)}, que está en obra. Avísenme antes que a nadie cuando esté listo y díganme si puedo apartarlo desde ahora.`)
 }
 
 /** AGENDAR VISITA (con o sin espacio) */
@@ -63,7 +48,7 @@ export function visitLink(space?: WorkshopSpace | null): string {
 
 /** información general */
 export function infoLink(): string {
-  return whatsappLink("Hola La Bor, quiero información de los espacios disponibles y sus planes (6 meses o 1 año).")
+  return whatsappLink("Hola La Bor, quiero información de los espacios disponibles: condiciones, plazos y disponibilidad.")
 }
 
 /** evento: voy / stand */

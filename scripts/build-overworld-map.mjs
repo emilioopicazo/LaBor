@@ -81,10 +81,10 @@ function wallsOf(id) {
     case "pabellon-04":
       return [...seg("n", [x1, y1, x2, y1]), ...seg("s", [x1, y2, x2, y2], [8.5]), ...seg("w", [x1, y1, x1, y2]), ...seg("e", [x2, y1, x2, y2])]
     case "pabellon-02":
-      // norte compartido con P01 (bloquea solo); oeste puerta al patio; este salida a Calle 12 Sur; sur muro con P03 y patio
-      return [...seg("w", [x1, y1, x1, y2], [14.8]), ...seg("e", [x2, y1, x2, y2], [14.8]), ...seg("s", [x1, y2, x2, y2])]
+      // norte compartido con P01 (bloquea solo); oeste puerta al patio; este muro a la calle; sur muro con P03 y patio
+      return [...seg("w", [x1, y1, x1, y2], [14.8]), ...seg("e", [x2, y1, x2, y2]), ...seg("s", [x1, y2, x2, y2])]
     case "pabellon-03":
-      return [...seg("w", [x1, y1, x1, y2], [21.5]), ...seg("e", [x2, y1, x2, y2], [21.5]), ...seg("s", [x1, y2, x2, y2])]
+      return [...seg("w", [x1, y1, x1, y2], [21.5]), ...seg("e", [x2, y1, x2, y2]), ...seg("s", [x1, y2, x2, y2])]
     default:
       return []
   }
@@ -114,11 +114,7 @@ function naveWalls() {
 }
 const INTERIOR_WALLS = [...wallsOf("pabellon-04"), ...wallsOf("pabellon-02"), ...wallsOf("pabellon-03"), ...naveWalls()]
 
-// ---- salidas a la calle (huecos en el muro este, Calle 12 Sur) ----------
-const STREET_EXITS = [
-  { id: "pabellon-02-street", rect: [34.6, 14.8 - GAP / 2, 35.2, 14.8 + GAP / 2] },
-  { id: "pabellon-03-street", rect: [34.6, 21.5 - GAP / 2, 35.2, 21.5 + GAP / 2] },
-]
+// (sin salidas de los pabellones a la calle: la única abertura del muro este es el INGRESO)
 
 // ---- circulación --------------------------------------------------------
 // Patio + pasillo del árbol + interiores de P04, P02, P03 y la nave +
@@ -277,7 +273,6 @@ const layers = [
     polygonObj("labor-property", "property-boundary", BOUNDARY, [prop("note", "Perímetro real medido (líneas exteriores). Chaflán NO; INGRESO en muro este y 24.80–29.90.")]),
     // Abertura real del muro (portón INGRESO, 5.1 m, Calle 12 Sur)
     rectObj("ingreso-opening", "opening", [34.6, 24.8, 35.2, 29.9], [prop("label", "INGRESO"), prop("street", "CALLE 12 SUR")]),
-    ...STREET_EXITS.map((e) => rectObj(e.id, "opening", e.rect, [prop("label", ""), prop("street", "CALLE 12 SUR")])),
   ]),
   layer(
     "BUILDING_COLLISION",

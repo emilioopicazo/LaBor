@@ -8,7 +8,7 @@
 import Phaser from "phaser"
 import { AVATARS } from "../../data/avatars"
 import { eventSoonLabel, eventTimeLabel, isEventMounted, nextEvent, type LaborEvent } from "../../data/events"
-import { OPENING_LABEL, getSpace } from "../../data/spaces"
+import { getSpace } from "../../data/spaces"
 import { gameEvents, type Interactable } from "../bridge"
 import { boundsOf, type BuildingDef, type OverworldMap, type PropDef, type Rect, type Vec } from "../map/tiled"
 import { nearestStandable, pointInPolygon } from "../world/collision"
@@ -78,9 +78,8 @@ const SITE = {
   door: { x: 1052, y: 392 },
   hammer: { x: 1058, y: 312 },
   nap: { x: 1036, y: 470 },
-  cones: [[1010, 262], [1078, 400], [985, 450]] as Array<[number, number]>,
+  cones: [[1010, 262], [1078, 410]] as Array<[number, number]>,
   sign: { x: 968, y: 548 },
-  caption: { x: 985, y: 583 },
 }
 
 interface NpcRoute {
@@ -196,20 +195,23 @@ export class OverworldScene extends WorldScene {
     map.doors.forEach((d) => {
       const space = getSpace(d.spaceId)
       const b = buildingOf(d.spaceId)
-      // interiores: la puerta es un hueco; la acción ENTRAR te lleva caminando hasta el punto de información de adentro
-      const walkIn = !!b?.interior
+      // interiores: la puerta es solo un hueco, se entra caminando (sin botón); el viaje rápido llega al hueco
+      const ret = map.spawns.find((s) => s.id === `return-${d.spaceId}`)
+      if (b?.interior) {
+        if (ret) approach[d.id] = { x: ret.x, y: ret.y }
+        return
+      }
       interactables.push({
         id: d.id,
         kind: "door",
-        action: walkIn ? "ENTRAR" : b?.construction ? "VER OBRA" : d.action,
+        action: b?.construction ? "VER" : d.action,
         label: space?.shortName ?? space?.name ?? d.spaceId.toUpperCase(),
         x: d.x,
         y: d.y,
         radius: d.radius,
         spaceId: d.spaceId,
-        sceneId: walkIn ? undefined : d.sceneId,
+        sceneId: d.sceneId,
       })
-      const ret = map.spawns.find((s) => s.id === `return-${d.spaceId}`)
       if (ret) approach[d.id] = { x: ret.x, y: ret.y }
     })
     map.pois.forEach((p) => {
@@ -448,17 +450,11 @@ export class OverworldScene extends WorldScene {
         if (commercial) {
           const reserved = space.status === "reserved"
           const soon = space.status === "coming-soon"
-          const text = soon ? `EN OBRA · ABRE EN ${OPENING_LABEL}` : `${reserved ? "RESERVADO" : "DISPONIBLE"} · ${space.areaM2} M²`
-          const meta = this.add.text(cx, cy + 14, text, { ...TEXT_STYLE, fontSize: soon ? "10px" : "11px", color: reserved || soon ? "#ecebe9" : "#5d5a60", letterSpacing: 1 })
+          const text = soon ? "EN OBRA" : reserved ? "RESERVADO" : "DISPONIBLE"
+          const meta = this.add.text(cx, cy + 14, text, { ...TEXT_STYLE, fontSize: "10px", color: reserved || soon ? "#ecebe9" : "#5d5a60", letterSpacing: 2 })
           meta.setOrigin(0.5).setResolution(2)
           if (reserved || soon) meta.setPadding(8, 3, 8, 3).setBackgroundColor(reserved ? "#4f2724" : "#2a292c")
-          if (reserved && !this.reducedMotion) this.tweens.add({ targets: meta, alpha: { from: 1, to: 0.45 }, scaleX: { from: 1, to: 1.08 }, scaleY: { from: 1, to: 1.08 }, duration: 900, yoyo: true, repeat: -1, ease: "Sine.easeInOut" })
           layer.push(meta)
-          if (!soon && !reserved && b.interior) {
-            const hint = this.add.text(cx, cy + 32, "ENTRA · EL TECHO SE ABRE", { ...TEXT_STYLE, fontSize: "9px", color: "#5d5a60", letterSpacing: 2 })
-            hint.setOrigin(0.5).setAlpha(0.8).setResolution(2)
-            layer.push(hint)
-          }
         }
       }
     }
@@ -497,52 +493,17 @@ export class OverworldScene extends WorldScene {
     for (let y = r.y + 2 * m; y < r.y + r.height; y += 2 * m) g.lineBetween(r.x, y, r.x + r.width, y)
     g.setDepth(-6)
 
-    const dash = (x1: number, y1: number, x2: number, y2: number, gfx: Phaser.GameObjects.Graphics) => {
-      const len = Math.hypot(x2 - x1, y2 - y1)
-      const n = Math.max(1, Math.floor(len / 14))
-      for (let i = 0; i < n; i += 2) {
-        const a = i / n
-        const bq = Math.min(1, (i + 1) / n)
-        gfx.lineBetween(x1 + (x2 - x1) * a, y1 + (y2 - y1) * a, x1 + (x2 - x1) * bq, y1 + (y2 - y1) * bq)
-      }
-    }
-    const stencil = (x: number, y: number, text: string, size = 9, angle = 0) => {
-      const t = this.add.text(x, y, text, { ...TEXT_STYLE, fontSize: `${size}px`, color: "#141315", letterSpacing: 2 })
-      t.setOrigin(0.5).setAlpha(0.42).setAngle(angle).setDepth(-5.5).setResolution(2)
-      return t
-    }
-
-    if (b.group === "nave") {
-      // la nave es una sola: la subdivisión en 3 módulos va marcada en el piso (en proceso)
+    // la nave es una sola: la subdivisión en 3 módulos va marcada en el piso con una línea discontinua y columnas
+    if (b.group === "nave" && b.spaceId !== "nave-03") {
       const d = this.add.graphics().setDepth(-5.8)
       d.lineStyle(3, 0x6b6970, 0.7)
-      if (b.spaceId !== "nave-03") dash(r.x, r.y + 10, r.x, r.y + r.height - 10, d)
-      // columnas de acero cada 4 m sobre los ejes de la subdivisión y el muro norte
+      const len = r.height - 20
+      const n = Math.max(1, Math.floor(len / 14))
+      for (let i = 0; i < n; i += 2) d.lineBetween(r.x, r.y + 10 + (len * i) / n, r.x, r.y + 10 + (len * Math.min(n, i + 1)) / n)
       d.fillStyle(WALL, 1)
-      for (let y = r.y + 1.0 * m; y < r.y + r.height; y += 4 * m) {
-        if (b.spaceId !== "nave-03") d.fillRect(r.x - 6, y - 6, 12, 12)
-      }
-      stencil(r.x + r.width / 2, r.y + r.height - 26, `${b.label} · MÓDULO EN SUBDIVISIÓN · 7 M DE ALTURA`, 9)
-      return
+      for (let y = r.y + 1.0 * m; y < r.y + r.height; y += 4 * m) d.fillRect(r.x - 6, y - 6, 12, 12)
     }
-
-    // pabellones: baño y bodega pre armados a lo largo del muro norte (marco punteado)
-    const d = this.add.graphics().setDepth(-5.8)
-    d.lineStyle(3, 0x6b6970, 0.75)
-    const unit = 1.7 * m
-    const depth = 2.0 * m
-    const x0 = r.x + 0.3 * m
-    const y0 = r.y + 0.15 * m
-    dash(x0, y0 + depth, x0 + unit * 2, y0 + depth, d)
-    dash(x0 + unit, y0, x0 + unit, y0 + depth, d)
-    dash(x0 + unit * 2, y0, x0 + unit * 2, y0 + depth, d)
-    stencil(x0 + unit / 2, y0 + depth / 2, "BAÑO", 8)
-    stencil(x0 + unit * 1.5, y0 + depth / 2, "BODEGA", 8)
-    stencil(r.x + r.width / 2, r.y + r.height - 22, `${b.label} · ${getSpace(b.spaceId)?.areaM2 ?? ""} M²`, 9)
-    // salida propia a la calle (pabellones 02 y 03)
-    if (r.x + r.width >= boundsOf(this.map.boundary).x + boundsOf(this.map.boundary).width - 2) {
-      stencil(r.x + r.width - 1.1 * m, r.y + r.height / 2 + 1.1 * m, "CALLE 12 SUR →", 8)
-    }
+    // los pabellones quedan lisos a propósito: planta libre, sin subdivisión dibujada
   }
 
   /** techo único de la nave (lámina a dos aguas sobre los tres módulos) */
@@ -565,11 +526,7 @@ export class OverworldScene extends WorldScene {
     for (let x = x1 + 24; x < x2; x += 24) g.lineBetween(x, y1 + 4, x, y2 - 4)
     g.lineStyle(6, WALL, 1)
     g.strokeRect(x1, y1, x2 - x1, y2 - y1)
-    const tag = this.add.text((x1 + x2) / 2, y1 + 22, "NAVE · 7 M · 3 MÓDULOS EN SUBDIVISIÓN", { ...TEXT_STYLE, fontSize: "10px", color: "#141315", letterSpacing: 2 })
-    tag.setOrigin(0.5).setAlpha(0.7).setResolution(2)
-    const c = this.roofContainer("nave")
-    c.addAt(g, 0)
-    c.add(tag)
+    this.roofContainer("nave").addAt(g, 0)
   }
 
   /** carpa beduina en la Nave 02: lona oscura con costuras, cuerdas y estacas; segundo techo bajo la lámina */
@@ -598,9 +555,7 @@ export class OverworldScene extends WorldScene {
     TENT.canvas.forEach(([x, y]) => g.lineBetween(0, 0, x, y))
     g.fillStyle(PALETTE.accent2, 1)
     g.fillCircle(0, 0, 5)
-    const tag = this.add.text(0, 56, "CARPA BEDUINA · DOBLE TECHO", { ...TEXT_STYLE, fontSize: "9px", color: "#ecebe9", letterSpacing: 2 })
-    tag.setOrigin(0.5).setAlpha(0.75).setResolution(2)
-    c.add([g, tag])
+    c.add(g)
     this.tent = c
     // postes (se ven cuando la lona se vuelve transparente)
     TENT.poles.forEach(([dx, dy]) => {
@@ -686,11 +641,9 @@ export class OverworldScene extends WorldScene {
       this.placeNpc(npc)
       this.npcIdle(npc)
     }
-    // montón de bloques y costales junto al punto de carga
-    ;[0, 1, 2].forEach((k) => this.add.image(SITE.pile.x - 34 + k * 14, SITE.pile.y + 6 - (k % 2) * 8, "block").setOrigin(0.5, 1).setScale(3).setDepth(SITE.pile.y + 6 - (k % 2) * 8))
-    ;[0, 1].forEach((k) => this.add.image(SITE.pile.x + 30, SITE.pile.y + 4 - k * 9, "sack").setOrigin(0.5, 1).setScale(3).setDepth(SITE.pile.y + 4 - k * 9))
-    // lo que ya metieron: bloques apilados junto a la puerta
-    ;[0, 1, 2, 3].forEach((k) => this.add.image(SITE.door.x - 6 + (k % 2) * 14, SITE.door.y + 30 - Math.floor(k / 2) * 9, "block").setOrigin(0.5, 1).setScale(3).setDepth(SITE.door.y + 30 - Math.floor(k / 2) * 9))
+    // montón de bloques junto al punto de carga y dos ya metidos junto a la puerta
+    ;[0, 1].forEach((k) => this.add.image(SITE.pile.x - 30 + k * 14, SITE.pile.y + 6 - k * 8, "block").setOrigin(0.5, 1).setScale(3).setDepth(SITE.pile.y + 6 - k * 8))
+    ;[0, 1].forEach((k) => this.add.image(SITE.door.x - 6 + k * 14, SITE.door.y + 30, "block").setOrigin(0.5, 1).setScale(3).setDepth(SITE.door.y + 30))
 
     // 2 · el que martilla: de pie frente al muro, martillo arriba y abajo, "TOC"
     if (pool[1] && this.textures.exists(`avatar-${pool[1]}`)) {
@@ -740,14 +693,11 @@ export class OverworldScene extends WorldScene {
       }
     }
 
-    // conos, letrero de obra y leyenda en el piso
+    // conos y letrero de obra
     SITE.cones.forEach(([x, y]) => this.add.image(x, y, "cone").setOrigin(0.5, 1).setScale(3).setDepth(y))
     this.add.image(SITE.sign.x, SITE.sign.y, "site-sign").setOrigin(0.5, 1).setScale(3).setDepth(SITE.sign.y)
     const label = this.add.text(SITE.sign.x, SITE.sign.y - 44, "EN OBRA", { ...TEXT_STYLE, fontSize: "11px", color: "#141315", letterSpacing: 2 })
     label.setOrigin(0.5).setDepth(SITE.sign.y + 1).setResolution(2)
-    const cap = this.add.text(SITE.caption.x, SITE.caption.y, `P01 · ABRE EN ${OPENING_LABEL}`, { ...TEXT_STYLE, fontSize: "10px", color: "#ecebe9", letterSpacing: 2, backgroundColor: "#2a292c" })
-    cap.setOrigin(0.5, 0).setPadding(8, 4, 8, 4).setAlpha(0.92).setDepth(-3).setResolution(2)
-    if (!this.reducedMotion) this.tweens.add({ targets: cap, alpha: { from: 0.92, to: 0.6 }, duration: 2600, yoyo: true, repeat: -1, ease: "Sine.easeInOut" })
   }
 
   // ---- personas montando el bazar (loop: cargan cajas al centro del patio) ----

@@ -61,3 +61,11 @@
   constantes de Phaser (`PALETTE` en `WorldScene.ts` + `roofStyle`), tokens
   inline de `/acerca/` y el generador del OG en el scratchpad. Mantener los
   alias (`--ochre*`, `--teal`, `--rust`) evitó tocar cien reglas.
+- **No publicar precios ni inventar detalles del espacio**: Emilio quitó los
+  precios de todo el sitio (la renta es la razón para escribir) y los detalles
+  "baño y bodega" / "salida propia a la calle" que yo había inventado. Regla:
+  en lo comercial, solo datos que él dio; lo demás, ambiguo. Tampoco fechas de
+  entrega ("abre en noviembre") si no las pidió públicas.
+- **Menos señalética**: las balizas (rombos / palomitas) y los textos extra en
+  techos e interiores confundían y amontonaban. Minimal: nombre + estado en el
+  techo, interior liso, se entra caminando sin botón.

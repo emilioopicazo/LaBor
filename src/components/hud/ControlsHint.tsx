@@ -10,7 +10,7 @@ export function ControlsHint({ coarse }: { coarse: boolean }) {
   if (gone) return null
   return (
     <p className="hint">
-      {coarse ? "ARRASTRA O TOCA PARA CAMINAR · PELLIZCA PARA ZOOM" : "WASD / FLECHAS: CAMINAR · E: ACTUAR · CLIC: IR AHÍ · RUEDA: ZOOM"}
+      {coarse ? "ARRASTRA O TOCA PARA CAMINAR" : "WASD / FLECHAS: CAMINAR · E: ACTUAR · CLIC: IR AHÍ · RUEDA: ZOOM"}
     </p>
   )
 }

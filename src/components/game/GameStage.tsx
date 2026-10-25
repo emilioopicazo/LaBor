@@ -7,7 +7,6 @@ import { PersonOverlay } from "../experience/PersonOverlay"
 import { ROOMS } from "../../data/rooms"
 import { SPACES, getSpace } from "../../data/spaces"
 import { gameCommands, gameEvents, type Interactable, type MarkerState } from "../../game/bridge"
-import { fromPrice, mxn } from "../../data/leads"
 import { mission, missionView, toast, useMissionRun } from "../../game/mission"
 import { profile, useProfile } from "../../game/profile"
 import { AvatarSelector } from "../experience/AvatarSelector"
@@ -97,8 +96,6 @@ export function GameStage({ active, opening = false }: GameStageProps) {
     switch (t.kind) {
       case "door":
         if (t.action === "ENTRAR" && t.sceneId) gameCommands.enterRoom(t.sceneId)
-        // interior sin escena: entrar es caminar hasta su punto de información
-        else if (t.action === "ENTRAR" && t.spaceId) gameCommands.goTo(`${t.spaceId}-info`)
         else if (t.spaceId) setOverlay({ type: "space", id: t.spaceId })
         return
       case "poi":
@@ -158,8 +155,7 @@ export function GameStage({ active, opening = false }: GameStageProps) {
         const sp = getSpace(spaceId)
         if (!sp || spaceToasted.current.has(spaceId)) return
         spaceToasted.current.add(spaceId)
-        const from = fromPrice(sp)
-        toast(`${sp.name} · ${sp.areaM2} M² · ${from ? `DESDE ${mxn(from)} / MES` : "A COTIZAR"} · BUSCA EL LETRERO INFO`, "quest")
+        toast(`${sp.name} · ${sp.areaM2} M²`, "quest")
       }),
       gameEvents.on("escape", () => {
         setOverlay(null)
@@ -206,10 +202,7 @@ export function GameStage({ active, opening = false }: GameStageProps) {
       SPACES.forEach((sp) => {
         const id = `${sp.id}-door`
         if (sp.type === "resident" && won(sp.id)) states[id] = "done"
-        else if (prof.visited.includes(sp.id) && sp.type !== "resident") {
-          states[id] = "done"
-          if (sp.walkIn) states[`${sp.id}-info`] = "done"
-        }
+        else if (prof.visited.includes(sp.id) && sp.type !== "resident") states[id] = "done"
         if (targetSpace === sp.id) states[id] = "target"
       })
       if (view?.complete) states["pieza-central"] = "done"

@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { INTRO_AUTO_MS, INTRO_RETURN_MS, INTRO_SEEN_KEY, LOCATION } from "../../config/world"
 import { PLAN } from "../../data/plan.generated"
-import { AVAILABLE, CONTACT, OPENING_LABEL, whatsappLink } from "../../data/spaces"
-import { fromPrice, mxn } from "../../data/leads"
+import { CONTACT, whatsappLink } from "../../data/spaces"
 
 interface IntroProps {
   /** sprites precargados */
@@ -79,10 +78,6 @@ export function Intro({ ready, opening, hidden = false, onDone }: IntroProps) {
     const cy = poly.reduce((a, p) => a + p[1], 0) / poly.length
     return { x: Number(X(cx)), y: Number(Y(cy)) }
   }
-  const openPabs = AVAILABLE.filter((s) => s.id.startsWith("pabellon") && s.status === "available")
-  const from = Math.min(...openPabs.map((s) => fromPrice(s) ?? Infinity))
-  const naves = AVAILABLE.filter((s) => s.id.startsWith("nave") && s.status === "available").length
-
   const shortLabel = (label: string) => label.replace("PABELLÓN ", "P").replace("PRÓXIMAMENTE", "")
 
   return (
@@ -131,7 +126,7 @@ export function Intro({ ready, opening, hidden = false, onDone }: IntroProps) {
                 {label}
                 {b.construction && (
                   <tspan x={c.x} dy="11" className="plan__label-meta">
-                    EN OBRA · NOV
+                    EN OBRA
                   </tspan>
                 )}
               </text>
@@ -149,22 +144,7 @@ export function Intro({ ready, opening, hidden = false, onDone }: IntroProps) {
           </g>
         </svg>
 
-        <dl className="plan__facts">
-          <div>
-            <dt>TALLERES</dt>
-            <dd>CARPINTERÍA · HERRERÍA · JOYERÍA</dd>
-          </div>
-          <div>
-            <dt>EN RENTA</dt>
-            <dd>
-              {openPabs.length} PABELLONES DESDE {mxn(from)}/MES · {naves} MÓDULOS DE NAVE
-            </dd>
-          </div>
-          <div>
-            <dt>PABELLÓN 01</dt>
-            <dd>EN OBRA · ABRE EN {OPENING_LABEL}</dd>
-          </div>
-        </dl>
+        <p className="plan__facts">CARPINTERÍA · HERRERÍA · JOYERÍA · PABELLONES Y NAVES EN RENTA</p>
 
         <div className="plan__actions">
           <button type="button" className="plan__enter" disabled={!ready} onClick={enter}>

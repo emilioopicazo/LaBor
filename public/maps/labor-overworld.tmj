@@ -93,52 +93,6 @@
               "value": "CALLE 12 SUR"
             }
           ]
-        },
-        {
-          "id": 3,
-          "name": "pabellon-02-street",
-          "type": "opening",
-          "x": 1660.8,
-          "y": 679.2,
-          "width": 28.8,
-          "height": 62.4,
-          "rotation": 0,
-          "visible": true,
-          "properties": [
-            {
-              "name": "label",
-              "type": "string",
-              "value": ""
-            },
-            {
-              "name": "street",
-              "type": "string",
-              "value": "CALLE 12 SUR"
-            }
-          ]
-        },
-        {
-          "id": 4,
-          "name": "pabellon-03-street",
-          "type": "opening",
-          "x": 1660.8,
-          "y": 1000.8,
-          "width": 28.8,
-          "height": 62.4,
-          "rotation": 0,
-          "visible": true,
-          "properties": [
-            {
-              "name": "label",
-              "type": "string",
-              "value": ""
-            },
-            {
-              "name": "street",
-              "type": "string",
-              "value": "CALLE 12 SUR"
-            }
-          ]
         }
       ],
       "opacity": 1,
@@ -153,7 +107,7 @@
       "draworder": "topdown",
       "objects": [
         {
-          "id": 5,
+          "id": 3,
           "name": "veta",
           "type": "building",
           "x": 0,
@@ -223,7 +177,7 @@
           ]
         },
         {
-          "id": 6,
+          "id": 4,
           "name": "mannno",
           "type": "building",
           "x": 0,
@@ -289,7 +243,7 @@
           ]
         },
         {
-          "id": 7,
+          "id": 5,
           "name": "franja-sur",
           "type": "building",
           "x": 0,
@@ -355,7 +309,7 @@
           ]
         },
         {
-          "id": 8,
+          "id": 6,
           "name": "pabellon-04",
           "type": "building",
           "x": 264,
@@ -403,7 +357,7 @@
           ]
         },
         {
-          "id": 9,
+          "id": 7,
           "name": "contraste",
           "type": "building",
           "x": 554.4,
@@ -451,7 +405,7 @@
           ]
         },
         {
-          "id": 10,
+          "id": 8,
           "name": "pabellon-01",
           "type": "building",
           "x": 1099.2,
@@ -499,7 +453,7 @@
           ]
         },
         {
-          "id": 11,
+          "id": 9,
           "name": "pabellon-02",
           "type": "building",
           "x": 1099.2,
@@ -547,7 +501,7 @@
           ]
         },
         {
-          "id": 12,
+          "id": 10,
           "name": "pabellon-03",
           "type": "building",
           "x": 1339.2,
@@ -595,7 +549,7 @@
           ]
         },
         {
-          "id": 13,
+          "id": 11,
           "name": "nave-03",
           "type": "building",
           "x": 360,
@@ -643,7 +597,7 @@
           ]
         },
         {
-          "id": 14,
+          "id": 12,
           "name": "nave-02",
           "type": "building",
           "x": 736.8,
@@ -691,7 +645,7 @@
           ]
         },
         {
-          "id": 15,
+          "id": 13,
           "name": "nave-01",
           "type": "building",
           "x": 1202.4,
@@ -751,7 +705,7 @@
       "draworder": "topdown",
       "objects": [
         {
-          "id": 16,
+          "id": 14,
           "name": "patio",
           "type": "walkable",
           "x": 271.2,
@@ -843,7 +797,7 @@
       "draworder": "topdown",
       "objects": [
         {
-          "id": 17,
+          "id": 15,
           "name": "veta-door",
           "type": "workshop-door",
           "x": 290.4,
@@ -882,7 +836,7 @@
           ]
         },
         {
-          "id": 18,
+          "id": 16,
           "name": "mannno-door",
           "type": "workshop-door",
           "x": 290.4,
@@ -921,7 +875,7 @@
           ]
         },
         {
-          "id": 19,
+          "id": 17,
           "name": "pabellon-04-door",
           "type": "workshop-door",
           "x": 408,
@@ -960,7 +914,7 @@
           ]
         },
         {
-          "id": 20,
+          "id": 18,
           "name": "contraste-door",
           "type": "workshop-door",
           "x": 700.8,
@@ -999,7 +953,7 @@
           ]
         },
         {
-          "id": 21,
+          "id": 19,
           "name": "pabellon-01-door",
           "type": "workshop-door",
           "x": 1080,
@@ -1038,7 +992,7 @@
           ]
         },
         {
-          "id": 22,
+          "id": 20,
           "name": "pabellon-02-door",
           "type": "workshop-door",
           "x": 1080,
@@ -1077,7 +1031,7 @@
           ]
         },
         {
-          "id": 23,
+          "id": 21,
           "name": "pabellon-03-door",
           "type": "workshop-door",
           "x": 1320,
@@ -1116,7 +1070,7 @@
           ]
         },
         {
-          "id": 24,
+          "id": 22,
           "name": "nave-03-door",
           "type": "workshop-door",
           "x": 475.2,
@@ -1155,7 +1109,7 @@
           ]
         },
         {
-          "id": 25,
+          "id": 23,
           "name": "nave-02-door",
           "type": "workshop-door",
           "x": 859.2,
@@ -1194,7 +1148,7 @@
           ]
         },
         {
-          "id": 26,
+          "id": 24,
           "name": "nave-01-door",
           "type": "workshop-door",
           "x": 1320,
@@ -1245,7 +1199,7 @@
       "draworder": "topdown",
       "objects": [
         {
-          "id": 27,
+          "id": 25,
           "name": "main-ingreso",
           "type": "spawn",
           "x": 1723.2,
@@ -1269,7 +1223,7 @@
           ]
         },
         {
-          "id": 28,
+          "id": 26,
           "name": "return-veta",
           "type": "spawn",
           "x": 328.8,
@@ -1288,7 +1242,7 @@
           ]
         },
         {
-          "id": 29,
+          "id": 27,
           "name": "return-mannno",
           "type": "spawn",
           "x": 328.8,
@@ -1307,7 +1261,7 @@
           ]
         },
         {
-          "id": 30,
+          "id": 28,
           "name": "return-pabellon-04",
           "type": "spawn",
           "x": 408,
@@ -1326,7 +1280,7 @@
           ]
         },
         {
-          "id": 31,
+          "id": 29,
           "name": "return-contraste",
           "type": "spawn",
           "x": 700.8,
@@ -1345,7 +1299,7 @@
           ]
         },
         {
-          "id": 32,
+          "id": 30,
           "name": "return-pabellon-01",
           "type": "spawn",
           "x": 1041.6,
@@ -1364,7 +1318,7 @@
           ]
         },
         {
-          "id": 33,
+          "id": 31,
           "name": "return-pabellon-02",
           "type": "spawn",
           "x": 1041.6,
@@ -1383,7 +1337,7 @@
           ]
         },
         {
-          "id": 34,
+          "id": 32,
           "name": "return-pabellon-03",
           "type": "spawn",
           "x": 1281.6,
@@ -1402,7 +1356,7 @@
           ]
         },
         {
-          "id": 35,
+          "id": 33,
           "name": "return-nave-03",
           "type": "spawn",
           "x": 475.2,
@@ -1421,7 +1375,7 @@
           ]
         },
         {
-          "id": 36,
+          "id": 34,
           "name": "return-nave-02",
           "type": "spawn",
           "x": 859.2,
@@ -1440,7 +1394,7 @@
           ]
         },
         {
-          "id": 37,
+          "id": 35,
           "name": "return-nave-01",
           "type": "spawn",
           "x": 1320,
@@ -1471,7 +1425,7 @@
       "draworder": "topdown",
       "objects": [
         {
-          "id": 38,
+          "id": 36,
           "name": "pieza-central",
           "type": "poi",
           "x": 672,
@@ -1510,7 +1464,7 @@
           ]
         },
         {
-          "id": 39,
+          "id": 37,
           "name": "eventos-board",
           "type": "poi",
           "x": 984,
@@ -1549,7 +1503,7 @@
           ]
         },
         {
-          "id": 40,
+          "id": 38,
           "name": "info-totem",
           "type": "poi",
           "x": 1468.8,
@@ -1588,7 +1542,7 @@
           ]
         },
         {
-          "id": 41,
+          "id": 39,
           "name": "pabellon-04-info",
           "type": "poi",
           "x": 408,
@@ -1632,7 +1586,7 @@
           ]
         },
         {
-          "id": 42,
+          "id": 40,
           "name": "pabellon-02-info",
           "type": "poi",
           "x": 1248,
@@ -1676,7 +1630,7 @@
           ]
         },
         {
-          "id": 43,
+          "id": 41,
           "name": "pabellon-03-info",
           "type": "poi",
           "x": 1507.2,
@@ -1720,7 +1674,7 @@
           ]
         },
         {
-          "id": 44,
+          "id": 42,
           "name": "nave-03-info",
           "type": "poi",
           "x": 547.2,
@@ -1764,7 +1718,7 @@
           ]
         },
         {
-          "id": 45,
+          "id": 43,
           "name": "nave-02-info",
           "type": "poi",
           "x": 969.6,
@@ -1808,7 +1762,7 @@
           ]
         },
         {
-          "id": 46,
+          "id": 44,
           "name": "nave-01-info",
           "type": "poi",
           "x": 1440,
@@ -1864,7 +1818,7 @@
       "draworder": "topdown",
       "objects": [
         {
-          "id": 47,
+          "id": 45,
           "name": "tree-main-trunk",
           "type": "obstacle",
           "x": 900,
@@ -1877,7 +1831,7 @@
           "properties": []
         },
         {
-          "id": 48,
+          "id": 46,
           "name": "pieza-pedestal",
           "type": "obstacle",
           "x": 626.4,
@@ -1890,7 +1844,7 @@
           "properties": []
         },
         {
-          "id": 49,
+          "id": 47,
           "name": "eventos-board",
           "type": "obstacle",
           "x": 950.4,
@@ -1903,7 +1857,7 @@
           "properties": []
         },
         {
-          "id": 50,
+          "id": 48,
           "name": "info-totem",
           "type": "obstacle",
           "x": 1449.6,
@@ -1916,7 +1870,7 @@
           "properties": []
         },
         {
-          "id": 51,
+          "id": 49,
           "name": "wood-stack",
           "type": "obstacle",
           "x": 328.8,
@@ -1929,7 +1883,7 @@
           "properties": []
         },
         {
-          "id": 52,
+          "id": 50,
           "name": "pallets",
           "type": "obstacle",
           "x": 326.4,
@@ -1942,7 +1896,7 @@
           "properties": []
         },
         {
-          "id": 53,
+          "id": 51,
           "name": "pabellon-04-wall-n-0",
           "type": "obstacle",
           "x": 264,
@@ -1960,7 +1914,7 @@
           ]
         },
         {
-          "id": 54,
+          "id": 52,
           "name": "pabellon-04-wall-s-0",
           "type": "obstacle",
           "x": 264,
@@ -1978,7 +1932,7 @@
           ]
         },
         {
-          "id": 55,
+          "id": 53,
           "name": "pabellon-04-wall-s-1",
           "type": "obstacle",
           "x": 439.2,
@@ -1996,7 +1950,7 @@
           ]
         },
         {
-          "id": 56,
+          "id": 54,
           "name": "pabellon-04-wall-w-0",
           "type": "obstacle",
           "x": 256.8,
@@ -2014,7 +1968,7 @@
           ]
         },
         {
-          "id": 57,
+          "id": 55,
           "name": "pabellon-04-wall-e-0",
           "type": "obstacle",
           "x": 547.2,
@@ -2032,7 +1986,7 @@
           ]
         },
         {
-          "id": 58,
+          "id": 56,
           "name": "pabellon-02-wall-w-0",
           "type": "obstacle",
           "x": 1092,
@@ -2050,7 +2004,7 @@
           ]
         },
         {
-          "id": 59,
+          "id": 57,
           "name": "pabellon-02-wall-w-1",
           "type": "obstacle",
           "x": 1092,
@@ -2068,13 +2022,13 @@
           ]
         },
         {
-          "id": 60,
+          "id": 58,
           "name": "pabellon-02-wall-e-0",
           "type": "obstacle",
           "x": 1668,
           "y": 550.08,
           "width": 14.4,
-          "height": 129.12,
+          "height": 320.16,
           "rotation": 0,
           "visible": true,
           "properties": [
@@ -2086,25 +2040,7 @@
           ]
         },
         {
-          "id": 61,
-          "name": "pabellon-02-wall-e-1",
-          "type": "obstacle",
-          "x": 1668,
-          "y": 741.6,
-          "width": 14.4,
-          "height": 128.64,
-          "rotation": 0,
-          "visible": true,
-          "properties": [
-            {
-              "name": "wall",
-              "type": "bool",
-              "value": true
-            }
-          ]
-        },
-        {
-          "id": 62,
+          "id": 59,
           "name": "pabellon-02-wall-s-0",
           "type": "obstacle",
           "x": 1099.2,
@@ -2122,7 +2058,7 @@
           ]
         },
         {
-          "id": 63,
+          "id": 60,
           "name": "pabellon-03-wall-w-0",
           "type": "obstacle",
           "x": 1332,
@@ -2140,7 +2076,7 @@
           ]
         },
         {
-          "id": 64,
+          "id": 61,
           "name": "pabellon-03-wall-w-1",
           "type": "obstacle",
           "x": 1332,
@@ -2158,13 +2094,13 @@
           ]
         },
         {
-          "id": 65,
+          "id": 62,
           "name": "pabellon-03-wall-e-0",
           "type": "obstacle",
           "x": 1668,
           "y": 870.24,
           "width": 14.4,
-          "height": 130.56,
+          "height": 320.16,
           "rotation": 0,
           "visible": true,
           "properties": [
@@ -2176,25 +2112,7 @@
           ]
         },
         {
-          "id": 66,
-          "name": "pabellon-03-wall-e-1",
-          "type": "obstacle",
-          "x": 1668,
-          "y": 1063.2,
-          "width": 14.4,
-          "height": 127.2,
-          "rotation": 0,
-          "visible": true,
-          "properties": [
-            {
-              "name": "wall",
-              "type": "bool",
-              "value": true
-            }
-          ]
-        },
-        {
-          "id": 67,
+          "id": 63,
           "name": "pabellon-03-wall-s-0",
           "type": "obstacle",
           "x": 1339.2,
@@ -2212,7 +2130,7 @@
           ]
         },
         {
-          "id": 68,
+          "id": 64,
           "name": "nave-wall-n-0",
           "type": "obstacle",
           "x": 360,
@@ -2230,7 +2148,7 @@
           ]
         },
         {
-          "id": 69,
+          "id": 65,
           "name": "nave-wall-n-1",
           "type": "obstacle",
           "x": 506.4,
@@ -2248,7 +2166,7 @@
           ]
         },
         {
-          "id": 70,
+          "id": 66,
           "name": "nave-wall-n-2",
           "type": "obstacle",
           "x": 890.4,
@@ -2266,7 +2184,7 @@
           ]
         },
         {
-          "id": 71,
+          "id": 67,
           "name": "nave-wall-n-3",
           "type": "obstacle",
           "x": 1351.2,
@@ -2284,7 +2202,7 @@
           ]
         },
         {
-          "id": 72,
+          "id": 68,
           "name": "nave-wall-s-0",
           "type": "obstacle",
           "x": 360,
@@ -2302,7 +2220,7 @@
           ]
         },
         {
-          "id": 73,
+          "id": 69,
           "name": "nave-wall-w-0",
           "type": "obstacle",
           "x": 352.8,
@@ -2320,7 +2238,7 @@
           ]
         },
         {
-          "id": 74,
+          "id": 70,
           "name": "nave-wall-e-0",
           "type": "obstacle",
           "x": 1668,
@@ -2350,7 +2268,7 @@
       "draworder": "topdown",
       "objects": [
         {
-          "id": 75,
+          "id": 71,
           "name": "tree-main-canopy",
           "type": "depth-anchor",
           "x": 921.6,
@@ -2433,7 +2351,7 @@
       "draworder": "topdown",
       "objects": [
         {
-          "id": 76,
+          "id": 72,
           "name": "tree-main-base",
           "type": "prop",
           "x": 921.6,
@@ -2457,7 +2375,7 @@
           ]
         },
         {
-          "id": 77,
+          "id": 73,
           "name": "shrub-01",
           "type": "prop",
           "x": 820.8,
@@ -2481,7 +2399,7 @@
           ]
         },
         {
-          "id": 78,
+          "id": 74,
           "name": "shrub-02",
           "type": "prop",
           "x": 950.4,
@@ -2505,7 +2423,7 @@
           ]
         },
         {
-          "id": 79,
+          "id": 75,
           "name": "installation-base",
           "type": "prop",
           "x": 672,
@@ -2534,7 +2452,7 @@
           ]
         },
         {
-          "id": 80,
+          "id": 76,
           "name": "events-board",
           "type": "prop",
           "x": 984,
@@ -2558,7 +2476,7 @@
           ]
         },
         {
-          "id": 81,
+          "id": 77,
           "name": "info-totem",
           "type": "prop",
           "x": 1468.8,
@@ -2582,7 +2500,7 @@
           ]
         },
         {
-          "id": 82,
+          "id": 78,
           "name": "wood-stack",
           "type": "prop",
           "x": 355.2,
@@ -2606,7 +2524,7 @@
           ]
         },
         {
-          "id": 83,
+          "id": 79,
           "name": "pallets",
           "type": "prop",
           "x": 350.4,
@@ -2630,7 +2548,7 @@
           ]
         },
         {
-          "id": 84,
+          "id": 80,
           "name": "planter-01",
           "type": "prop",
           "x": 590.4,
@@ -2654,7 +2572,7 @@
           ]
         },
         {
-          "id": 85,
+          "id": 81,
           "name": "planter-02",
           "type": "prop",
           "x": 1209.6,
@@ -2678,7 +2596,7 @@
           ]
         },
         {
-          "id": 86,
+          "id": 82,
           "name": "water-tank",
           "type": "prop",
           "x": 1161.6,
@@ -2714,7 +2632,7 @@
       "draworder": "topdown",
       "objects": [
         {
-          "id": 87,
+          "id": 83,
           "name": "tree-main-canopy",
           "type": "prop",
           "x": 921.6,
@@ -2750,7 +2668,7 @@
     }
   ],
   "nextlayerid": 15,
-  "nextobjectid": 88,
+  "nextobjectid": 84,
   "orientation": "orthogonal",
   "properties": [
     {

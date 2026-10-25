@@ -1,6 +1,6 @@
 import { AVAILABLE, CONTACT, RESIDENTS, mailLink, whatsappLink } from "../../data/spaces"
 import { eventArchiveLabel, eventShortLabel, lastEvent, nextEvent } from "../../data/events"
-import { fromPrice, mapsLink, mxn } from "../../data/leads"
+import { mapsLink } from "../../data/leads"
 import { PIEZA_CENTRAL } from "../../data/missions"
 import { UNLOCK_MISSION_ID } from "../../data/music"
 import { currentTrack, music, useMusic } from "../../game/audio"
@@ -101,8 +101,7 @@ export function FastMenu({ open, setOpen, onTravel, onDirect, onChangeAvatar }: 
             <p className="menu__section">ESPACIOS DISPONIBLES</p>
             <ul className="menu__list">
               {AVAILABLE.map((s) => {
-                const from = fromPrice(s)
-                const meta = s.status === "reserved" ? `${s.areaM2} M² · RESERVADO` : s.status === "coming-soon" ? `${s.areaM2} M² · ABRE EN NOV` : from ? `${s.areaM2} M² · DESDE ${mxn(from)}` : `${s.areaM2} M² · COTIZAR`
+                const meta = s.status === "reserved" ? `${s.areaM2} M² · RESERVADO` : s.status === "coming-soon" ? `${s.areaM2} M² · EN OBRA` : `${s.areaM2} M²`
                 return <Item key={s.id} id={s.id} label={s.name} meta={meta} reserved={s.status !== "available"} />
               })}
             </ul>

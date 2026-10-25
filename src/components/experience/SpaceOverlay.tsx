@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react"
 import { calendarUrl, eventDateLabel, eventTimeLabel, nextEvent } from "../../data/events"
-import { PRICE_LEGEND, USE_OPTIONS, eventProposalLink, fromPrice, infoLink, instagramHandle, interestLink, interestMail, mapsLink, mxn, openingLink, planLabel, rsvpLink, vendorLink, visitLink, waitlistLink, workshopInfoLink, type UseOption } from "../../data/leads"
-import { AVAILABLE, CONTACT, OPENING_LABEL, mailLink, spaceKindLabel, type RentPlan, type SpaceCta, type WorkshopSpace } from "../../data/spaces"
+import { PRICE_LEGEND, USE_OPTIONS, eventProposalLink, infoLink, instagramHandle, interestLink, interestMail, mapsLink, openingLink, rsvpLink, vendorLink, visitLink, waitlistLink, workshopInfoLink, type UseOption } from "../../data/leads"
+import { AVAILABLE, CONTACT, OPENING_LABEL, mailLink, spaceKindLabel, type SpaceCta, type WorkshopSpace } from "../../data/spaces"
 
 interface SpaceOverlayProps {
   space: WorkshopSpace
@@ -27,43 +27,19 @@ function CtaLink({ href, label, primary = false }: { href: string; label: string
 }
 
 /**
- * Ficha de un espacio disponible o reservado: plan y uso se eligen con
- * botones y cada CTA abre WhatsApp con el mensaje ya escrito. Sin
- * formularios. Los reservados se pueden recorrer y ofrecen lista de espera.
+ * Ficha de un espacio: el uso se elige con botones y cada CTA abre
+ * WhatsApp con el mensaje ya escrito. Sin formularios y SIN precios: la
+ * renta se platica (es la razón para escribir).
  */
 function LeadPanel({ space }: { space: WorkshopSpace }) {
   const reserved = space.status === "reserved"
   const soon = space.status === "coming-soon"
   const locked = reserved || soon
-  const plans = space.plans ?? []
-  const [plan, setPlan] = useState<RentPlan | null>(null)
   const [use, setUse] = useState<UseOption | null>(null)
   const others = AVAILABLE.filter((s) => s.status === "available" && s.id !== space.id)
 
   return (
     <div className="lead" data-status={space.status}>
-      {plans.length > 0 && (
-        <>
-          <p className="lead__label">{locked ? "PLANES DE REFERENCIA" : "ELIGE TU PLAN"}</p>
-          <div className="lead__chips" role="group" aria-label="Plan de renta">
-            {plans.map((p) => (
-              <button
-                key={p.id}
-                type="button"
-                className={`lead__chip lead__chip--plan${plan?.id === p.id ? " is-selected" : ""}`}
-                onClick={() => setPlan(plan?.id === p.id ? null : p)}
-                aria-pressed={plan?.id === p.id}
-                disabled={locked}
-              >
-                <span className="lead__chip-price">{mxn(p.monthlyMxn)}</span>
-                <span className="lead__chip-meta">MXN / MES · {p.label}</span>
-              </button>
-            ))}
-          </div>
-        </>
-      )}
-      {plans.length === 0 && !locked && <p className="lead__quote">RENTA A COTIZAR SEGÚN USO Y PLAZO</p>}
-
       {!locked && (
         <>
           <p className="lead__label">¿PARA QUÉ LO USARÍAS?</p>
@@ -92,7 +68,7 @@ function LeadPanel({ space }: { space: WorkshopSpace }) {
         ) : reserved ? (
           <CtaLink href={waitlistLink(space)} label="AVISARME SI SE LIBERA" primary />
         ) : (
-          <CtaLink href={interestLink(space, plan, use)} label={plan ? `ME INTERESA · ${plan.label}` : "ME INTERESA"} primary />
+          <CtaLink href={interestLink(space, use)} label="ME INTERESA" primary />
         )}
       </div>
       <div className="overlay__cta-row lead__ctas lead__ctas--more">
@@ -109,7 +85,7 @@ function LeadPanel({ space }: { space: WorkshopSpace }) {
         ) : (
           <>
             <CtaLink href={visitLink(space)} label="AGENDAR VISITA" />
-            <CtaLink href={interestMail(space, plan, use)} label="PEDIR INFO POR CORREO" />
+            <CtaLink href={interestMail(space, use)} label="PEDIR INFO POR CORREO" />
           </>
         )}
       </div>
@@ -188,7 +164,6 @@ export function SpaceOverlay({ space, onClose, onNavigate, onEnterScene, onTrave
   const commercial = space.type === "available"
   const reserved = space.status === "reserved"
   const soon = space.status === "coming-soon"
-  const from = fromPrice(space)
   // escasez real por familia: pabellones (disponibles / reservados / en obra) y naves
   const pabs = AVAILABLE.filter((s) => s.id.startsWith("pabellon"))
   const pabsOpen = pabs.filter((s) => s.status === "available").length
@@ -244,8 +219,6 @@ export function SpaceOverlay({ space, onClose, onNavigate, onEnterScene, onTrave
           </button>
         </header>
 
-        {commercial && !reserved && !soon && <p className="overlay__lead">ESTE ESPACIO PODRÍA SER TUYO…</p>}
-        {soon && <p className="overlay__lead">YA CASI. ABRE EN {OPENING_LABEL}.</p>}
 
         <h2 className="overlay__name">
           {nameLines.map((line) => (
@@ -253,16 +226,7 @@ export function SpaceOverlay({ space, onClose, onNavigate, onEnterScene, onTrave
           ))}
         </h2>
 
-        {space.areaM2 !== undefined && (
-          <p className="overlay__area">
-            {space.areaM2} M²
-            {commercial && (
-              <span className={`overlay__rent${reserved ? " overlay__rent--reserved" : ""}`}>
-                {reserved ? "RESERVADO" : from ? `DESDE ${mxn(from)} MXN / MES` : "RENTA A COTIZAR"}
-              </span>
-            )}
-          </p>
-        )}
+        {space.areaM2 !== undefined && <p className="overlay__area">{space.areaM2} M²</p>}
 
         {subtitleLines.length > 0 && (
           <ul className="overlay__subtitle">
@@ -275,7 +239,7 @@ export function SpaceOverlay({ space, onClose, onNavigate, onEnterScene, onTrave
         {commercial && (
           <>
             <p key={space.id} className={`overlay__status${reserved ? " overlay__status--reserved" : soon ? " overlay__status--soon" : " overlay__status--open"}`}>
-              {reserved ? "RESERVADO · LISTA DE ESPERA" : soon ? `EN OBRA · ENTREGA ${OPENING_LABEL}` : "ESPACIO DISPONIBLE"}
+              {reserved ? "RESERVADO · LISTA DE ESPERA" : soon ? `EN OBRA · ${OPENING_LABEL}` : "ESPACIO DISPONIBLE"}
             </p>
             <p className="overlay__scarcity">{scarcity}</p>
           </>
@@ -309,7 +273,3 @@ export function SpaceOverlay({ space, onClose, onNavigate, onEnterScene, onTrave
   )
 }
 
-/** etiqueta corta de plan para menús: "DESDE $8,000" */
-export function planShort(plan: RentPlan): string {
-  return planLabel(plan).split(" MXN")[0]
-}
