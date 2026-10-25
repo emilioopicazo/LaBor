@@ -33,28 +33,103 @@ const BOUNDARY = [
 // ---- huellas de edificios (caras interiores medidas) ---------------
 // Franja oeste: línea punteada del plano en x=5.50/5.65; división
 // VETA/MANNNO punteada en y=17.60; quiebre del muro en y=29.80.
+// interior: se entra sin cambiar de escena (la huella es caminable; los muros
+// son rectángulos en OBSTACLES y el techo se vuelve transparente al entrar).
+// construction: en obra (bloquea; albañiles trabajando afuera).
+// group: varias huellas bajo un mismo techo (la nave es una sola, subdividida).
+// heightM: altura visual para la perspectiva (fachadas).
 const BUILDINGS = {
-  veta: { name: "VETA", poly: [[0, 0], [7.93, 4.65], [5.65, 4.65], [5.65, 17.6], [0, 17.6]] },
-  mannno: { name: "MANNNO", poly: [[0, 17.6], [5.65, 17.6], [5.65, 29.8], [0, 29.8]] },
+  veta: { name: "VETA", poly: [[0, 0], [7.93, 4.65], [5.65, 4.65], [5.65, 17.6], [0, 17.6]], heightM: 4 },
+  mannno: { name: "MANNNO", poly: [[0, 17.6], [5.65, 17.6], [5.65, 29.8], [0, 29.8]], heightM: 4 },
   // Tramo sur de la franja (12.31 m): construido en el boceto del
   // plano maestro, sin uso confirmado. Bloquea, no se entra.
-  "franja-sur": { name: "PRÓXIMAMENTE", poly: [[0, 29.8], [5.5, 29.8], [5.5, 42.09], [0.32, 42.09]], enterable: false },
-  "pabellon-04": { name: "PABELLÓN 04", rect: [5.5, 4.65, 11.55, 11.65] },
-  contraste: { name: "CONTRASTE", rect: [11.55, 4.65, 17.6, 11.65] },
-  "pabellon-01": { name: "PABELLÓN 01", rect: [22.9, 4.65, 34.9, 11.46] },
-  "pabellon-02": { name: "PABELLÓN 02", rect: [22.9, 11.46, 34.9, 18.13] },
-  "pabellon-03": { name: "PABELLÓN 03", rect: [27.9, 18.13, 34.9, 24.8] },
-  "nave-03": { name: "NAVE 03", rect: [7.5, 29.9, 15.35, 42.09] },
-  "nave-02": { name: "NAVE 02", rect: [15.35, 29.9, 25.05, 42.09] },
-  "nave-01": { name: "NAVE 01", rect: [25.05, 29.9, 34.9, 42.09] },
+  "franja-sur": { name: "PRÓXIMAMENTE", poly: [[0, 29.8], [5.5, 29.8], [5.5, 42.09], [0.32, 42.09]], enterable: false, heightM: 3 },
+  "pabellon-04": { name: "PABELLÓN 04", rect: [5.5, 4.65, 11.55, 11.65], interior: true, heightM: 3.5 },
+  contraste: { name: "CONTRASTE", rect: [11.55, 4.65, 17.6, 11.65], heightM: 3.5 },
+  "pabellon-01": { name: "PABELLÓN 01", rect: [22.9, 4.65, 34.9, 11.46], construction: true, heightM: 3.5 },
+  "pabellon-02": { name: "PABELLÓN 02", rect: [22.9, 11.46, 34.9, 18.13], interior: true, heightM: 3.5 },
+  "pabellon-03": { name: "PABELLÓN 03", rect: [27.9, 18.13, 34.9, 24.8], interior: true, heightM: 3.5 },
+  "nave-03": { name: "NAVE 03", rect: [7.5, 29.9, 15.35, 42.09], interior: true, group: "nave", heightM: 7 },
+  "nave-02": { name: "NAVE 02", rect: [15.35, 29.9, 25.05, 42.09], interior: true, group: "nave", heightM: 7 },
+  "nave-01": { name: "NAVE 01", rect: [25.05, 29.9, 34.9, 42.09], interior: true, group: "nave", heightM: 7 },
 }
 
-// ---- circulación exterior real --------------------------------------
-// Patio + pasillo del árbol (entre CONTRASTE y Pabellón 01) + bolsa
-// norte de Pabellón 03 + zona de ingreso con banqueta exterior (x>34.9).
+// ---- muros de los interiores (rectángulos que bloquean; 0.3 m) ---------
+// Cada muro puede tener huecos (puertas) por donde sí se pasa.
+const WALL_T = 0.3
+const GAP = 1.3 // ancho de puerta
+function wallsOf(id) {
+  const b = BUILDINGS[id]
+  if (!b || !b.rect) return []
+  const [x1, y1, x2, y2] = b.rect
+  const seg = (name, [ax, ay, bx, by], gaps = []) => {
+    // divide el muro en tramos saltando los huecos (gaps: coordenada a lo largo del muro)
+    const horizontal = ay === by
+    const start = horizontal ? ax : ay
+    const end = horizontal ? bx : by
+    const cuts = gaps.flatMap((g) => [g - GAP / 2, g + GAP / 2]).sort((a, b) => a - b)
+    const pieces = []
+    let cursor = start
+    for (let i = 0; i < cuts.length; i += 2) {
+      if (cuts[i] > cursor) pieces.push([cursor, cuts[i]])
+      cursor = cuts[i + 1]
+    }
+    if (cursor < end) pieces.push([cursor, end])
+    return pieces.map(([a, b], i) => ({ id: `${id}-wall-${name}-${i}`, rect: horizontal ? [a, ay - WALL_T / 2, b, ay + WALL_T / 2] : [ax - WALL_T / 2, a, ax + WALL_T / 2, b] }))
+  }
+  switch (id) {
+    case "pabellon-04":
+      return [...seg("n", [x1, y1, x2, y1]), ...seg("s", [x1, y2, x2, y2], [8.5]), ...seg("w", [x1, y1, x1, y2]), ...seg("e", [x2, y1, x2, y2])]
+    case "pabellon-02":
+      // norte compartido con P01 (bloquea solo); oeste puerta al patio; este salida a Calle 12 Sur; sur muro con P03 y patio
+      return [...seg("w", [x1, y1, x1, y2], [14.8]), ...seg("e", [x2, y1, x2, y2], [14.8]), ...seg("s", [x1, y2, x2, y2])]
+    case "pabellon-03":
+      return [...seg("w", [x1, y1, x1, y2], [21.5]), ...seg("e", [x2, y1, x2, y2], [21.5]), ...seg("s", [x1, y2, x2, y2])]
+    default:
+      return []
+  }
+}
+// la nave es una sola: perímetro con tres puertas al patio (sin muros internos: la subdivisión es visual)
+const NAVE_RECT = [7.5, 29.9, 34.9, 42.09]
+function naveWalls() {
+  const [x1, y1, x2, y2] = NAVE_RECT
+  const out = []
+  const push = (name, a, b, horizontal, fixed, gaps = []) => {
+    const cuts = gaps.flatMap((g) => [g - GAP / 2, g + GAP / 2]).sort((p, q) => p - q)
+    let cursor = a
+    let i = 0
+    const pieces = []
+    for (let k = 0; k < cuts.length; k += 2) {
+      if (cuts[k] > cursor) pieces.push([cursor, cuts[k]])
+      cursor = cuts[k + 1]
+    }
+    if (cursor < b) pieces.push([cursor, b])
+    pieces.forEach(([p, q]) => out.push({ id: `nave-wall-${name}-${i++}`, rect: horizontal ? [p, fixed - WALL_T / 2, q, fixed + WALL_T / 2] : [fixed - WALL_T / 2, p, fixed + WALL_T / 2, q] }))
+  }
+  push("n", x1, x2, true, y1, [9.9, 17.9, 27.5])
+  push("s", x1, x2, true, y2)
+  push("w", y1, y2, false, x1)
+  push("e", y1, y2, false, x2)
+  return out
+}
+const INTERIOR_WALLS = [...wallsOf("pabellon-04"), ...wallsOf("pabellon-02"), ...wallsOf("pabellon-03"), ...naveWalls()]
+
+// ---- salidas a la calle (huecos en el muro este, Calle 12 Sur) ----------
+const STREET_EXITS = [
+  { id: "pabellon-02-street", rect: [34.6, 14.8 - GAP / 2, 35.2, 14.8 + GAP / 2] },
+  { id: "pabellon-03-street", rect: [34.6, 21.5 - GAP / 2, 35.2, 21.5 + GAP / 2] },
+]
+
+// ---- circulación --------------------------------------------------------
+// Patio + pasillo del árbol + interiores de P04, P02, P03 y la nave +
+// Calle 12 Sur completa (banqueta 1.7 m + carril 2.4 m, x 34.9–39.0).
+// Un solo polígono sin huecos: rodea CONTRASTE, P01 (en obra) y los
+// talleres de la franja oeste; los muros interiores van en OBSTACLES.
+const STREET_X = 39.0
 const WALKABLE = [
-  [5.65, 11.65], [17.6, 11.65], [17.6, 4.8], [22.9, 4.8], [22.9, 18.13],
-  [27.9, 18.13], [27.9, 24.8], [36.6, 24.8], [36.6, 29.9], [5.65, 29.9],
+  [5.65, 4.65], [11.55, 4.65], [11.55, 11.65], [17.6, 11.65], [17.6, 4.8], [22.9, 4.8],
+  [22.9, 11.46], [34.9, 11.46], [34.9, 4.65], [STREET_X, 4.65], [STREET_X, 42.09], [34.9, 42.09],
+  [7.5, 42.09], [7.5, 29.9], [5.65, 29.9],
 ]
 
 // ---- puertas (punto 0.4 m frente al muro que da al patio) ------------
@@ -82,6 +157,13 @@ const POIS = [
   { id: "pieza-central", x: 14.0, y: 20.0, r: 2.0, action: "VER", missionRole: "anchor", label: "LA HORA" },
   { id: "eventos-board", x: 20.5, y: 29.3, r: 1.6, action: "VER", missionRole: "", label: "EVENTOS" },
   { id: "info-totem", x: 30.6, y: 25.9, r: 1.6, action: "VER", missionRole: "", label: "INFORMACIÓN" },
+  // puntos de información dentro de cada interior (abren la ficha del espacio)
+  { id: "pabellon-04-info", x: 8.5, y: 8.4, r: 1.6, action: "INFO", missionRole: "", label: "PABELLÓN 04", spaceId: "pabellon-04" },
+  { id: "pabellon-02-info", x: 26.0, y: 14.8, r: 1.6, action: "INFO", missionRole: "", label: "PABELLÓN 02", spaceId: "pabellon-02" },
+  { id: "pabellon-03-info", x: 31.4, y: 21.5, r: 1.6, action: "INFO", missionRole: "", label: "PABELLÓN 03", spaceId: "pabellon-03" },
+  { id: "nave-03-info", x: 11.4, y: 34.0, r: 1.6, action: "INFO", missionRole: "", label: "NAVE 03", spaceId: "nave-03" },
+  { id: "nave-02-info", x: 20.2, y: 32.2, r: 1.6, action: "INFO", missionRole: "", label: "NAVE 02", spaceId: "nave-02" },
+  { id: "nave-01-info", x: 30.0, y: 34.0, r: 1.6, action: "INFO", missionRole: "", label: "NAVE 01", spaceId: "nave-01" },
 ]
 
 // ---- obstáculos reales (solo los que afectan el movimiento) ---------
@@ -195,15 +277,16 @@ const layers = [
     polygonObj("labor-property", "property-boundary", BOUNDARY, [prop("note", "Perímetro real medido (líneas exteriores). Chaflán NO; INGRESO en muro este y 24.80–29.90.")]),
     // Abertura real del muro (portón INGRESO, 5.1 m, Calle 12 Sur)
     rectObj("ingreso-opening", "opening", [34.6, 24.8, 35.2, 29.9], [prop("label", "INGRESO"), prop("street", "CALLE 12 SUR")]),
+    ...STREET_EXITS.map((e) => rectObj(e.id, "opening", e.rect, [prop("label", ""), prop("street", "CALLE 12 SUR")])),
   ]),
   layer(
     "BUILDING_COLLISION",
     Object.entries(BUILDINGS).map(([id, b]) => {
-      const props = [prop("spaceId", id), prop("label", b.name), prop("enterable", b.enterable !== false)]
+      const props = [prop("spaceId", id), prop("label", b.name), prop("enterable", b.enterable !== false), prop("interior", b.interior === true), prop("construction", b.construction === true), prop("group", b.group ?? ""), prop("heightM", b.heightM ?? 3.5)]
       return b.rect ? rectObj(id, "building", b.rect, props) : polygonObj(id, "building", b.poly, props)
     }),
   ),
-  layer("WALKABLE", [polygonObj("patio", "walkable", WALKABLE, [prop("note", "Patio + pasillo del árbol + bolsa norte P03 + ingreso con banqueta.")])]),
+  layer("WALKABLE", [polygonObj("patio", "walkable", WALKABLE, [prop("note", "Patio + pasillo del árbol + interiores (P04, P02, P03, nave) + Calle 12 Sur.")])]),
   layer(
     "DOORS",
     DOORS.map(([spaceId, x, y, n, action]) =>
@@ -229,13 +312,14 @@ const layers = [
         prop("missionRole", p.missionRole),
         prop("radius", px(p.r)),
         prop("label", p.label),
+        ...(p.spaceId ? [prop("spaceId", p.spaceId)] : []),
       ]),
     ),
   ),
-  layer(
-    "OBSTACLES",
-    OBSTACLES.map((o) => ellipseObj(o.id, "obstacle", o.x, o.y, o.r)),
-  ),
+  layer("OBSTACLES", [
+    ...OBSTACLES.map((o) => ellipseObj(o.id, "obstacle", o.x, o.y, o.r)),
+    ...INTERIOR_WALLS.map((w) => rectObj(w.id, "obstacle", w.rect, [prop("wall", true)])),
+  ]),
   layer("DEPTH_ANCHORS", [
     pointObj("tree-main-canopy", "depth-anchor", TREE.x, TREE.y + 0.35, [prop("for", "tree-main-canopy"), prop("offset", 40)]),
   ]),
@@ -287,3 +371,20 @@ const map = {
 const out = path.resolve("public/maps/labor-overworld.tmj")
 fs.writeFileSync(out, JSON.stringify(map, null, 2) + "\n")
 console.log("→", out, `${map.width * PX}×${map.height * PX}px`, "objetos:", nextObjectId - 1)
+
+// ---- plano en metros para el intro (SVG que se dibuja solo) --------------
+// Misma fuente de verdad que el mapa; React no necesita el TMJ para pintarlo.
+{
+  const planOut = path.resolve("src/data/plan.generated.ts")
+  const polyOf = (b) => (b.poly ? b.poly : [[b.rect[0], b.rect[1]], [b.rect[2], b.rect[1]], [b.rect[2], b.rect[3]], [b.rect[0], b.rect[3]]])
+  const plan = {
+    boundary: BOUNDARY,
+    streetX: STREET_X,
+    ingreso: { x: 34.9, y: 27.35 },
+    tree: { x: TREE.x, y: TREE.y, r: TREE.canopyR },
+    buildings: Object.entries(BUILDINGS).map(([id, b]) => ({ id, label: b.name, poly: polyOf(b), interior: b.interior === true, construction: b.construction === true, group: b.group ?? "", enterable: b.enterable !== false })),
+  }
+  const ts = `// GENERADO por scripts/build-overworld-map.mjs — no editar a mano.\n// Plano del predio en metros (para el intro). Fuente de verdad: el generador.\nexport interface PlanBuilding {\n  id: string\n  label: string\n  poly: Array<[number, number]>\n  interior: boolean\n  construction: boolean\n  group: string\n  enterable: boolean\n}\nexport const PLAN = ${JSON.stringify(plan, null, 2)} as const satisfies {\n  boundary: ReadonlyArray<readonly [number, number]>\n  streetX: number\n  ingreso: { x: number; y: number }\n  tree: { x: number; y: number; r: number }\n  buildings: ReadonlyArray<PlanBuilding>\n}\n`
+  fs.writeFileSync(planOut, ts)
+  console.log(`→ ${planOut}`)
+}

@@ -50,6 +50,11 @@ export function waitlistLink(space: WorkshopSpace): string {
   return whatsappLink(`Hola La Bor, ${spaceRef(space)} aparece reservado. Quiero entrar a la lista de espera por si se libera, y conocer otros espacios parecidos.`)
 }
 
+/** EN OBRA: avisarme cuando abra (Pabellón 01, noviembre) */
+export function openingLink(space: WorkshopSpace): string {
+  return whatsappLink(`Hola La Bor, me interesa ${spaceRef(space)}, que abre en noviembre. Avísenme antes que a nadie cuando esté listo y díganme si puedo apartarlo desde ahora.`)
+}
+
 /** AGENDAR VISITA (con o sin espacio) */
 export function visitLink(space?: WorkshopSpace | null): string {
   const what = space ? `para conocer ${spaceRef(space)} y el patio` : "para conocer los espacios disponibles"

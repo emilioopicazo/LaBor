@@ -23,11 +23,25 @@ export interface Circle {
 export type Facing = "down" | "up" | "left" | "right"
 export type WallSide = "n" | "s" | "e" | "w"
 
+/** hueco en el muro perimetral: INGRESO (con letrero) o salida de un pabellón a la calle (sin letrero) */
+export interface OpeningDef extends Rect {
+  id: string
+  label: string
+}
+
 export interface BuildingDef {
   id: string
   spaceId: string
   label: string
   enterable: boolean
+  /** se entra sin cambiar de escena: huella caminable, techo transparente al entrar */
+  interior: boolean
+  /** en obra: bloquea y hay albañiles trabajando afuera */
+  construction: boolean
+  /** varias huellas bajo un mismo techo (la nave) */
+  group: string
+  /** altura visual (m) para fachadas / perspectiva */
+  heightM: number
   points: Vec[]
   bounds: Rect
 }
@@ -48,6 +62,8 @@ export interface SpawnDef {
   facing: Facing
 }
 export interface PoiDef {
+  /** POI dentro de un espacio: abre su ficha */
+  spaceId?: string
   id: string
   x: number
   y: number
@@ -77,7 +93,7 @@ export interface OverworldMap {
   height: number
   pxPerMeter: number
   boundary: Vec[]
-  openings: Rect[]
+  openings: OpeningDef[]
   buildings: BuildingDef[]
   walkable: Vec[][]
   doors: DoorDef[]
@@ -175,9 +191,9 @@ export function parseTiledMap(json: TiledMapJson): OverworldMap {
   const boundaryLayer = objs("PROPERTY_BOUNDARY")
   const boundaryObj = boundaryLayer.find((o) => (o.type ?? o.class) === "property-boundary")
   const boundary = boundaryObj ? polygonPoints(boundaryObj) : []
-  const openings = boundaryLayer
+  const openings: OpeningDef[] = boundaryLayer
     .filter((o) => (o.type ?? o.class) === "opening")
-    .map((o) => ({ x: o.x, y: o.y, width: o.width, height: o.height }))
+    .map((o) => ({ id: o.name, x: o.x, y: o.y, width: o.width, height: o.height, label: str(props(o.properties), "label", "INGRESO") }))
 
   const buildings: BuildingDef[] = objs("BUILDING_COLLISION").map((o) => {
     const p = props(o.properties)
@@ -187,6 +203,10 @@ export function parseTiledMap(json: TiledMapJson): OverworldMap {
       spaceId: str(p, "spaceId", o.name),
       label: str(p, "label", ""),
       enterable: bool(p, "enterable", true),
+      interior: bool(p, "interior", false),
+      construction: bool(p, "construction", false),
+      group: str(p, "group", ""),
+      heightM: num(p, "heightM", 3.5),
       points,
       bounds: boundsOf(points),
     }
@@ -223,6 +243,7 @@ export function parseTiledMap(json: TiledMapJson): OverworldMap {
       action: str(p, "action", "VER"),
       missionRole: str(p, "missionRole", ""),
       label: str(p, "label", o.name.toUpperCase()),
+      spaceId: str(p, "spaceId", "") || undefined,
     }
   })
 

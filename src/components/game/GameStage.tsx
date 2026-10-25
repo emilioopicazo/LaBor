@@ -7,6 +7,7 @@ import { PersonOverlay } from "../experience/PersonOverlay"
 import { ROOMS } from "../../data/rooms"
 import { SPACES, getSpace } from "../../data/spaces"
 import { gameCommands, gameEvents, type Interactable, type MarkerState } from "../../game/bridge"
+import { fromPrice, mxn } from "../../data/leads"
 import { mission, missionView, toast, useMissionRun } from "../../game/mission"
 import { profile, useProfile } from "../../game/profile"
 import { AvatarSelector } from "../experience/AvatarSelector"
@@ -16,6 +17,7 @@ import { SpaceOverlay } from "../experience/SpaceOverlay"
 import { Toasts } from "../experience/Toasts"
 import { ActionButton } from "../hud/ActionButton"
 import { AvatarChip } from "../hud/AvatarChip"
+import { ZoomControl } from "../hud/ZoomControl"
 import { ControlsHint } from "../hud/ControlsHint"
 import { DebugPanel } from "../hud/DebugPanel"
 import { JoystickView } from "../hud/JoystickView"
@@ -62,6 +64,9 @@ export function GameStage({ active, opening = false }: GameStageProps) {
   }, [])
   const [menuOpen, setMenuOpen] = useState(false)
   const [hasMoved, setHasMoved] = useState(false)
+  /** interior en el que está parado el visitante (techo transparente) */
+  const [insideSpaceId, setInsideSpaceId] = useState<string | null>(null)
+  const spaceToasted = useRef<Set<string>>(new Set())
   const pendingTravel = useRef<string | null>(null)
   const debug = useMemo(() => new URLSearchParams(window.location.search).has("debug") || new URLSearchParams(window.location.search).get("mapdebug") === "1", [])
 
@@ -92,6 +97,8 @@ export function GameStage({ active, opening = false }: GameStageProps) {
     switch (t.kind) {
       case "door":
         if (t.action === "ENTRAR" && t.sceneId) gameCommands.enterRoom(t.sceneId)
+        // interior sin escena: entrar es caminar hasta su punto de información
+        else if (t.action === "ENTRAR" && t.spaceId) gameCommands.goTo(`${t.spaceId}-info`)
         else if (t.spaceId) setOverlay({ type: "space", id: t.spaceId })
         return
       case "poi":
@@ -143,6 +150,17 @@ export function GameStage({ active, opening = false }: GameStageProps) {
       gameEvents.on("interact", ({ target: t }) => handleInteract(t)),
       gameEvents.on("arrived", () => gameCommands.triggerAction()),
       gameEvents.on("moved", () => setHasMoved(true)),
+      gameEvents.on("zoom", ({ level }) => profile.setZoom(level)),
+      gameEvents.on("space", ({ spaceId }) => {
+        setInsideSpaceId(spaceId)
+        if (!spaceId) return
+        profile.markVisited(spaceId)
+        const sp = getSpace(spaceId)
+        if (!sp || spaceToasted.current.has(spaceId)) return
+        spaceToasted.current.add(spaceId)
+        const from = fromPrice(sp)
+        toast(`${sp.name} · ${sp.areaM2} M² · ${from ? `DESDE ${mxn(from)} / MES` : "A COTIZAR"} · BUSCA EL LETRERO INFO`, "quest")
+      }),
       gameEvents.on("escape", () => {
         setOverlay(null)
         setMenuOpen(false)
@@ -165,6 +183,13 @@ export function GameStage({ active, opening = false }: GameStageProps) {
     gameCommands.setPaused(paused)
   }, [paused])
 
+  // zoom guardado del visitante: se aplica al arrancar (y en cada escena, vía registry)
+  useEffect(() => {
+    if (ready && prof.zoom) gameCommands.setZoom(prof.zoom)
+    // solo al estar listo: después manda el control de zoom
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ready])
+
   // balizas (✓ hecho / ◆ objetivo) y chevrón de guía, a partir de misión + visitados
   useEffect(() => {
     const states: Record<string, MarkerState> = {}
@@ -181,7 +206,10 @@ export function GameStage({ active, opening = false }: GameStageProps) {
       SPACES.forEach((sp) => {
         const id = `${sp.id}-door`
         if (sp.type === "resident" && won(sp.id)) states[id] = "done"
-        else if (prof.visited.includes(sp.id) && sp.type !== "resident") states[id] = "done"
+        else if (prof.visited.includes(sp.id) && sp.type !== "resident") {
+          states[id] = "done"
+          if (sp.walkIn) states[`${sp.id}-info`] = "done"
+        }
         if (targetSpace === sp.id) states[id] = "target"
       })
       if (view?.complete) states["pieza-central"] = "done"
@@ -236,7 +264,9 @@ export function GameStage({ active, opening = false }: GameStageProps) {
     (spaceId: string) => {
       setMenuOpen(false)
       setOverlay(null)
-      const targetId = getSpace(spaceId)?.type === "available" || getSpace(spaceId)?.type === "resident" ? `${spaceId}-door` : spaceId
+      const sp = getSpace(spaceId)
+      // interiores: el viaje termina en el letrero de adentro (la puerta es solo un hueco)
+      const targetId = sp?.walkIn ? `${spaceId}-info` : sp?.type === "available" || sp?.type === "resident" ? `${spaceId}-door` : spaceId
       if (sceneId !== "overworld") {
         pendingTravel.current = targetId
         gameCommands.exitRoom()
@@ -276,6 +306,7 @@ export function GameStage({ active, opening = false }: GameStageProps) {
           <AvatarChip avatarId={prof.avatarId ?? DEFAULT_AVATAR} sceneName={roomSpace?.shortName ?? null} onClick={() => setOverlay({ type: "avatar" })} />
           {view && !overlay && <MissionLine view={view} onClick={() => setOverlay({ type: "mission" })} />}
           <FastMenu open={menuOpen} setOpen={setMenuOpen} onTravel={travelTo} onDirect={openDirect} onChangeAvatar={() => { setMenuOpen(false); setOverlay({ type: "avatar" }) }} />
+          {!overlay && !menuOpen && <ZoomControl level={prof.zoom ?? 1} onChange={(z) => gameCommands.setZoom(z)} />}
           {!overlay && !menuOpen && <ActionButton label={actionLabel} caption={target?.label ?? null} coarse={coarse} onPress={() => gameCommands.triggerAction()} />}
           {coarse && <JoystickView />}
           {!hasMoved && !overlay && !menuOpen && <ControlsHint coarse={coarse} />}
@@ -291,6 +322,8 @@ export function GameStage({ active, opening = false }: GameStageProps) {
             setOverlay(null)
             gameCommands.enterRoom(id)
           }}
+          onTravel={travelTo}
+          insideSpaceId={insideSpaceId}
           currentSceneId={sceneId}
         />
       )}

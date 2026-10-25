@@ -47,3 +47,17 @@
   chunks viejos. Editar código sí; `npm run build` solo cuando termine.
 - **El servidor de preview hay que lanzarlo con `setsid nohup … &`**; con
   `nohup` a secas muere al cerrar la llamada de la herramienta.
+- **Las `@keyframes` que animan `transform` pisan el `transform` inline**: el
+  marcador INGRESO del intro apareció en (0,0) porque su `translate` iba en
+  `style` y la animación de "sello" animaba `transform`. En SVG, la posición va
+  en un `<g transform="translate()">` padre y la animación en un `<g>` hijo.
+- **Al mover NPCs decorativos (obra) hay que filtrar en las pruebas**: el test
+  del ciclo de eventos contaba `npcs.length` y falló al aparecer el albañil;
+  `debugState()` ahora marca `worker: true` y las pruebas cuentan solo los del bazar.
+- **Un favicon SVG no se anima en Chrome/Safari**: solo Firefox respeta SMIL.
+  Para animarlo en los demás hay que cambiar el `href` del `<link rel="icon">`
+  por frames (data URI), poco frecuente y respetando `prefers-reduced-motion`.
+- **La paleta se cambia en cuatro lugares**: tokens CSS (`experience.css`),
+  constantes de Phaser (`PALETTE` en `WorldScene.ts` + `roofStyle`), tokens
+  inline de `/acerca/` y el generador del OG en el scratchpad. Mantener los
+  alias (`--ochre*`, `--teal`, `--rust`) evitó tocar cien reglas.

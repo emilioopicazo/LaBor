@@ -24,6 +24,8 @@ export interface SpaceCta {
   targetSpaceId?: string
   /** Entra a la escena de taller (cuarto jugable) */
   enterSceneId?: string
+  /** Camina (viaje rápido) hasta la puerta del espacio en el patio */
+  travelTo?: string
 }
 
 /** persona del taller: a quién escribirle y de qué es el taller (mensaje prellenado) */
@@ -67,6 +69,8 @@ export interface WorkshopSpace {
   cta2?: SpaceCta
   image?: string
   contact?: WorkshopContact
+  /** se entra caminando desde el patio (sin cambiar de escena): el techo se vuelve transparente */
+  walkIn?: boolean
 }
 
 // ---- contacto real ------------------------------------------------------
@@ -107,16 +111,24 @@ export const PLANS_GRANDE: RentPlan[] = [
 
 const SHARED = "Patio compartido con VETA, MANNNO y CONTRASTE, y programa de eventos en el patio."
 
+/** Pabellón 01: en obra, entrega en noviembre 2026 */
+export const OPENING_LABEL = "NOVIEMBRE 2026"
+
+/** La nave es una sola (7 m de altura) que se está subdividiendo en 3 módulos */
+const NAVE_SHARED = ["Módulo de una nave de 7 m de altura, en subdivisión (3 módulos)", "Pensada para artistas y artesanos: producción, estudio, exhibición"]
+
 function available(
   id: string,
   name: string,
   number: string,
   areaM2: number,
   plans: RentPlan[],
-  status: "available" | "reserved",
+  status: "available" | "reserved" | "coming-soon",
   details: string[] = [],
   includes: string[] = [],
+  description?: string,
 ): WorkshopSpace {
+  const nave = id.startsWith("nave")
   return {
     id,
     name,
@@ -129,12 +141,18 @@ function available(
     details,
     includes: [...includes, SHARED],
     description:
-      status === "reserved"
+      description ??
+      (status === "reserved"
         ? "Este espacio ya está apartado. Si se libera, avisamos primero a la lista de espera y te enseñamos otros parecidos."
-        : plans.length
-          ? "Elige el plan que te acomode y escríbenos: te respondemos por WhatsApp con disponibilidad y fecha de entrada."
-          : "Las naves se cotizan según uso y plazo. Escríbenos y te mandamos propuesta.",
-    cta: { label: "RECORRER EL ESPACIO", enterSceneId: `${id}-room` },
+        : status === "coming-soon"
+          ? `En obra. Se entrega en ${OPENING_LABEL.toLowerCase()}: déjanos tu interés y te avisamos antes que a nadie cuando esté listo.`
+          : nave
+            ? "Las naves se cotizan según uso y plazo. Camina adentro para ver el módulo y escríbenos: te mandamos propuesta."
+            : "Camina adentro para verlo. Elige el plan que te acomode y escríbenos: te respondemos por WhatsApp con disponibilidad y fecha de entrada."),
+    // los disponibles se recorren sin cambiar de escena: el CTA te lleva caminando a la puerta
+    walkIn: status !== "coming-soon",
+    cta: status === "coming-soon" ? undefined : { label: nave ? "CAMINAR A LA NAVE" : "CAMINAR AL PABELLÓN", travelTo: id },
+    ...(nave ? { subtitle: "Nave / 7 m de altura / Módulo" } : {}),
   }
 }
 
@@ -207,14 +225,15 @@ export const SPACES: WorkshopSpace[] = [
   },
 
   // ---- ESPACIOS DISPONIBLES --------------------------------
-  // Estado: 01 y 03 reservados (se pueden recorrer); 02, 04 y naves disponibles.
-  available("pabellon-04", "PABELLÓN 04", "P04", 42, PLANS_CHICO, "available", ["Planta libre — 6.05 × 6.85 m", "Junto a CONTRASTE, frente al patio"]),
-  available("pabellon-01", "PABELLÓN 01", "P01", 80, PLANS_GRANDE, "reserved", ["Interior — 45.6 m²", "Terraza exterior — 33.3 m²"]),
-  available("pabellon-02", "PABELLÓN 02", "P02", 80, PLANS_GRANDE, "available", ["Interior — 45.7 m²", "Terraza exterior — 33.3 m²"]),
-  available("pabellon-03", "PABELLÓN 03", "P03", 46, PLANS_CHICO, "reserved", ["Planta libre — 6.85 × 6.67 m", "Junto al ingreso por Calle 12 Sur"]),
-  available("nave-03", "NAVE 03", "N03", 95, [], "available", ["Nave — 7.85 × 12.06 m", "Frente al patio, acceso desde Calle Cobá"]),
-  available("nave-02", "NAVE 02", "N02", 117, [], "available", ["Nave — 9.70 × 12.06 m", "Frente al patio"]),
-  available("nave-01", "NAVE 01", "N01", 117, [], "available", ["Nave — 9.70 × 12.06 m", "Esquina Calle Cobá / Calle 12 Sur"]),
+  // Estado (oct 2026): 02, 03, 04 y las tres naves disponibles (se entra
+  // caminando, el techo se vuelve transparente); 01 en obra, abre en noviembre.
+  available("pabellon-04", "PABELLÓN 04", "P04", 42, PLANS_CHICO, "available", ["Planta libre — 6.05 × 6.85 m", "Subdivisión pre armada: baño y bodega", "Junto a CONTRASTE, frente al patio"]),
+  available("pabellon-01", "PABELLÓN 01", "P01", 80, PLANS_GRANDE, "coming-soon", ["Interior — 45.6 m²", "Terraza exterior — 33.3 m²", `Entrega — ${OPENING_LABEL}`]),
+  available("pabellon-02", "PABELLÓN 02", "P02", 80, PLANS_GRANDE, "available", ["Interior — 45.7 m²", "Terraza exterior — 33.3 m²", "Subdivisión pre armada: baño y bodega", "Salida propia a Calle 12 Sur"]),
+  available("pabellon-03", "PABELLÓN 03", "P03", 46, PLANS_CHICO, "available", ["Planta libre — 6.85 × 6.67 m", "Subdivisión pre armada: baño y bodega", "Salida propia a Calle 12 Sur, junto al ingreso"]),
+  available("nave-03", "NAVE 03", "N03", 95, [], "available", ["Módulo — 7.85 × 12.06 m", ...NAVE_SHARED, "Frente al patio, acceso desde Calle Cobá"]),
+  available("nave-02", "NAVE 02", "N02", 117, [], "available", ["Módulo — 9.70 × 12.06 m", ...NAVE_SHARED, "Carpa beduina montada al centro: doble techo, lista para eventos"]),
+  available("nave-01", "NAVE 01", "N01", 117, [], "available", ["Módulo — 9.70 × 12.06 m", ...NAVE_SHARED, "Esquina Calle Cobá / Calle 12 Sur"]),
 
   // ---- PATIO / PROGRAMA ------------------------------------
   {
@@ -269,7 +288,7 @@ export function spaceKindLabel(space: WorkshopSpace): string {
     case "resident":
       return "RESIDENTE"
     case "available":
-      return space.status === "reserved" ? "ESPACIO RESERVADO" : "ESPACIO DISPONIBLE"
+      return space.status === "reserved" ? "ESPACIO RESERVADO" : space.status === "coming-soon" ? `EN OBRA · ABRE EN ${OPENING_LABEL}` : "ESPACIO DISPONIBLE"
     case "event":
       return "PATIO"
     case "navigation":
@@ -283,11 +302,11 @@ export function spaceKindLabel(space: WorkshopSpace): string {
 export function spaceAccent(space: WorkshopSpace): string | undefined {
   switch (space.id) {
     case "veta":
-      return "#c98f42"
+      return "#a39d95"
     case "contraste":
-      return "#3f9c96"
+      return "#b4544b"
     case "mannno":
-      return "#8e9299"
+      return "#7f8187"
     default:
       return undefined
   }

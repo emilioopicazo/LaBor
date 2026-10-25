@@ -46,6 +46,10 @@ export interface GameEvents {
   escape: Record<string, never>
   /** viaje rápido terminado: el visitante llegó al objetivo */
   arrived: { targetId: string }
+  /** el visitante entró (spaceId) o salió (null) de un interior sin cambiar de escena */
+  space: { spaceId: string | null }
+  /** el zoom del usuario cambió (botones o pellizco): multiplicador sobre el zoom base */
+  zoom: { level: number }
 }
 
 type Listener<T> = (payload: T) => void
@@ -96,6 +100,8 @@ export interface GameCommands {
   setGuide(targetId: string | null): void
   /** el portón se abre: el visitante aterriza y la cámara asienta (llegada visible) */
   arrive(): void
+  /** zoom del usuario: multiplicador sobre el zoom base (1 = normal); se acota en el mundo */
+  setZoom(level: number): void
 }
 
 let controller: GameCommands | null = null
@@ -128,4 +134,5 @@ export const gameCommands: GameCommands = {
   setMarkers: (m) => run((c) => c.setMarkers(m)),
   setGuide: (id) => run((c) => c.setGuide(id)),
   arrive: () => run((c) => c.arrive()),
+  setZoom: (level) => run((c) => c.setZoom(level)),
 }

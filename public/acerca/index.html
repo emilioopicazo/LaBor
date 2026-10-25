@@ -27,7 +27,7 @@
     <meta name="twitter:title" content="Acerca de La Bor · Talleres, espacios en renta, eventos y ubicación en Tulum" />
     <meta name="twitter:description" content="Qué es La Bor, quiénes son sus talleres (VETA, MANNNO, CONTRASTE), cuánto cuesta rentar un pabellón o una nave en La Veleta, Tulum, qué fue el bazar PATIO y cómo llegar. Contacto directo por WhatsApp." />
     <meta name="twitter:image" content="https://www.labortulum.com/og/labor-og.jpg" />
-    <meta name="theme-color" content="#171614" />
+    <meta name="theme-color" content="#141315" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -36,7 +36,7 @@
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
     <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23171614'/%3E%3Ctext x='16' y='21' font-family='Arial,sans-serif' font-size='11' font-weight='700' letter-spacing='1' fill='%23eceae4' text-anchor='middle'%3ELB%3C/text%3E%3C/svg%3E" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -231,7 +231,7 @@
           "seller": {
             "@id": "https://www.labortulum.com/#org"
           },
-          "description": "Nave de 7.85 × 12.06 m frente al patio, acceso desde Calle Cobá. Renta a cotizar."
+          "description": "Módulo de 7.85 × 12.06 m dentro de una nave de 7 m de altura que se subdivide en tres, pensada para artistas y artesanos. Frente al patio, acceso desde Calle Cobá. Renta a cotizar."
         },
         {
           "@type": "Offer",
@@ -244,7 +244,7 @@
           "seller": {
             "@id": "https://www.labortulum.com/#org"
           },
-          "description": "Nave de 9.70 × 12.06 m frente al patio. Renta a cotizar."
+          "description": "Módulo central de 9.70 × 12.06 m de la nave de 7 m de altura (tres módulos para artistas y artesanos), con una carpa beduina montada al centro. Renta a cotizar."
         },
         {
           "@type": "Offer",
@@ -257,33 +257,44 @@
           "seller": {
             "@id": "https://www.labortulum.com/#org"
           },
-          "description": "Nave de 9.70 × 12.06 m en esquina Calle Cobá / Calle 12 Sur. Renta a cotizar."
+          "description": "Módulo de 9.70 × 12.06 m de la nave de 7 m de altura (tres módulos para artistas y artesanos), en esquina Calle Cobá / Calle 12 Sur. Renta a cotizar."
         },
         {
           "@type": "Offer",
-          "name": "Pabellón 01 — 80 m²",
+          "name": "Pabellón 01 — 80 m² (interior 45.6 m² + terraza 33.3 m²)",
           "category": "Renta de taller, estudio o nave",
-          "availability": "https://schema.org/SoldOut",
+          "availability": "https://schema.org/PreOrder",
+          "availabilityStarts": "2026-11-01",
+          "price": "12000",
           "priceCurrency": "MXN",
+          "priceSpecification": [
+            { "@type": "UnitPriceSpecification", "price": "12000", "priceCurrency": "MXN", "unitText": "mes", "name": "Contrato de 1 año" },
+            { "@type": "UnitPriceSpecification", "price": "15000", "priceCurrency": "MXN", "unitText": "mes", "name": "Contrato de 6 meses" }
+          ],
           "url": "https://www.labortulum.com/acerca/#espacios",
           "areaServed": "Tulum, Quintana Roo",
           "seller": {
             "@id": "https://www.labortulum.com/#org"
           },
-          "description": "Reservado. Lista de espera por WhatsApp."
+          "description": "En obra. Se entrega en noviembre de 2026; se puede apartar desde ahora por WhatsApp."
         },
         {
           "@type": "Offer",
           "name": "Pabellón 03 — 46 m²",
           "category": "Renta de taller, estudio o nave",
-          "availability": "https://schema.org/SoldOut",
+          "availability": "https://schema.org/InStock",
+          "price": "8000",
           "priceCurrency": "MXN",
+          "priceSpecification": [
+            { "@type": "UnitPriceSpecification", "price": "8000", "priceCurrency": "MXN", "unitText": "mes", "name": "Contrato de 1 año" },
+            { "@type": "UnitPriceSpecification", "price": "10000", "priceCurrency": "MXN", "unitText": "mes", "name": "Contrato de 6 meses" }
+          ],
           "url": "https://www.labortulum.com/acerca/#espacios",
           "areaServed": "Tulum, Quintana Roo",
           "seller": {
             "@id": "https://www.labortulum.com/#org"
           },
-          "description": "Reservado. Lista de espera por WhatsApp."
+          "description": "Planta libre de 6.85 × 6.67 m junto al ingreso, con subdivisión pre armada (baño y bodega) y salida propia a Calle 12 Sur. Disponible."
         }
       ],
       "sameAs": [
@@ -415,7 +426,7 @@
 }
     </script>
     <style>
-      :root { --ink:#181411; --charcoal:#1c1916; --charcoal-2:#262119; --paper:#f4efe4; --paper-2:#e9dcc6; --muted:#c0b6a3; --muted-2:#8b8272; --body:#d5cdbd; --ochre:#c98f42; --ochre-2:#e08a3c; --ochre-3:#f2a058; --teal:#3f9c96; --rust:#c47a3f; }
+      :root { --ink:#141315; --charcoal:#1a191b; --charcoal-2:#232225; --paper:#ecebe9; --paper-2:#d9d7d4; --muted:#a9a6ad; --muted-2:#7d7a82; --body:#cfcdd1; --ochre:#9a979e; --ochre-2:#b4544b; --ochre-3:#d9928a; --teal:#b0adb7; --rust:#9a443d; }
       * { box-sizing:border-box; margin:0; padding:0 }
       html { scroll-behavior:smooth; -webkit-text-size-adjust:100% }
       body { font-family: "Archivo","Helvetica Neue",Helvetica,Arial,sans-serif; background:#171614; color:var(--body); line-height:1.55; font-size:17px; padding: 0 0 calc(24px + env(safe-area-inset-bottom,0px)) }
@@ -519,17 +530,17 @@
 
       <section id="espacios">
         <h2>Espacios en renta</h2>
-        <p>Pabellones y naves alrededor del patio, para talleres, estudios, oficinas, marcas y bodegas. Renta mensual según la duración del contrato.</p>
+        <p>Pabellones y naves alrededor del patio, para talleres, estudios, oficinas, marcas y bodegas. Renta mensual según la duración del contrato. Los pabellones 02, 03 y 04 están disponibles hoy, con subdivisión pre armada (baño y bodega); los pabellones 02 y 03 tienen salida propia a Calle 12 Sur. El Pabellón 01 está en obra y abre en noviembre de 2026. La nave es una sola, de 7 m de altura, que se está subdividiendo en tres módulos para artistas y artesanos; el módulo central tiene una carpa beduina montada (doble techo).</p>
         <table>
           <thead><tr><th>Espacio</th><th>Medida</th><th>Renta mensual</th></tr></thead>
           <tbody>
             <tr><td><strong>Pabellón 04</strong><br />Planta libre 6.05 × 6.85 m, frente al patio</td><td>42 m²</td><td><strong>$8,000 MXN</strong> con contrato de 1 año<br />$10,000 MXN a 6 meses</td></tr>
             <tr><td><strong>Pabellón 02</strong><br />Interior 45.7 m² + terraza 33.3 m²</td><td>80 m²</td><td><strong>$12,000 MXN</strong> con contrato de 1 año<br />$15,000 MXN a 6 meses</td></tr>
-            <tr><td><strong>Pabellón 01</strong><br />Interior 45.6 m² + terraza 33.3 m²</td><td>80 m²</td><td><span class="tag">RESERVADO</span> lista de espera</td></tr>
-            <tr><td><strong>Pabellón 03</strong><br />Planta libre 6.85 × 6.67 m, junto al ingreso</td><td>46 m²</td><td><span class="tag">RESERVADO</span> lista de espera</td></tr>
-            <tr><td><strong>Nave 03</strong><br />7.85 × 12.06 m, acceso desde Calle Cobá</td><td>95 m²</td><td>A cotizar</td></tr>
-            <tr><td><strong>Nave 02</strong><br />9.70 × 12.06 m, frente al patio</td><td>117 m²</td><td>A cotizar</td></tr>
-            <tr><td><strong>Nave 01</strong><br />9.70 × 12.06 m, esquina Cobá / 12 Sur</td><td>117 m²</td><td>A cotizar</td></tr>
+            <tr><td><strong>Pabellón 03</strong><br />Planta libre 6.85 × 6.67 m, junto al ingreso, salida propia a Calle 12 Sur</td><td>46 m²</td><td><strong>$8,000 MXN</strong> con contrato de 1 año<br />$10,000 MXN a 6 meses</td></tr>
+            <tr><td><strong>Pabellón 01</strong><br />Interior 45.6 m² + terraza 33.3 m²</td><td>80 m²</td><td><span class="tag">EN OBRA</span> abre en noviembre 2026 · <strong>$12,000 MXN</strong> a 1 año · se puede apartar</td></tr>
+            <tr><td><strong>Nave 03</strong><br />Módulo 7.85 × 12.06 m, acceso desde Calle Cobá</td><td>95 m²</td><td>A cotizar</td></tr>
+            <tr><td><strong>Nave 02</strong><br />Módulo central 9.70 × 12.06 m, con carpa beduina</td><td>117 m²</td><td>A cotizar</td></tr>
+            <tr><td><strong>Nave 01</strong><br />Módulo 9.70 × 12.06 m, esquina Cobá / 12 Sur</td><td>117 m²</td><td>A cotizar</td></tr>
           </tbody>
         </table>
         <p class="legend">Precios de referencia en MXN. Todo se confirma por WhatsApp al +52 55 3037 4167 o por correo a labortulum@gmail.com. Patio compartido con VETA, MANNNO y CONTRASTE, y programa de eventos.</p>

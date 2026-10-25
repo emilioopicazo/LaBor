@@ -93,6 +93,52 @@
               "value": "CALLE 12 SUR"
             }
           ]
+        },
+        {
+          "id": 3,
+          "name": "pabellon-02-street",
+          "type": "opening",
+          "x": 1660.8,
+          "y": 679.2,
+          "width": 28.8,
+          "height": 62.4,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "label",
+              "type": "string",
+              "value": ""
+            },
+            {
+              "name": "street",
+              "type": "string",
+              "value": "CALLE 12 SUR"
+            }
+          ]
+        },
+        {
+          "id": 4,
+          "name": "pabellon-03-street",
+          "type": "opening",
+          "x": 1660.8,
+          "y": 1000.8,
+          "width": 28.8,
+          "height": 62.4,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "label",
+              "type": "string",
+              "value": ""
+            },
+            {
+              "name": "street",
+              "type": "string",
+              "value": "CALLE 12 SUR"
+            }
+          ]
         }
       ],
       "opacity": 1,
@@ -107,7 +153,7 @@
       "draworder": "topdown",
       "objects": [
         {
-          "id": 3,
+          "id": 5,
           "name": "veta",
           "type": "building",
           "x": 0,
@@ -153,11 +199,31 @@
               "name": "enterable",
               "type": "bool",
               "value": true
+            },
+            {
+              "name": "interior",
+              "type": "bool",
+              "value": false
+            },
+            {
+              "name": "construction",
+              "type": "bool",
+              "value": false
+            },
+            {
+              "name": "group",
+              "type": "string",
+              "value": ""
+            },
+            {
+              "name": "heightM",
+              "type": "int",
+              "value": 4
             }
           ]
         },
         {
-          "id": 4,
+          "id": 6,
           "name": "mannno",
           "type": "building",
           "x": 0,
@@ -199,11 +265,31 @@
               "name": "enterable",
               "type": "bool",
               "value": true
+            },
+            {
+              "name": "interior",
+              "type": "bool",
+              "value": false
+            },
+            {
+              "name": "construction",
+              "type": "bool",
+              "value": false
+            },
+            {
+              "name": "group",
+              "type": "string",
+              "value": ""
+            },
+            {
+              "name": "heightM",
+              "type": "int",
+              "value": 4
             }
           ]
         },
         {
-          "id": 5,
+          "id": 7,
           "name": "franja-sur",
           "type": "building",
           "x": 0,
@@ -245,11 +331,31 @@
               "name": "enterable",
               "type": "bool",
               "value": false
+            },
+            {
+              "name": "interior",
+              "type": "bool",
+              "value": false
+            },
+            {
+              "name": "construction",
+              "type": "bool",
+              "value": false
+            },
+            {
+              "name": "group",
+              "type": "string",
+              "value": ""
+            },
+            {
+              "name": "heightM",
+              "type": "int",
+              "value": 3
             }
           ]
         },
         {
-          "id": 6,
+          "id": 8,
           "name": "pabellon-04",
           "type": "building",
           "x": 264,
@@ -273,11 +379,31 @@
               "name": "enterable",
               "type": "bool",
               "value": true
+            },
+            {
+              "name": "interior",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "name": "construction",
+              "type": "bool",
+              "value": false
+            },
+            {
+              "name": "group",
+              "type": "string",
+              "value": ""
+            },
+            {
+              "name": "heightM",
+              "type": "float",
+              "value": 3.5
             }
           ]
         },
         {
-          "id": 7,
+          "id": 9,
           "name": "contraste",
           "type": "building",
           "x": 554.4,
@@ -301,11 +427,31 @@
               "name": "enterable",
               "type": "bool",
               "value": true
+            },
+            {
+              "name": "interior",
+              "type": "bool",
+              "value": false
+            },
+            {
+              "name": "construction",
+              "type": "bool",
+              "value": false
+            },
+            {
+              "name": "group",
+              "type": "string",
+              "value": ""
+            },
+            {
+              "name": "heightM",
+              "type": "float",
+              "value": 3.5
             }
           ]
         },
         {
-          "id": 8,
+          "id": 10,
           "name": "pabellon-01",
           "type": "building",
           "x": 1099.2,
@@ -329,11 +475,31 @@
               "name": "enterable",
               "type": "bool",
               "value": true
+            },
+            {
+              "name": "interior",
+              "type": "bool",
+              "value": false
+            },
+            {
+              "name": "construction",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "name": "group",
+              "type": "string",
+              "value": ""
+            },
+            {
+              "name": "heightM",
+              "type": "float",
+              "value": 3.5
             }
           ]
         },
         {
-          "id": 9,
+          "id": 11,
           "name": "pabellon-02",
           "type": "building",
           "x": 1099.2,
@@ -357,11 +523,31 @@
               "name": "enterable",
               "type": "bool",
               "value": true
+            },
+            {
+              "name": "interior",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "name": "construction",
+              "type": "bool",
+              "value": false
+            },
+            {
+              "name": "group",
+              "type": "string",
+              "value": ""
+            },
+            {
+              "name": "heightM",
+              "type": "float",
+              "value": 3.5
             }
           ]
         },
         {
-          "id": 10,
+          "id": 12,
           "name": "pabellon-03",
           "type": "building",
           "x": 1339.2,
@@ -385,11 +571,31 @@
               "name": "enterable",
               "type": "bool",
               "value": true
+            },
+            {
+              "name": "interior",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "name": "construction",
+              "type": "bool",
+              "value": false
+            },
+            {
+              "name": "group",
+              "type": "string",
+              "value": ""
+            },
+            {
+              "name": "heightM",
+              "type": "float",
+              "value": 3.5
             }
           ]
         },
         {
-          "id": 11,
+          "id": 13,
           "name": "nave-03",
           "type": "building",
           "x": 360,
@@ -413,11 +619,31 @@
               "name": "enterable",
               "type": "bool",
               "value": true
+            },
+            {
+              "name": "interior",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "name": "construction",
+              "type": "bool",
+              "value": false
+            },
+            {
+              "name": "group",
+              "type": "string",
+              "value": "nave"
+            },
+            {
+              "name": "heightM",
+              "type": "int",
+              "value": 7
             }
           ]
         },
         {
-          "id": 12,
+          "id": 14,
           "name": "nave-02",
           "type": "building",
           "x": 736.8,
@@ -441,11 +667,31 @@
               "name": "enterable",
               "type": "bool",
               "value": true
+            },
+            {
+              "name": "interior",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "name": "construction",
+              "type": "bool",
+              "value": false
+            },
+            {
+              "name": "group",
+              "type": "string",
+              "value": "nave"
+            },
+            {
+              "name": "heightM",
+              "type": "int",
+              "value": 7
             }
           ]
         },
         {
-          "id": 13,
+          "id": 15,
           "name": "nave-01",
           "type": "building",
           "x": 1202.4,
@@ -469,6 +715,26 @@
               "name": "enterable",
               "type": "bool",
               "value": true
+            },
+            {
+              "name": "interior",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "name": "construction",
+              "type": "bool",
+              "value": false
+            },
+            {
+              "name": "group",
+              "type": "string",
+              "value": "nave"
+            },
+            {
+              "name": "heightM",
+              "type": "int",
+              "value": 7
             }
           ]
         }
@@ -485,11 +751,11 @@
       "draworder": "topdown",
       "objects": [
         {
-          "id": 14,
+          "id": 16,
           "name": "patio",
           "type": "walkable",
           "x": 271.2,
-          "y": 559.2,
+          "y": 223.2,
           "width": 0,
           "height": 0,
           "rotation": 0,
@@ -500,47 +766,67 @@
               "y": 0
             },
             {
-              "x": 573.6,
+              "x": 283.2,
               "y": 0
             },
             {
+              "x": 283.2,
+              "y": 336
+            },
+            {
               "x": 573.6,
-              "y": -328.8
+              "y": 336
+            },
+            {
+              "x": 573.6,
+              "y": 7.2
             },
             {
               "x": 828,
-              "y": -328.8
+              "y": 7.2
             },
             {
               "x": 828,
-              "y": 311.04
+              "y": 326.88
             },
             {
-              "x": 1068,
-              "y": 311.04
+              "x": 1404,
+              "y": 326.88
             },
             {
-              "x": 1068,
-              "y": 631.2
+              "x": 1404,
+              "y": 0
             },
             {
-              "x": 1485.6,
-              "y": 631.2
+              "x": 1600.8,
+              "y": 0
             },
             {
-              "x": 1485.6,
-              "y": 876
+              "x": 1600.8,
+              "y": 1797.12
+            },
+            {
+              "x": 1404,
+              "y": 1797.12
+            },
+            {
+              "x": 88.8,
+              "y": 1797.12
+            },
+            {
+              "x": 88.8,
+              "y": 1212
             },
             {
               "x": 0,
-              "y": 876
+              "y": 1212
             }
           ],
           "properties": [
             {
               "name": "note",
               "type": "string",
-              "value": "Patio + pasillo del árbol + bolsa norte P03 + ingreso con banqueta."
+              "value": "Patio + pasillo del árbol + interiores (P04, P02, P03, nave) + Calle 12 Sur."
             }
           ]
         }
@@ -557,7 +843,7 @@
       "draworder": "topdown",
       "objects": [
         {
-          "id": 15,
+          "id": 17,
           "name": "veta-door",
           "type": "workshop-door",
           "x": 290.4,
@@ -596,7 +882,7 @@
           ]
         },
         {
-          "id": 16,
+          "id": 18,
           "name": "mannno-door",
           "type": "workshop-door",
           "x": 290.4,
@@ -635,7 +921,7 @@
           ]
         },
         {
-          "id": 17,
+          "id": 19,
           "name": "pabellon-04-door",
           "type": "workshop-door",
           "x": 408,
@@ -674,7 +960,7 @@
           ]
         },
         {
-          "id": 18,
+          "id": 20,
           "name": "contraste-door",
           "type": "workshop-door",
           "x": 700.8,
@@ -713,7 +999,7 @@
           ]
         },
         {
-          "id": 19,
+          "id": 21,
           "name": "pabellon-01-door",
           "type": "workshop-door",
           "x": 1080,
@@ -752,7 +1038,7 @@
           ]
         },
         {
-          "id": 20,
+          "id": 22,
           "name": "pabellon-02-door",
           "type": "workshop-door",
           "x": 1080,
@@ -791,7 +1077,7 @@
           ]
         },
         {
-          "id": 21,
+          "id": 23,
           "name": "pabellon-03-door",
           "type": "workshop-door",
           "x": 1320,
@@ -830,7 +1116,7 @@
           ]
         },
         {
-          "id": 22,
+          "id": 24,
           "name": "nave-03-door",
           "type": "workshop-door",
           "x": 475.2,
@@ -869,7 +1155,7 @@
           ]
         },
         {
-          "id": 23,
+          "id": 25,
           "name": "nave-02-door",
           "type": "workshop-door",
           "x": 859.2,
@@ -908,7 +1194,7 @@
           ]
         },
         {
-          "id": 24,
+          "id": 26,
           "name": "nave-01-door",
           "type": "workshop-door",
           "x": 1320,
@@ -959,7 +1245,7 @@
       "draworder": "topdown",
       "objects": [
         {
-          "id": 25,
+          "id": 27,
           "name": "main-ingreso",
           "type": "spawn",
           "x": 1723.2,
@@ -983,7 +1269,7 @@
           ]
         },
         {
-          "id": 26,
+          "id": 28,
           "name": "return-veta",
           "type": "spawn",
           "x": 328.8,
@@ -1002,7 +1288,7 @@
           ]
         },
         {
-          "id": 27,
+          "id": 29,
           "name": "return-mannno",
           "type": "spawn",
           "x": 328.8,
@@ -1021,7 +1307,7 @@
           ]
         },
         {
-          "id": 28,
+          "id": 30,
           "name": "return-pabellon-04",
           "type": "spawn",
           "x": 408,
@@ -1040,7 +1326,7 @@
           ]
         },
         {
-          "id": 29,
+          "id": 31,
           "name": "return-contraste",
           "type": "spawn",
           "x": 700.8,
@@ -1059,7 +1345,7 @@
           ]
         },
         {
-          "id": 30,
+          "id": 32,
           "name": "return-pabellon-01",
           "type": "spawn",
           "x": 1041.6,
@@ -1078,7 +1364,7 @@
           ]
         },
         {
-          "id": 31,
+          "id": 33,
           "name": "return-pabellon-02",
           "type": "spawn",
           "x": 1041.6,
@@ -1097,7 +1383,7 @@
           ]
         },
         {
-          "id": 32,
+          "id": 34,
           "name": "return-pabellon-03",
           "type": "spawn",
           "x": 1281.6,
@@ -1116,7 +1402,7 @@
           ]
         },
         {
-          "id": 33,
+          "id": 35,
           "name": "return-nave-03",
           "type": "spawn",
           "x": 475.2,
@@ -1135,7 +1421,7 @@
           ]
         },
         {
-          "id": 34,
+          "id": 36,
           "name": "return-nave-02",
           "type": "spawn",
           "x": 859.2,
@@ -1154,7 +1440,7 @@
           ]
         },
         {
-          "id": 35,
+          "id": 37,
           "name": "return-nave-01",
           "type": "spawn",
           "x": 1320,
@@ -1185,7 +1471,7 @@
       "draworder": "topdown",
       "objects": [
         {
-          "id": 36,
+          "id": 38,
           "name": "pieza-central",
           "type": "poi",
           "x": 672,
@@ -1224,7 +1510,7 @@
           ]
         },
         {
-          "id": 37,
+          "id": 39,
           "name": "eventos-board",
           "type": "poi",
           "x": 984,
@@ -1263,7 +1549,7 @@
           ]
         },
         {
-          "id": 38,
+          "id": 40,
           "name": "info-totem",
           "type": "poi",
           "x": 1468.8,
@@ -1300,6 +1586,270 @@
               "value": "INFORMACIÓN"
             }
           ]
+        },
+        {
+          "id": 41,
+          "name": "pabellon-04-info",
+          "type": "poi",
+          "x": 408,
+          "y": 403.2,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "point": true,
+          "properties": [
+            {
+              "name": "id",
+              "type": "string",
+              "value": "pabellon-04-info"
+            },
+            {
+              "name": "action",
+              "type": "string",
+              "value": "INFO"
+            },
+            {
+              "name": "missionRole",
+              "type": "string",
+              "value": ""
+            },
+            {
+              "name": "radius",
+              "type": "float",
+              "value": 76.8
+            },
+            {
+              "name": "label",
+              "type": "string",
+              "value": "PABELLÓN 04"
+            },
+            {
+              "name": "spaceId",
+              "type": "string",
+              "value": "pabellon-04"
+            }
+          ]
+        },
+        {
+          "id": 42,
+          "name": "pabellon-02-info",
+          "type": "poi",
+          "x": 1248,
+          "y": 710.4,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "point": true,
+          "properties": [
+            {
+              "name": "id",
+              "type": "string",
+              "value": "pabellon-02-info"
+            },
+            {
+              "name": "action",
+              "type": "string",
+              "value": "INFO"
+            },
+            {
+              "name": "missionRole",
+              "type": "string",
+              "value": ""
+            },
+            {
+              "name": "radius",
+              "type": "float",
+              "value": 76.8
+            },
+            {
+              "name": "label",
+              "type": "string",
+              "value": "PABELLÓN 02"
+            },
+            {
+              "name": "spaceId",
+              "type": "string",
+              "value": "pabellon-02"
+            }
+          ]
+        },
+        {
+          "id": 43,
+          "name": "pabellon-03-info",
+          "type": "poi",
+          "x": 1507.2,
+          "y": 1032,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "point": true,
+          "properties": [
+            {
+              "name": "id",
+              "type": "string",
+              "value": "pabellon-03-info"
+            },
+            {
+              "name": "action",
+              "type": "string",
+              "value": "INFO"
+            },
+            {
+              "name": "missionRole",
+              "type": "string",
+              "value": ""
+            },
+            {
+              "name": "radius",
+              "type": "float",
+              "value": 76.8
+            },
+            {
+              "name": "label",
+              "type": "string",
+              "value": "PABELLÓN 03"
+            },
+            {
+              "name": "spaceId",
+              "type": "string",
+              "value": "pabellon-03"
+            }
+          ]
+        },
+        {
+          "id": 44,
+          "name": "nave-03-info",
+          "type": "poi",
+          "x": 547.2,
+          "y": 1632,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "point": true,
+          "properties": [
+            {
+              "name": "id",
+              "type": "string",
+              "value": "nave-03-info"
+            },
+            {
+              "name": "action",
+              "type": "string",
+              "value": "INFO"
+            },
+            {
+              "name": "missionRole",
+              "type": "string",
+              "value": ""
+            },
+            {
+              "name": "radius",
+              "type": "float",
+              "value": 76.8
+            },
+            {
+              "name": "label",
+              "type": "string",
+              "value": "NAVE 03"
+            },
+            {
+              "name": "spaceId",
+              "type": "string",
+              "value": "nave-03"
+            }
+          ]
+        },
+        {
+          "id": 45,
+          "name": "nave-02-info",
+          "type": "poi",
+          "x": 969.6,
+          "y": 1545.6,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "point": true,
+          "properties": [
+            {
+              "name": "id",
+              "type": "string",
+              "value": "nave-02-info"
+            },
+            {
+              "name": "action",
+              "type": "string",
+              "value": "INFO"
+            },
+            {
+              "name": "missionRole",
+              "type": "string",
+              "value": ""
+            },
+            {
+              "name": "radius",
+              "type": "float",
+              "value": 76.8
+            },
+            {
+              "name": "label",
+              "type": "string",
+              "value": "NAVE 02"
+            },
+            {
+              "name": "spaceId",
+              "type": "string",
+              "value": "nave-02"
+            }
+          ]
+        },
+        {
+          "id": 46,
+          "name": "nave-01-info",
+          "type": "poi",
+          "x": 1440,
+          "y": 1632,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "point": true,
+          "properties": [
+            {
+              "name": "id",
+              "type": "string",
+              "value": "nave-01-info"
+            },
+            {
+              "name": "action",
+              "type": "string",
+              "value": "INFO"
+            },
+            {
+              "name": "missionRole",
+              "type": "string",
+              "value": ""
+            },
+            {
+              "name": "radius",
+              "type": "float",
+              "value": 76.8
+            },
+            {
+              "name": "label",
+              "type": "string",
+              "value": "NAVE 01"
+            },
+            {
+              "name": "spaceId",
+              "type": "string",
+              "value": "nave-01"
+            }
+          ]
         }
       ],
       "opacity": 1,
@@ -1314,7 +1864,7 @@
       "draworder": "topdown",
       "objects": [
         {
-          "id": 39,
+          "id": 47,
           "name": "tree-main-trunk",
           "type": "obstacle",
           "x": 900,
@@ -1327,7 +1877,7 @@
           "properties": []
         },
         {
-          "id": 40,
+          "id": 48,
           "name": "pieza-pedestal",
           "type": "obstacle",
           "x": 626.4,
@@ -1340,7 +1890,7 @@
           "properties": []
         },
         {
-          "id": 41,
+          "id": 49,
           "name": "eventos-board",
           "type": "obstacle",
           "x": 950.4,
@@ -1353,7 +1903,7 @@
           "properties": []
         },
         {
-          "id": 42,
+          "id": 50,
           "name": "info-totem",
           "type": "obstacle",
           "x": 1449.6,
@@ -1366,7 +1916,7 @@
           "properties": []
         },
         {
-          "id": 43,
+          "id": 51,
           "name": "wood-stack",
           "type": "obstacle",
           "x": 328.8,
@@ -1379,7 +1929,7 @@
           "properties": []
         },
         {
-          "id": 44,
+          "id": 52,
           "name": "pallets",
           "type": "obstacle",
           "x": 326.4,
@@ -1390,6 +1940,402 @@
           "visible": true,
           "ellipse": true,
           "properties": []
+        },
+        {
+          "id": 53,
+          "name": "pabellon-04-wall-n-0",
+          "type": "obstacle",
+          "x": 264,
+          "y": 216,
+          "width": 290.4,
+          "height": 14.4,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "wall",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": 54,
+          "name": "pabellon-04-wall-s-0",
+          "type": "obstacle",
+          "x": 264,
+          "y": 552,
+          "width": 112.8,
+          "height": 14.4,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "wall",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": 55,
+          "name": "pabellon-04-wall-s-1",
+          "type": "obstacle",
+          "x": 439.2,
+          "y": 552,
+          "width": 115.2,
+          "height": 14.4,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "wall",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": 56,
+          "name": "pabellon-04-wall-w-0",
+          "type": "obstacle",
+          "x": 256.8,
+          "y": 223.2,
+          "width": 14.4,
+          "height": 336,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "wall",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": 57,
+          "name": "pabellon-04-wall-e-0",
+          "type": "obstacle",
+          "x": 547.2,
+          "y": 223.2,
+          "width": 14.4,
+          "height": 336,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "wall",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": 58,
+          "name": "pabellon-02-wall-w-0",
+          "type": "obstacle",
+          "x": 1092,
+          "y": 550.08,
+          "width": 14.4,
+          "height": 129.12,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "wall",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": 59,
+          "name": "pabellon-02-wall-w-1",
+          "type": "obstacle",
+          "x": 1092,
+          "y": 741.6,
+          "width": 14.4,
+          "height": 128.64,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "wall",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": 60,
+          "name": "pabellon-02-wall-e-0",
+          "type": "obstacle",
+          "x": 1668,
+          "y": 550.08,
+          "width": 14.4,
+          "height": 129.12,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "wall",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": 61,
+          "name": "pabellon-02-wall-e-1",
+          "type": "obstacle",
+          "x": 1668,
+          "y": 741.6,
+          "width": 14.4,
+          "height": 128.64,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "wall",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": 62,
+          "name": "pabellon-02-wall-s-0",
+          "type": "obstacle",
+          "x": 1099.2,
+          "y": 863.04,
+          "width": 576,
+          "height": 14.4,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "wall",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": 63,
+          "name": "pabellon-03-wall-w-0",
+          "type": "obstacle",
+          "x": 1332,
+          "y": 870.24,
+          "width": 14.4,
+          "height": 130.56,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "wall",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": 64,
+          "name": "pabellon-03-wall-w-1",
+          "type": "obstacle",
+          "x": 1332,
+          "y": 1063.2,
+          "width": 14.4,
+          "height": 127.2,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "wall",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": 65,
+          "name": "pabellon-03-wall-e-0",
+          "type": "obstacle",
+          "x": 1668,
+          "y": 870.24,
+          "width": 14.4,
+          "height": 130.56,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "wall",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": 66,
+          "name": "pabellon-03-wall-e-1",
+          "type": "obstacle",
+          "x": 1668,
+          "y": 1063.2,
+          "width": 14.4,
+          "height": 127.2,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "wall",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": 67,
+          "name": "pabellon-03-wall-s-0",
+          "type": "obstacle",
+          "x": 1339.2,
+          "y": 1183.2,
+          "width": 336,
+          "height": 14.4,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "wall",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": 68,
+          "name": "nave-wall-n-0",
+          "type": "obstacle",
+          "x": 360,
+          "y": 1428,
+          "width": 84,
+          "height": 14.4,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "wall",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": 69,
+          "name": "nave-wall-n-1",
+          "type": "obstacle",
+          "x": 506.4,
+          "y": 1428,
+          "width": 321.6,
+          "height": 14.4,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "wall",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": 70,
+          "name": "nave-wall-n-2",
+          "type": "obstacle",
+          "x": 890.4,
+          "y": 1428,
+          "width": 398.4,
+          "height": 14.4,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "wall",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": 71,
+          "name": "nave-wall-n-3",
+          "type": "obstacle",
+          "x": 1351.2,
+          "y": 1428,
+          "width": 324,
+          "height": 14.4,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "wall",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": 72,
+          "name": "nave-wall-s-0",
+          "type": "obstacle",
+          "x": 360,
+          "y": 2013.12,
+          "width": 1315.2,
+          "height": 14.4,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "wall",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": 73,
+          "name": "nave-wall-w-0",
+          "type": "obstacle",
+          "x": 352.8,
+          "y": 1435.2,
+          "width": 14.4,
+          "height": 585.12,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "wall",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": 74,
+          "name": "nave-wall-e-0",
+          "type": "obstacle",
+          "x": 1668,
+          "y": 1435.2,
+          "width": 14.4,
+          "height": 585.12,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "wall",
+              "type": "bool",
+              "value": true
+            }
+          ]
         }
       ],
       "opacity": 1,
@@ -1404,7 +2350,7 @@
       "draworder": "topdown",
       "objects": [
         {
-          "id": 45,
+          "id": 75,
           "name": "tree-main-canopy",
           "type": "depth-anchor",
           "x": 921.6,
@@ -1487,7 +2433,7 @@
       "draworder": "topdown",
       "objects": [
         {
-          "id": 46,
+          "id": 76,
           "name": "tree-main-base",
           "type": "prop",
           "x": 921.6,
@@ -1511,7 +2457,7 @@
           ]
         },
         {
-          "id": 47,
+          "id": 77,
           "name": "shrub-01",
           "type": "prop",
           "x": 820.8,
@@ -1535,7 +2481,7 @@
           ]
         },
         {
-          "id": 48,
+          "id": 78,
           "name": "shrub-02",
           "type": "prop",
           "x": 950.4,
@@ -1559,7 +2505,7 @@
           ]
         },
         {
-          "id": 49,
+          "id": 79,
           "name": "installation-base",
           "type": "prop",
           "x": 672,
@@ -1588,7 +2534,7 @@
           ]
         },
         {
-          "id": 50,
+          "id": 80,
           "name": "events-board",
           "type": "prop",
           "x": 984,
@@ -1612,7 +2558,7 @@
           ]
         },
         {
-          "id": 51,
+          "id": 81,
           "name": "info-totem",
           "type": "prop",
           "x": 1468.8,
@@ -1636,7 +2582,7 @@
           ]
         },
         {
-          "id": 52,
+          "id": 82,
           "name": "wood-stack",
           "type": "prop",
           "x": 355.2,
@@ -1660,7 +2606,7 @@
           ]
         },
         {
-          "id": 53,
+          "id": 83,
           "name": "pallets",
           "type": "prop",
           "x": 350.4,
@@ -1684,7 +2630,7 @@
           ]
         },
         {
-          "id": 54,
+          "id": 84,
           "name": "planter-01",
           "type": "prop",
           "x": 590.4,
@@ -1708,7 +2654,7 @@
           ]
         },
         {
-          "id": 55,
+          "id": 85,
           "name": "planter-02",
           "type": "prop",
           "x": 1209.6,
@@ -1732,7 +2678,7 @@
           ]
         },
         {
-          "id": 56,
+          "id": 86,
           "name": "water-tank",
           "type": "prop",
           "x": 1161.6,
@@ -1768,7 +2714,7 @@
       "draworder": "topdown",
       "objects": [
         {
-          "id": 57,
+          "id": 87,
           "name": "tree-main-canopy",
           "type": "prop",
           "x": 921.6,
@@ -1804,7 +2750,7 @@
     }
   ],
   "nextlayerid": 15,
-  "nextobjectid": 58,
+  "nextobjectid": 88,
   "orientation": "orthogonal",
   "properties": [
     {

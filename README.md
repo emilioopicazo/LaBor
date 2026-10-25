@@ -58,16 +58,23 @@ Predio 34.90 × 42.09 m (chaflán en la esquina NO; **INGRESO** de 5.1 m en el
 muro este, Calle 12 Sur; sin abertura en Cobá en el plano).
 
 Capas: `00_REFERENCE_PLAN` (imagen a 48 px/m, solo calibración),
-`PROPERTY_BOUNDARY`, `BUILDING_COLLISION` (VETA / MANNNO / franja sur /
-Pabellón 04 / CONTRASTE / Pabellones 01–03 / Naves 01–03), `WALKABLE`
-(patio + pasillo del árbol + bolsa norte de P03 + ingreso con banqueta),
-`DOORS` (puerta en la cara que da al patio), `SPAWNS` (`main-ingreso`,
-`return-<espacio>`), `POI` (pedestal, tablero de eventos, tótem), `OBSTACLES`
-(tronco, pedestal, tablero, tótem, madera, tarimas), `DEPTH_ANCHORS` y `ART_*`.
+`PROPERTY_BOUNDARY` (con las aberturas: INGRESO y las salidas de P02 y P03 a
+la calle), `BUILDING_COLLISION` (VETA / MANNNO / franja sur / Pabellón 04 /
+CONTRASTE / Pabellones 01–03 / Naves 01–03, con propiedades `interior`,
+`construction`, `group`, `heightM`), `WALKABLE` (patio + pasillo del árbol +
+**interiores de P04, P02, P03 y la nave** + **Calle 12 Sur** completa: banqueta
+1.7 m y carril hasta x = 39 m), `DOORS`, `SPAWNS`, `POI` (pedestal, tablero,
+tótem y un punto `INFO` dentro de cada interior, con `spaceId`), `OBSTACLES`
+(círculos: tronco, pedestal…; **rectángulos: los muros de los interiores**, 0.3 m,
+con huecos de 1.3 m en las puertas), `DEPTH_ANCHORS` y `ART_*`.
+
+El generador también escribe `src/data/plan.generated.ts` (plano en metros)
+para el intro, que lo dibuja como SVG sin cargar el TMJ.
 
 - `maps/labor.tiled-project` abre el mapa en Tiled con las clases ya definidas.
-- `scripts/build-overworld-map.mjs` documenta el trazado inicial en metros y
-  regenera el TMJ. Si editas el mapa en Tiled, **no** lo vuelvas a correr.
+- `scripts/build-overworld-map.mjs` documenta el trazado en metros y regenera
+  el TMJ **y** `plan.generated.ts`. Es la fuente de verdad espacial: cambiar un
+  muro, una puerta o el estado `interior` de un edificio es editar ahí y correrlo.
 - `?mapdebug=1` dibuja el plano encima del juego más polígonos, puertas,
   spawns, POIs y el colisionador del visitante.
 
@@ -78,9 +85,13 @@ Pabellón 04 / CONTRASTE / Pabellones 01–03 / Naves 01–03), `WALKABLE`
   anillo sigue al dedo). **Un** botón contextual abajo-derecha que dice lo
   que va a pasar: ENTRAR · VER · JUGAR · INSTALAR · SALIR. Tocar el piso
   libre camina hasta ahí (secundario). Prioridad: UI > interactuables >
-  joystick > tap-to-walk.
+  joystick > tap-to-walk. Un toque corto en la zona del joystick (sin
+  arrastrar) también camina hasta ahí.
+- **Zoom**: control `+ / −` sobre el botón de acción (pasos `USER_ZOOM_STEPS`
+  0.62–1.55×, se guarda en el perfil), pellizco con dos dedos y rueda del ratón.
+  El zoom nunca deja ver fuera de los límites del mundo.
 - **Escritorio**: WASD / flechas, `E` / `Enter` / espacio para actuar,
-  clic para caminar, `ESC` cierra.
+  clic para caminar, rueda para zoom, `ESC` cierra.
 - Colisión: círculo de 16 px a la altura de los pies (≈0.33 m); el paso se
   resuelve por ejes y, si hace falta, girado ±25°/±50°/±75°, así el
   visitante desliza por muros, esquinas y el tronco sin atorarse.
@@ -130,6 +141,29 @@ menú no toca la misión.
   Contrato `MinigameResult { gameId, success, score?, durationMs }`; el minijuego
   devuelve resultado y `mission.onMinigameResult` decide la recompensa.
 
+## Interiores sin cambiar de escena (techo transparente)
+
+Los espacios disponibles (P02, P03, P04 y los tres módulos de la nave) se
+recorren **dentro del patio**: la huella es caminable, los muros bloquean y la
+puerta es un hueco. Al pisar la huella (`pointInPolygon` en cada frame), el
+contenedor del techo —relleno, lámina, nombre y estado— baja a alfa 0.08 en
+420 ms y se ve el interior: losa con juntas, **subdivisión pre armada** (baño y
+bodega marcados con línea punteada) y una placa `INFO` en el piso que abre la
+ficha. En la nave, el techo es uno solo (lámina a dos aguas, "7 M · 3 MÓDULOS
+EN SUBDIVISIÓN") y la **carpa beduina** de la Nave 02 es un segundo techo
+(contenedor propio con postes que bloquean): se ve desde los otros módulos y se
+vuelve transparente solo cuando estás debajo. Al entrar se emite `space` y React
+muestra un aviso con m² y renta (una vez por espacio por sesión) y marca el
+espacio como visitado. El CTA de la ficha "CAMINAR AL PABELLÓN / A LA NAVE"
+lleva al letrero de adentro; ENTRAR en la puerta hace lo mismo.
+
+**Pabellón 01 en obra** (`status: "coming-soon"`, abre en noviembre 2026): no se
+entra; afuera, en el pasillo del árbol, hay una cuadrilla en loop —uno carga
+bloques del montón a la puerta, otro martilla el muro ("TOC"), otro duerme sobre
+los costales ("z")—, conos, letrero EN OBRA y leyenda. Casco y chaleco son
+texturas generadas (`helmet`, `vest`, `block`, `sack`, `cone`, `hammer`,
+`site-sign`). La ficha ofrece **AVISARME CUANDO ABRA** y visita a la obra.
+
 ## Comercial
 
 Contacto real en `src/data/spaces.ts` (`CONTACT`): WhatsApp +52 55 3037 4167 y
@@ -143,8 +177,10 @@ el mensaje ya escrito según lo que el interesado eligió (`src/data/leads.ts`).
 - **Ficha de espacio**: chips de plan (6 MESES / 1 AÑO) y de uso (TALLER, ESTUDIO,
   OFICINA…) → **ME INTERESA** (WhatsApp con espacio + plan + uso), **AGENDAR
   VISITA**, **PEDIR INFO POR CORREO**, y **RECORRER EL ESPACIO**.
-- **Reservado** (`status: "reserved"`, hoy P01 y P03): se sigue recorriendo; la
-  ficha ofrece **AVISARME SI SE LIBERA** (lista de espera) y ver los disponibles.
+- **Estados** (oct 2026): P02, P03, P04 y naves `available`; P01 `coming-soon`
+  (en obra, noviembre). `reserved` sigue soportado (lista de espera). La línea de
+  escasez se calcula de los estados reales ("QUEDAN 3 PABELLONES DE 4 · 1 EN
+  OBRA"). El CTA principal de la ficha es pegajoso al pie de la hoja.
 - **Eventos** (`src/data/events.ts`): el próximo evento aparece en el menú, en el
   tablero de EVENTOS (VOY · PONER UN STAND · AGREGAR AL CALENDARIO), en el tótem
   de información, en la recompensa de la misión y como aviso al entrar. Ahora:
@@ -291,6 +327,20 @@ Todo lo que pasa en el mundo se ve (y respeta `prefers-reduced-motion`):
 En `?debug`, `__LABOR__.getState().fx` lista los últimos efectos
 (`ring:x,y`, `burst:x,y`) para verificarlos en Playwright.
 
+## Sistema visual V2 (oct 2026)
+
+Grises de concreto, asfalto y lámina + **un** acento rojo tenue (`--accent`
+#b4544b) solo en detalles: foco, objetivo, sellos, "!" del letrero, techo de
+CONTRASTE, cascos de la obra. Los alias `--ochre*`, `--teal`, `--rust` siguen
+existiendo pero apuntan a grises y al acento. Hojas (`.overlay__panel`,
+`.menu__panel`, `.popup__card`) translúcidas con `backdrop-filter`. Sin
+degradados rayados. Favicon: "LB" negro sobre papel (`public/favicon.svg`, con
+animación SMIL para Firefox; en Chrome/Safari `src/favicon.ts` cambia unos
+frames cada 7 s: un subrayado que barre). Intro: hoja de plano —el predio se
+dibuja solo desde `plan.generated.ts`, etiquetas, "INGRESO", tres datos (talleres,
+renta, P01 en obra) y un botón; entra solo a los 7 s (2.6 s si ya viniste,
+`labor.intro.v2`), con liga directa a WhatsApp y a `/acerca/`.
+
 ## Archivos clave
 
 ```
@@ -303,6 +353,9 @@ src/
   game/map/tiled.ts                  ← lector del TMJ → geometría tipada
   game/world/collision.ts            ← canStand, deslizamiento, ruta ligera
   game/phaser/{config,Joystick,WorldScene,OverworldScene,RoomScene,BootScene,createGame}.ts
+  data/plan.generated.ts             ← plano en metros (lo escribe el generador; intro)
+  favicon.ts                         ← animador del favicon (frames)
+  components/hud/ZoomControl.tsx     ← + / − de zoom
   game/{profile,mission}.ts          ← perfil persistente / corrida reseteable
   game/minigames/{contract,tictactoe,cut,connectfour,rhythm,memory,balance}.ts
   game/world/sundial.ts              ← la sombra de LA HORA sigue al sol real de Tulum

@@ -4,9 +4,13 @@
 // del motor en src/game/phaser/config.ts.
 // ============================================================
 
-export const INTRO_TITLE_MS = 2400
-export const INTRO_TEXT_MS = 9500
+/** intro: el plano se dibuja y, si no se toca, el portón se abre solo */
+export const INTRO_AUTO_MS = 7000
+/** visitante que ya entró antes: el plano apenas se asienta y entra */
+export const INTRO_RETURN_MS = 2600
 export const ENTRANCE_GATE_MS = 950
+/** llave en localStorage: ya vio el intro completo */
+export const INTRO_SEEN_KEY = "labor.intro.v2"
 
 export function prefersReducedMotion(): boolean {
   if (typeof window === "undefined") return false

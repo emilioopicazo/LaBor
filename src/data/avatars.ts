@@ -25,9 +25,9 @@ export const FRAME_H = 28
 
 export const AVATARS: AvatarDef[] = [
   { id: "sporty", name: "LA SPORTY", descriptor: "Wellness, gorra y agenda llena.", sheet: "/assets/characters/avatars/sporty.png", accent: "#d9c9a5" },
-  { id: "playero", name: "EL PLAYERO", descriptor: "Sandalias, lentes y cero prisa.", sheet: "/assets/characters/avatars/playero.png", accent: "#7fb1b3" },
-  { id: "tuluminati", name: "EL TULUMINATI", descriptor: "Lino, ceremonia y buena vibra.", sheet: "/assets/characters/avatars/tuluminati.png", accent: "#c9b18f" },
-  { id: "creativa", name: "LA CREATIVA", descriptor: "Overol, pañuelo y manos ocupadas.", sheet: "/assets/characters/avatars/creativa.png", accent: "#b8663d" },
+  { id: "playero", name: "EL PLAYERO", descriptor: "Sandalias, lentes y cero prisa.", sheet: "/assets/characters/avatars/playero.png", accent: "#9a9ea6" },
+  { id: "tuluminati", name: "EL TULUMINATI", descriptor: "Lino, ceremonia y buena vibra.", sheet: "/assets/characters/avatars/tuluminati.png", accent: "#bdb6ab" },
+  { id: "creativa", name: "LA CREATIVA", descriptor: "Overol, pañuelo y manos ocupadas.", sheet: "/assets/characters/avatars/creativa.png", accent: "#9a443d" },
   { id: "nomada-nocturno", name: "EL NÓMADA NOCTURNO", descriptor: "Negro total, audífonos, otra zona horaria.", sheet: "/assets/characters/avatars/nomada-nocturno.png", accent: "#8e9299" },
 ]
 

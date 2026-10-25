@@ -130,7 +130,7 @@ export class RoomScene extends WorldScene {
       const t1 = this.add.text(d.sign.x, d.sign.y - 34, `${reserved ? "RESERVADO" : "ESPACIO DISPONIBLE"} · ${space.areaM2} M²`, { ...TEXT_STYLE, fontSize: "15px", letterSpacing: 2, color: reserved ? "#f4efe4" : "#181411" })
       t1.setOrigin(0.5).setAlpha(reserved ? 1 : 0.75).setDepth(-9).setResolution(2)
       if (reserved) {
-        t1.setPadding(10, 4, 10, 4).setBackgroundColor("#b8663d")
+        t1.setPadding(10, 4, 10, 4).setBackgroundColor("#4f2724")
         if (!this.reducedMotion) this.tweens.add({ targets: t1, alpha: { from: 1, to: 0.5 }, duration: 900, yoyo: true, repeat: -1, ease: "Sine.easeInOut" })
       }
       const t2 = this.add.text(d.sign.x, d.sign.y - 10, price, { ...TEXT_STYLE, fontSize: "13px", letterSpacing: 1 })

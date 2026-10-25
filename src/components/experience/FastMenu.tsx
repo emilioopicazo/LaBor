@@ -98,21 +98,14 @@ export function FastMenu({ open, setOpen, onTravel, onDirect, onChangeAvatar }: 
               </>
             )}
 
-            {!ev && past && (
-              <>
-                <p className="menu__section">ÚLTIMO EN EL PATIO</p>
-                <ul className="menu__list">
-                  <li>
-                    <button type="button" className="menu__item menu__item--past" onClick={() => onDirect("eventos-board")}>
-                      <span className="menu__item-label">
-                        {past.kind} · {past.name}
-                      </span>
-                      <span className="menu__item-meta">{eventArchiveLabel(past)} · YA PASÓ</span>
-                    </button>
-                  </li>
-                </ul>
-              </>
-            )}
+            <p className="menu__section">ESPACIOS DISPONIBLES</p>
+            <ul className="menu__list">
+              {AVAILABLE.map((s) => {
+                const from = fromPrice(s)
+                const meta = s.status === "reserved" ? `${s.areaM2} M² · RESERVADO` : s.status === "coming-soon" ? `${s.areaM2} M² · ABRE EN NOV` : from ? `${s.areaM2} M² · DESDE ${mxn(from)}` : `${s.areaM2} M² · COTIZAR`
+                return <Item key={s.id} id={s.id} label={s.name} meta={meta} reserved={s.status !== "available"} />
+              })}
+            </ul>
 
             <p className="menu__section">MISIÓN</p>
             <ul className="menu__list">
@@ -126,18 +119,19 @@ export function FastMenu({ open, setOpen, onTravel, onDirect, onChangeAvatar }: 
               ))}
             </ul>
 
-            <p className="menu__section">ESPACIOS DISPONIBLES</p>
-            <ul className="menu__list">
-              {AVAILABLE.map((s) => {
-                const from = fromPrice(s)
-                const meta = s.status === "reserved" ? `${s.areaM2} M² · RESERVADO` : from ? `${s.areaM2} M² · DESDE ${mxn(from)}` : `${s.areaM2} M² · COTIZAR`
-                return <Item key={s.id} id={s.id} label={s.name} meta={meta} reserved={s.status === "reserved"} />
-              })}
-            </ul>
-
             <p className="menu__section">PATIO</p>
             <ul className="menu__list">
               <Item id="eventos-board" label="EVENTOS" meta="LETRERO" />
+              {!ev && past && (
+                <li>
+                  <button type="button" className="menu__item menu__item--past" onClick={() => onDirect("eventos-board")}>
+                    <span className="menu__item-label">
+                      {past.kind} · {past.name}
+                    </span>
+                    <span className="menu__item-meta">{eventArchiveLabel(past)} · YA PASÓ</span>
+                  </button>
+                </li>
+              )}
               <Item id="info-totem" label="INFORMACIÓN" meta="TÓTEM" />
               <Item id="agenda" label="AGENDA" direct />
             </ul>

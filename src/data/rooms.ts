@@ -69,7 +69,7 @@ function room(spaceId: string, width: number, height: number, style: RoomStyle, 
     width,
     height,
     wall,
-    spawn: { x: width / 2, y: height - 70 },
+    spawn: { x: width / 2, y: height - 124 },
     spawnFacing: "up",
     exit: { x: width / 2, y: height - 24, radius: 70, label: "SALIR AL PATIO" },
     sign: { x: width - 80, y: height - 60, radius: 64, label: space.name, action: "VER" },
@@ -81,7 +81,7 @@ function room(spaceId: string, width: number, height: number, style: RoomStyle, 
 
 export const ROOMS: Record<string, RoomDef> = Object.fromEntries(
   [
-    room("veta", 720, 480, "wood", "#c98f42", {
+    room("veta", 720, 480, "wood", "#a39d95", {
       // de pie a la derecha de la entrada, de frente al visitante
       host: { x: 440, y: 396, facing: "left" },
       stations: [{ id: "veta-bench", x: 360, y: 236, radius: 84, label: "BANCO DE CARPINTERO", minigameIds: ["gato", "corte"] }],
@@ -106,7 +106,7 @@ export const ROOMS: Record<string, RoomDef> = Object.fromEntries(
         { id: "mannno-table", sprite: "worktable", x: 580, y: 340, scale: 2, obstacleR: 32, obstacleDy: -18, tint: 0x6f7378 },
       ],
     }),
-    room("contraste", 640, 440, "concrete-light", "#3f9c96", {
+    room("contraste", 640, 440, "concrete-light", "#b4544b", {
       host: { x: 405, y: 360, facing: "left" },
       stations: [{ id: "contraste-bench", x: 320, y: 216, radius: 84, label: "BANCO DE JOYERO", minigameIds: ["memoria", "balanza"] }],
       props: [

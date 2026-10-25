@@ -26,9 +26,20 @@ import {
   TAP_MAX_MS,
   WALK_FPS,
   baseZoomFor,
+  clampUserZoom,
   isMapDebug,
 } from "./config"
 import { Joystick } from "./Joystick"
+
+/** paleta del mundo: grises + un acento tenue rosado/morado solo en detalles */
+export const PALETTE = {
+  ink: 0x141315,
+  paper: 0xecebe9,
+  accent: 0xb4544b,
+  accent2: 0x9a443d,
+  accent3: 0xd9928a,
+  gray: 0x9a979e,
+} as const
 
 export interface WorldBuild {
   geo: Geometry
@@ -51,9 +62,16 @@ const NOTICE_STYLE: Phaser.Types.GameObjects.Text.TextStyle = {
   fontFamily: '"Archivo", "Helvetica Neue", Arial, sans-serif',
   fontSize: "34px",
   fontStyle: "900",
-  color: "#e08a3c",
-  stroke: "#181411",
+  color: "#d9928a",
+  stroke: "#141315",
   strokeThickness: 6,
+}
+
+interface PinchState {
+  /** distancia inicial entre los dos dedos (px de pantalla) */
+  d0: number
+  /** zoom del usuario al empezar el pellizco */
+  z0: number
 }
 
 export abstract class WorldScene extends Phaser.Scene implements GameCommands {
@@ -104,6 +122,11 @@ export abstract class WorldScene extends Phaser.Scene implements GameCommands {
   private fxLog: string[] = []
   private resizes = 0
   private lastArrive = -Infinity
+  /** zoom elegido por el visitante (multiplicador sobre el base); vive en el registry entre escenas */
+  protected userZoom = 1
+  private pinch: PinchState | null = null
+  /** dónde y cuándo bajó el dedo del joystick: un toque corto sin arrastre cuenta como tap */
+  private joyDown: { x: number; y: number; t: number } | null = null
 
   protected abstract buildWorld(data: Record<string, unknown>): WorldBuild
   /** las subclases reaccionan a banderas de mundo (etapas de la escultura) */
@@ -118,7 +141,10 @@ export abstract class WorldScene extends Phaser.Scene implements GameCommands {
     this.fastTravel = null
     this.current = null
     this.tap = null
+    this.pinch = null
+    this.joyDown = null
     this.joystick.end()
+    this.userZoom = clampUserZoom((this.registry.get("userZoom") as number | undefined) ?? 1)
     this.sceneData = data
   }
   private sceneData: Record<string, unknown> = {}
@@ -161,7 +187,7 @@ export abstract class WorldScene extends Phaser.Scene implements GameCommands {
       this.debugGfx.setDepth(9000)
     }
 
-    this.cameras.main.fadeIn(260, 24, 21, 17)
+    this.cameras.main.fadeIn(260, 20, 19, 21)
     registerController(this)
     gameEvents.emit("ready", { sceneId: this.sceneId, spaceId: this.spaceId })
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
@@ -191,9 +217,10 @@ export abstract class WorldScene extends Phaser.Scene implements GameCommands {
     const rest = this.restZoom()
     cam.setZoom(rest * 0.86)
     cam.zoomTo(rest, 900, "Sine.easeOut", true)
+    this.logFx("arrive")
     this.player.setScale(PLAYER_SCALE * 0.5)
     this.tweens.add({ targets: this.player, scaleX: PLAYER_SCALE, scaleY: PLAYER_SCALE, duration: 460, delay: 180, ease: "Back.easeOut" })
-    this.time.delayedCall(220, () => this.ringPulse(this.px, this.py - 6, 24, 0xf4efe4, 520))
+    this.time.delayedCall(220, () => this.ringPulse(this.px, this.py - 6, 24, PALETTE.paper, 520))
   }
 
   // ---- efectos ----------------------------------------------------------------
@@ -209,7 +236,7 @@ export abstract class WorldScene extends Phaser.Scene implements GameCommands {
     }
     this.sparks = this.add.particles(0, 0, "spark-paper", cfg)
     this.sparks.setDepth(7000)
-    this.sparksOchre = this.add.particles(0, 0, "spark-ochre", cfg)
+    this.sparksOchre = this.add.particles(0, 0, "spark-accent", cfg)
     this.sparksOchre.setDepth(7000)
   }
 
@@ -226,7 +253,7 @@ export abstract class WorldScene extends Phaser.Scene implements GameCommands {
   }
 
   /** anillo que se expande y se desvanece (instalar, completar, entrar) */
-  protected ringPulse(x: number, y: number, radius = 40, color = 0xe08a3c, duration = 700, silent = false) {
+  protected ringPulse(x: number, y: number, radius = 40, color: number = PALETTE.accent, duration = 700, silent = false) {
     if (this.reducedMotion) return
     const g = this.add.graphics()
     g.lineStyle(4, color, 0.9)
@@ -246,18 +273,66 @@ export abstract class WorldScene extends Phaser.Scene implements GameCommands {
     this.applyZoom()
   }
 
-  protected applyZoom() {
+  protected applyZoom(animate = false) {
     const cam = this.cameras.main
     const w = this.scale.width
     const h = this.scale.height
-    let z = baseZoomFor(w, h) * this.zoomMult
+    let z = baseZoomFor(w, h) * this.zoomMult * this.userZoom
     // el viewport nunca debe ser mayor que los límites (sin vacío fuera del predio)
     z = Math.max(z, w / this.bounds.width, h / this.bounds.height)
     this.baseZoom = z
-    // si hay un zoom animado en curso, se le cambia el destino; si no, se aplica directo
+    // si hay un zoom animado en curso, se le cambia el destino; si no, se aplica directo (o con una transición corta)
     if (cam.zoomEffect.isRunning) cam.zoomEffect.destination = this.restZoom()
+    else if (animate && !this.reducedMotion) cam.zoomTo(this.restZoom(), 220, "Sine.easeOut", true)
     else cam.setZoom(this.restZoom())
     cam.setDeadzone((w * DEADZONE_W) / z, (h * DEADZONE_H) / z)
+  }
+
+  /** zoom del usuario (botones +/− o pellizco): se acota, se guarda en el registry y se avisa a React */
+  setZoom(level: number) {
+    const next = clampUserZoom(level)
+    if (Math.abs(next - this.userZoom) < 0.001) return
+    this.userZoom = next
+    this.registry.set("userZoom", next)
+    this.applyZoom(true)
+    gameEvents.emit("zoom", { level: next })
+  }
+
+  // ---- pellizco (dos dedos) ---------------------------------------------------
+  private touchPointers(): Phaser.Input.Pointer[] {
+    return this.input.manager.pointers.filter((pt) => pt.isDown && pt.wasTouch && pt.id !== this.joystick.pointerId)
+  }
+
+  private beginPinchIfPossible() {
+    const pts = this.touchPointers()
+    if (pts.length < 2) return
+    const d0 = dist(pts[0].x, pts[0].y, pts[1].x, pts[1].y)
+    if (d0 < 20) return
+    this.pinch = { d0, z0: this.userZoom }
+    // un pellizco nunca es un toque
+    this.tap = null
+    this.cancelPath()
+  }
+
+  private updatePinch() {
+    if (!this.pinch) return
+    const pts = this.touchPointers()
+    if (pts.length < 2) {
+      this.pinch = null
+      return
+    }
+    const d = dist(pts[0].x, pts[0].y, pts[1].x, pts[1].y)
+    const target = clampUserZoom(this.pinch.z0 * (d / this.pinch.d0))
+    if (Math.abs(target - this.userZoom) < 0.01) return
+    this.userZoom = target
+    this.registry.set("userZoom", target)
+    this.applyZoom(false)
+  }
+
+  private endPinch() {
+    if (!this.pinch) return
+    this.pinch = null
+    gameEvents.emit("zoom", { level: this.userZoom })
   }
 
   /** zoom "en reposo": el base, o un poco más cerca si hay algo enfocado */
@@ -272,6 +347,11 @@ export abstract class WorldScene extends Phaser.Scene implements GameCommands {
     this.input.on(Phaser.Input.Events.POINTER_MOVE, this.onPointerMove, this)
     this.input.on(Phaser.Input.Events.POINTER_UP, this.onPointerUp, this)
     this.input.on(Phaser.Input.Events.POINTER_UP_OUTSIDE, this.onPointerUp, this)
+    // rueda del ratón / trackpad: acercar y alejar (escritorio)
+    this.input.on(Phaser.Input.Events.POINTER_WHEEL, (_p: Phaser.Input.Pointer, _o: unknown[], _dx: number, dy: number) => {
+      if (this.paused || dy === 0) return
+      this.setZoom(this.userZoom * (dy > 0 ? 0.9 : 1.1))
+    })
     const kb = this.input.keyboard
     if (kb) {
       this.keys = kb.addKeys("W,A,S,D,UP,DOWN,LEFT,RIGHT,E,ENTER,ESC,SPACE") as Record<string, Phaser.Input.Keyboard.Key>
@@ -297,12 +377,15 @@ export abstract class WorldScene extends Phaser.Scene implements GameCommands {
       if (this.joystick.active && !this.joystickOwnerDown()) this.releaseJoystick()
       if (!this.joystick.active) {
         this.joystick.begin(p.id, p.x, p.y)
+        this.joyDown = { x: p.x, y: p.y, t: this.time.now }
         this.cancelPath()
         this.emitJoystick()
         return
       }
     }
     this.tap = { id: p.id, x: p.x, y: p.y, t: this.time.now }
+    // segundo dedo fuera del joystick: pellizco para acercar / alejar
+    if (touch) this.beginPinchIfPossible()
   }
 
   private joystickOwnerDown(): boolean {
@@ -321,13 +404,25 @@ export abstract class WorldScene extends Phaser.Scene implements GameCommands {
     if (this.joystick.active && this.joystick.pointerId === p.id) {
       this.joystick.move(p.id, p.x, p.y)
       this.emitJoystick()
+      // el dedo arrastró: ya no es un toque
+      if (this.joyDown && dist(this.joyDown.x, this.joyDown.y, p.x, p.y) > TAP_MAX_MOVE) this.joyDown = null
+      return
     }
+    if (this.pinch) this.updatePinch()
   }
 
   private onPointerUp(p: Phaser.Input.Pointer) {
+    if (this.pinch) this.endPinch()
     if (this.joystick.active && this.joystick.pointerId === p.id) {
       this.joystick.end(p.id)
       this.emitJoystick()
+      // toque corto sin arrastre en la zona del joystick: también camina hacia donde se tocó
+      const jd = this.joyDown
+      this.joyDown = null
+      if (jd && !this.paused && dist(jd.x, jd.y, p.x, p.y) <= TAP_MAX_MOVE && this.time.now - jd.t <= TAP_MAX_MS) {
+        const world = this.cameras.main.getWorldPoint(p.x, p.y)
+        this.handleTap(world.x, world.y)
+      }
       return
     }
     const tap = this.tap
@@ -390,9 +485,9 @@ export abstract class WorldScene extends Phaser.Scene implements GameCommands {
 
   private drawMarker(t: Vec) {
     this.marker.clear()
-    this.marker.lineStyle(2, 0xf4efe4, 0.9)
+    this.marker.lineStyle(2, PALETTE.paper, 0.9)
     this.marker.strokeCircle(t.x, t.y, 10)
-    this.marker.fillStyle(0xf4efe4, 0.6)
+    this.marker.fillStyle(PALETTE.paper, 0.6)
     this.marker.fillCircle(t.x, t.y, 3)
   }
 
@@ -555,7 +650,8 @@ export abstract class WorldScene extends Phaser.Scene implements GameCommands {
       case "station":
         return 110
       case "sign":
-        return 96
+        // letreros de los cuartos van alto (están en la pared); las placas INFO de los interiores, a ras
+        return it.spaceId && it.id.endsWith("-info") ? 40 : 96
       case "exit":
         return 44
       case "person":
@@ -601,7 +697,7 @@ export abstract class WorldScene extends Phaser.Scene implements GameCommands {
     t.setScale(0)
     this.tweens.add({ targets: t, scaleX: 1, scaleY: 1, duration: 420, ease: "Back.easeOut" })
     this.tweens.add({ targets: t, y: y - 16, duration: 520, yoyo: true, repeat: -1, ease: "Quad.easeOut", delay: 420 })
-    const ring = this.time.addEvent({ delay: 2400, loop: true, callback: () => this.ringPulse(x, y - 6, 22, 0xe08a3c, 800, true) })
+    const ring = this.time.addEvent({ delay: 2400, loop: true, callback: () => this.ringPulse(x, y - 6, 22, PALETTE.accent, 800, true) })
     t.once(Phaser.GameObjects.Events.DESTROY, () => ring.remove(false))
   }
 
@@ -647,9 +743,9 @@ export abstract class WorldScene extends Phaser.Scene implements GameCommands {
     const left = { x: px + Math.cos(angle + 2.5) * size, y: py + Math.sin(angle + 2.5) * size }
     const right = { x: px + Math.cos(angle - 2.5) * size, y: py + Math.sin(angle - 2.5) * size }
     const pulse = 0.55 + 0.35 * Math.abs(Math.sin(this.time.now / 500))
-    g.fillStyle(0x181411, 0.9)
+    g.fillStyle(PALETTE.ink, 0.9)
     g.fillCircle(px, py, size * 1.35)
-    g.fillStyle(0xe08a3c, pulse)
+    g.fillStyle(PALETTE.accent, pulse)
     g.fillPoints([new Phaser.Math.Vector2(tip.x, tip.y), new Phaser.Math.Vector2(left.x, left.y), new Phaser.Math.Vector2(right.x, right.y)], true)
   }
 
@@ -673,7 +769,7 @@ export abstract class WorldScene extends Phaser.Scene implements GameCommands {
     if (!b) return
     if (!this.reducedMotion) this.tweens.add({ targets: b, scaleX: b.scaleX * 1.7, scaleY: b.scaleY * 1.7, duration: 180, yoyo: true, ease: "Quad.easeOut" })
     this.burst(b.x, b.y, 16)
-    this.ringPulse(b.x, b.y, 22, 0x3f9c96, 600)
+    this.ringPulse(b.x, b.y, 22, PALETTE.accent2, 600)
   }
 
   setGuide(targetId: string | null) {
@@ -699,8 +795,8 @@ export abstract class WorldScene extends Phaser.Scene implements GameCommands {
     const cam = this.cameras.main
     // cruzar la puerta: la cámara se acerca mientras funde
     cam.zoomTo(cam.zoom * 1.18, 240, "Sine.easeIn", true)
-    if (door) this.ringPulse(door.x, door.y, 30, 0xf4efe4, 420)
-    cam.fadeOut(220, 24, 21, 17)
+    if (door) this.ringPulse(door.x, door.y, 30, PALETTE.paper, 420)
+    cam.fadeOut(220, 20, 19, 21)
     cam.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
       this.scene.start(key, data)
     })
@@ -771,7 +867,7 @@ export abstract class WorldScene extends Phaser.Scene implements GameCommands {
       spaceId: this.spaceId,
       fps: Math.round(this.game.loop.actualFps),
       player: { x: this.px, y: this.py, facing: this.facing, moving: this.moving, avatarId: this.avatarId },
-      camera: { scrollX: cam.scrollX, scrollY: cam.scrollY, zoom: cam.zoom, width: cam.width, height: cam.height, deadzone: cam.deadzone ? { w: cam.deadzone.width, h: cam.deadzone.height } : null },
+      camera: { scrollX: cam.scrollX, scrollY: cam.scrollY, zoom: cam.zoom, baseZoom: this.baseZoom, userZoom: this.userZoom, width: cam.width, height: cam.height, deadzone: cam.deadzone ? { w: cam.deadzone.width, h: cam.deadzone.height } : null },
       current: this.current,
       paused: this.paused,
       interactables: this.interactables.map((i) => ({ id: i.id, x: i.x, y: i.y, radius: i.radius, action: i.action })),

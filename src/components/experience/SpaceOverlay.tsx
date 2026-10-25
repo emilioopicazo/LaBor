@@ -1,13 +1,17 @@
 import { useEffect, useRef, useState } from "react"
 import { calendarUrl, eventDateLabel, eventTimeLabel, nextEvent } from "../../data/events"
-import { PRICE_LEGEND, USE_OPTIONS, eventProposalLink, fromPrice, infoLink, instagramHandle, interestLink, interestMail, mapsLink, mxn, planLabel, rsvpLink, vendorLink, visitLink, waitlistLink, workshopInfoLink, type UseOption } from "../../data/leads"
-import { AVAILABLE, CONTACT, mailLink, spaceKindLabel, type RentPlan, type SpaceCta, type WorkshopSpace } from "../../data/spaces"
+import { PRICE_LEGEND, USE_OPTIONS, eventProposalLink, fromPrice, infoLink, instagramHandle, interestLink, interestMail, mapsLink, mxn, openingLink, planLabel, rsvpLink, vendorLink, visitLink, waitlistLink, workshopInfoLink, type UseOption } from "../../data/leads"
+import { AVAILABLE, CONTACT, OPENING_LABEL, mailLink, spaceKindLabel, type RentPlan, type SpaceCta, type WorkshopSpace } from "../../data/spaces"
 
 interface SpaceOverlayProps {
   space: WorkshopSpace
   onClose: () => void
   onNavigate: (id: string) => void
   onEnterScene: (sceneId: string) => void
+  /** camina (viaje rápido) hasta la puerta de un espacio del patio */
+  onTravel?: (spaceId: string) => void
+  /** interior donde ya está parado el visitante: no se ofrece caminar hasta él */
+  insideSpaceId?: string | null
   /** escena actual: se omite el CTA de entrar si ya estamos dentro */
   currentSceneId?: string
 }
@@ -29,6 +33,8 @@ function CtaLink({ href, label, primary = false }: { href: string; label: string
  */
 function LeadPanel({ space }: { space: WorkshopSpace }) {
   const reserved = space.status === "reserved"
+  const soon = space.status === "coming-soon"
+  const locked = reserved || soon
   const plans = space.plans ?? []
   const [plan, setPlan] = useState<RentPlan | null>(null)
   const [use, setUse] = useState<UseOption | null>(null)
@@ -38,7 +44,7 @@ function LeadPanel({ space }: { space: WorkshopSpace }) {
     <div className="lead" data-status={space.status}>
       {plans.length > 0 && (
         <>
-          <p className="lead__label">{reserved ? "PLANES DE REFERENCIA" : "ELIGE TU PLAN"}</p>
+          <p className="lead__label">{locked ? "PLANES DE REFERENCIA" : "ELIGE TU PLAN"}</p>
           <div className="lead__chips" role="group" aria-label="Plan de renta">
             {plans.map((p) => (
               <button
@@ -47,7 +53,7 @@ function LeadPanel({ space }: { space: WorkshopSpace }) {
                 className={`lead__chip lead__chip--plan${plan?.id === p.id ? " is-selected" : ""}`}
                 onClick={() => setPlan(plan?.id === p.id ? null : p)}
                 aria-pressed={plan?.id === p.id}
-                disabled={reserved}
+                disabled={locked}
               >
                 <span className="lead__chip-price">{mxn(p.monthlyMxn)}</span>
                 <span className="lead__chip-meta">MXN / MES · {p.label}</span>
@@ -56,9 +62,9 @@ function LeadPanel({ space }: { space: WorkshopSpace }) {
           </div>
         </>
       )}
-      {plans.length === 0 && !reserved && <p className="lead__quote">RENTA A COTIZAR SEGÚN USO Y PLAZO</p>}
+      {plans.length === 0 && !locked && <p className="lead__quote">RENTA A COTIZAR SEGÚN USO Y PLAZO</p>}
 
-      {!reserved && (
+      {!locked && (
         <>
           <p className="lead__label">¿PARA QUÉ LO USARÍAS?</p>
           <div className="lead__chips lead__chips--uses" role="group" aria-label="Uso">
@@ -79,18 +85,29 @@ function LeadPanel({ space }: { space: WorkshopSpace }) {
         </ul>
       )}
 
-      <div className="overlay__cta-row lead__ctas">
-        {reserved ? (
+      {/* el CTA principal se queda a la mano mientras la hoja hace scroll; los secundarios van en flujo */}
+      <div className="overlay__cta-row lead__ctas lead__ctas--primary">
+        {soon ? (
+          <CtaLink href={openingLink(space)} label="AVISARME CUANDO ABRA" primary />
+        ) : reserved ? (
+          <CtaLink href={waitlistLink(space)} label="AVISARME SI SE LIBERA" primary />
+        ) : (
+          <CtaLink href={interestLink(space, plan, use)} label={plan ? `ME INTERESA · ${plan.label}` : "ME INTERESA"} primary />
+        )}
+      </div>
+      <div className="overlay__cta-row lead__ctas lead__ctas--more">
+        {soon ? (
           <>
-            <CtaLink href={waitlistLink(space)} label="AVISARME SI SE LIBERA" primary />
+            <CtaLink href={visitLink(space)} label="AGENDAR VISITA A LA OBRA" />
+            {others.length > 0 && <CtaLink href={infoLink()} label={`VER ${others.length} DISPONIBLES HOY`} />}
+          </>
+        ) : reserved ? (
+          <>
             <CtaLink href={visitLink(space)} label="AGENDAR VISITA" />
-            {others.length > 0 && (
-              <CtaLink href={infoLink()} label={`VER ${others.length} DISPONIBLES`} />
-            )}
+            {others.length > 0 && <CtaLink href={infoLink()} label={`VER ${others.length} DISPONIBLES`} />}
           </>
         ) : (
           <>
-            <CtaLink href={interestLink(space, plan, use)} label={plan ? `ME INTERESA · ${plan.label}` : "ME INTERESA"} primary />
             <CtaLink href={visitLink(space)} label="AGENDAR VISITA" />
             <CtaLink href={interestMail(space, plan, use)} label="PEDIR INFO POR CORREO" />
           </>
@@ -158,7 +175,7 @@ function InfoPanel() {
  * sobre el mundo, que permanece visible detrás. Cierra con ×, ESC
  * o clic en el fondo.
  */
-export function SpaceOverlay({ space, onClose, onNavigate, onEnterScene, currentSceneId }: SpaceOverlayProps) {
+export function SpaceOverlay({ space, onClose, onNavigate, onEnterScene, onTravel, insideSpaceId = null, currentSceneId }: SpaceOverlayProps) {
   const closeRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
@@ -170,13 +187,18 @@ export function SpaceOverlay({ space, onClose, onNavigate, onEnterScene, current
   const subtitleLines = space.subtitle?.split(" / ") ?? []
   const commercial = space.type === "available"
   const reserved = space.status === "reserved"
+  const soon = space.status === "coming-soon"
   const from = fromPrice(space)
-  // escasez real por familia: pabellones (con reservas) y naves (a cotizar)
+  // escasez real por familia: pabellones (disponibles / reservados / en obra) y naves
   const pabs = AVAILABLE.filter((s) => s.id.startsWith("pabellon"))
+  const pabsOpen = pabs.filter((s) => s.status === "available").length
   const pabsReserved = pabs.filter((s) => s.status === "reserved").length
+  const pabsSoon = pabs.filter((s) => s.status === "coming-soon").length
+  const navesOpen = AVAILABLE.filter((s) => s.id.startsWith("nave") && s.status === "available").length
+  const pabsTail = [pabsReserved ? `${pabsReserved} RESERVADO${pabsReserved > 1 ? "S" : ""}` : "", pabsSoon ? `${pabsSoon} EN OBRA` : ""].filter(Boolean).join(" · ")
   const scarcity = space.id.startsWith("nave")
-    ? `QUEDAN ${AVAILABLE.filter((s) => s.id.startsWith("nave") && s.status === "available").length} NAVES · ${pabsReserved} DE ${pabs.length} PABELLONES YA RESERVADOS`
-    : `QUEDAN ${pabs.length - pabsReserved} PABELLONES DE ${pabs.length} · ${pabsReserved} YA RESERVADOS`
+    ? `QUEDAN ${navesOpen} MÓDULOS DE NAVE · ${pabsOpen} PABELLONES DISPONIBLES`
+    : `QUEDAN ${pabsOpen} PABELLONES DE ${pabs.length}${pabsTail ? ` · ${pabsTail}` : ""}`
 
   const renderCta = (cta: SpaceCta, primary: boolean) => {
     const cls = `overlay__cta${primary ? " overlay__cta--primary" : ""}`
@@ -191,6 +213,14 @@ export function SpaceOverlay({ space, onClose, onNavigate, onEnterScene, current
     if (cta.targetSpaceId) {
       return (
         <button key={cta.label} type="button" className={cls} onClick={() => onNavigate(cta.targetSpaceId!)}>
+          {cta.label}
+        </button>
+      )
+    }
+    if (cta.travelTo) {
+      if (!onTravel || currentSceneId !== "overworld" || insideSpaceId === cta.travelTo) return null
+      return (
+        <button key={cta.label} type="button" className={cls} onClick={() => onTravel(cta.travelTo!)}>
           {cta.label}
         </button>
       )
@@ -214,7 +244,8 @@ export function SpaceOverlay({ space, onClose, onNavigate, onEnterScene, current
           </button>
         </header>
 
-        {commercial && !reserved && <p className="overlay__lead">ESTE ESPACIO PODRÍA SER TUYO…</p>}
+        {commercial && !reserved && !soon && <p className="overlay__lead">ESTE ESPACIO PODRÍA SER TUYO…</p>}
+        {soon && <p className="overlay__lead">YA CASI. ABRE EN {OPENING_LABEL}.</p>}
 
         <h2 className="overlay__name">
           {nameLines.map((line) => (
@@ -243,7 +274,9 @@ export function SpaceOverlay({ space, onClose, onNavigate, onEnterScene, current
 
         {commercial && (
           <>
-            <p key={space.id} className={`overlay__status${reserved ? " overlay__status--reserved" : " overlay__status--open"}`}>{reserved ? "RESERVADO · LISTA DE ESPERA" : "ESPACIO DISPONIBLE"}</p>
+            <p key={space.id} className={`overlay__status${reserved ? " overlay__status--reserved" : soon ? " overlay__status--soon" : " overlay__status--open"}`}>
+              {reserved ? "RESERVADO · LISTA DE ESPERA" : soon ? `EN OBRA · ENTREGA ${OPENING_LABEL}` : "ESPACIO DISPONIBLE"}
+            </p>
             <p className="overlay__scarcity">{scarcity}</p>
           </>
         )}
@@ -257,8 +290,6 @@ export function SpaceOverlay({ space, onClose, onNavigate, onEnterScene, current
             ))}
           </ul>
         )}
-
-        {space.status === "coming-soon" && <p className="overlay__soon">PRÓXIMAMENTE</p>}
 
         {commercial && <LeadPanel space={space} />}
         {space.id === "eventos-board" && <EventCard />}

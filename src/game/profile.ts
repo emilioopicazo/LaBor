@@ -17,6 +17,8 @@ export interface PlayerProfile {
   seenControls: boolean
   /** espacios que ya recorrió por dentro */
   visited: string[]
+  /** zoom elegido por el visitante (multiplicador sobre el base) */
+  zoom?: number
 }
 
 const KEY = "labor.profile.v1"
@@ -72,6 +74,10 @@ export const profile = {
   markControlsSeen() {
     if (state.seenControls) return
     commit({ ...state, seenControls: true })
+  },
+  setZoom(zoom: number) {
+    if (state.zoom === zoom) return
+    commit({ ...state, zoom })
   },
   markVisited(spaceId: string) {
     if (state.visited.includes(spaceId)) return
