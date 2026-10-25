@@ -106,7 +106,7 @@ const SHARED = "Patio compartido con VETA, MANNNO y CONTRASTE, y programa de eve
 export const OPENING_LABEL = "PRÓXIMAMENTE"
 
 /** La nave es una sola (7 m de altura) que se está subdividiendo en 3 módulos */
-const NAVE_SHARED = ["Módulo de una nave de 7 m de altura, en subdivisión (3 módulos)", "Pensada para artistas y artesanos: producción, estudio, exhibición"]
+const NAVE_SHARED = ["Módulo de una nave de 7 m de altura", "Pensada para artistas y artesanos: producción, estudio, exhibición"]
 
 function available(
   id: string,

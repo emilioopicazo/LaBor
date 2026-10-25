@@ -438,8 +438,7 @@ export class OverworldScene extends WorldScene {
       if (!space) {
         // bloque sin ficha (franja sur): aviso "PRÓXIMAMENTE", discreto y con respiración lenta
         const soon = this.add.text(cx, cy, b.label, { ...TEXT_STYLE, fontSize: "13px", color: "#ecebe9", letterSpacing: 3, backgroundColor: "#2a292c" })
-        soon.setOrigin(0.5).setPadding(12, 6, 12, 6).setAlpha(0.95).setResolution(2)
-        if (!this.reducedMotion) this.tweens.add({ targets: soon, alpha: { from: 0.95, to: 0.55 }, duration: 2400, yoyo: true, repeat: -1, ease: "Sine.easeInOut" })
+        soon.setOrigin(0.5).setPadding(12, 6, 12, 6).setAlpha(0.9).setResolution(2)
         layer.push(soon)
       } else {
         const size = b.bounds.width < 300 ? 15 : 19
