@@ -222,7 +222,7 @@ export const SPACES: WorkshopSpace[] = [
   available("pabellon-01", "PABELLÓN 01", "P01", 80, [], "coming-soon", ["Interior — 45.6 m²", "Terraza exterior — 33.3 m²"]),
   available("pabellon-02", "PABELLÓN 02", "P02", 80, [], "available", ["Interior — 45.7 m²", "Terraza exterior — 33.3 m²"]),
   available("pabellon-03", "PABELLÓN 03", "P03", 46, [], "available", ["Planta libre — 6.85 × 6.67 m", "Junto al ingreso por Calle 12 Sur"]),
-  available("nave-03", "NAVE 03", "N03", 95, [], "available", ["Módulo — 7.85 × 12.06 m", ...NAVE_SHARED, "Frente al patio, acceso desde Calle Cobá"]),
+  available("nave-03", "NAVE 03", "N03", 95, [], "available", ["Módulo — 7.85 × 12.06 m", ...NAVE_SHARED, "Frente al patio"]),
   available("nave-02", "NAVE 02", "N02", 117, [], "available", ["Módulo — 9.70 × 12.06 m", ...NAVE_SHARED, "Carpa beduina montada al centro: doble techo, lista para eventos"]),
   available("nave-01", "NAVE 01", "N01", 117, [], "available", ["Módulo — 9.70 × 12.06 m", ...NAVE_SHARED, "Esquina Calle Cobá / Calle 12 Sur"]),
 

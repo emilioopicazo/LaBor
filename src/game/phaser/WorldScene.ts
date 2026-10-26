@@ -680,11 +680,9 @@ export abstract class WorldScene extends Phaser.Scene implements GameCommands {
     t.setOrigin(0.5, 1).setDepth(7100).setResolution(2)
     this.notices.set(id, t)
     if (this.reducedMotion) return
+    // solo un pop de entrada: nada que rebote ni lance anillos (minimal)
     t.setScale(0)
     this.tweens.add({ targets: t, scaleX: 1, scaleY: 1, duration: 420, ease: "Back.easeOut" })
-    this.tweens.add({ targets: t, y: y - 16, duration: 520, yoyo: true, repeat: -1, ease: "Quad.easeOut", delay: 420 })
-    const ring = this.time.addEvent({ delay: 2400, loop: true, callback: () => this.ringPulse(x, y - 6, 22, PALETTE.accent, 800, true) })
-    t.once(Phaser.GameObjects.Events.DESTROY, () => ring.remove(false))
   }
 
   private hideNotice(id: string) {
@@ -728,10 +726,9 @@ export abstract class WorldScene extends Phaser.Scene implements GameCommands {
     const tip = { x: px + Math.cos(angle) * size, y: py + Math.sin(angle) * size }
     const left = { x: px + Math.cos(angle + 2.5) * size, y: py + Math.sin(angle + 2.5) * size }
     const right = { x: px + Math.cos(angle - 2.5) * size, y: py + Math.sin(angle - 2.5) * size }
-    const pulse = 0.55 + 0.35 * Math.abs(Math.sin(this.time.now / 500))
     g.fillStyle(PALETTE.ink, 0.9)
     g.fillCircle(px, py, size * 1.35)
-    g.fillStyle(PALETTE.accent, pulse)
+    g.fillStyle(PALETTE.accent, 0.9)
     g.fillPoints([new Phaser.Math.Vector2(tip.x, tip.y), new Phaser.Math.Vector2(left.x, left.y), new Phaser.Math.Vector2(right.x, right.y)], true)
   }
 

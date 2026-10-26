@@ -65,7 +65,6 @@ export function GameStage({ active, opening = false }: GameStageProps) {
   const [hasMoved, setHasMoved] = useState(false)
   /** interior en el que está parado el visitante (techo transparente) */
   const [insideSpaceId, setInsideSpaceId] = useState<string | null>(null)
-  const spaceToasted = useRef<Set<string>>(new Set())
   const pendingTravel = useRef<string | null>(null)
   const debug = useMemo(() => new URLSearchParams(window.location.search).has("debug") || new URLSearchParams(window.location.search).get("mapdebug") === "1", [])
 
@@ -149,13 +148,9 @@ export function GameStage({ active, opening = false }: GameStageProps) {
       gameEvents.on("moved", () => setHasMoved(true)),
       gameEvents.on("zoom", ({ level }) => profile.setZoom(level)),
       gameEvents.on("space", ({ spaceId }) => {
+        // entrar a un interior no avisa nada: el techo se abre y ya (la placa INFO da la ficha)
         setInsideSpaceId(spaceId)
-        if (!spaceId) return
-        profile.markVisited(spaceId)
-        const sp = getSpace(spaceId)
-        if (!sp || spaceToasted.current.has(spaceId)) return
-        spaceToasted.current.add(spaceId)
-        toast(`${sp.name} · ${sp.areaM2} M²`, "quest")
+        if (spaceId) profile.markVisited(spaceId)
       }),
       gameEvents.on("escape", () => {
         setOverlay(null)
@@ -207,7 +202,8 @@ export function GameStage({ active, opening = false }: GameStageProps) {
       })
       if (view?.complete) states["pieza-central"] = "done"
       else if (!run || finalStep) states["pieza-central"] = "target"
-      guide = !run ? "pieza-central" : view?.complete ? null : finalStep ? "pieza-central" : targetSpace ? `${targetSpace}-door` : null
+      // sin misión en curso no hay guía: el patio se recorre sin flechas
+      guide = !run || view?.complete ? null : finalStep ? "pieza-central" : targetSpace ? `${targetSpace}-door` : null
       // novedad en el letrero de eventos: "!" hasta que se abre el anuncio
       if (nextEvent() && !noticeSeen) states["eventos-board"] = "notice"
     } else {

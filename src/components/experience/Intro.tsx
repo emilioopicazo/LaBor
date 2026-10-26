@@ -100,7 +100,7 @@ export function Intro({ ready, opening, hidden = false, onDone }: IntroProps) {
         <svg className="plan__svg" viewBox={`0 0 ${(w * PX).toFixed(0)} ${(h * PX).toFixed(0)}`} role="img" aria-hidden="true">
           {/* calle 12 sur */}
           <rect className="plan__street" x={X(34.9)} y={Y(minY + PAD)} width={((PLAN.streetX - 34.9 + PAD) * PX).toFixed(1)} height={((h - PAD) * PX).toFixed(1)} />
-          <text className="plan__street-label" x={X(37.2)} y={Y(23)} transform={`rotate(90 ${X(37.2)} ${Y(23)})`}>
+          <text className="plan__street-label" x={X(37.2)} y={Y(13)} transform={`rotate(90 ${X(37.2)} ${Y(13)})`}>
             CALLE 12 SUR
           </text>
           {/* predio */}

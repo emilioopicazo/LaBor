@@ -338,8 +338,11 @@ frames cada 7 s: un subrayado que barre). Intro: hoja de plano —el predio se
 dibuja solo desde `plan.generated.ts`, etiquetas, "INGRESO", una línea de datos
 (oficios y renta, sin precios) y un botón; entra solo a los 7 s (2.6 s si ya
 viniste, `labor.intro.v2`), con liga directa a WhatsApp y a `/acerca/`.
-**Sin balizas**: no hay rombos ni palomitas sobre puertas o letreros; solo el
-"!" del tablero cuando hay evento. Los techos dicen nombre y estado, nada más.
+**Sin balizas**: no hay rombos ni palomitas sobre puertas o letreros; solo un
+"!" estático en el tablero cuando hay evento. El chevrón de guía aparece solo
+con una misión en curso y no late. Entrar a un interior no muestra aviso. Los
+techos dicen nombre y estado, nada más; no hay rótulo del vecino ni aros en el
+piso.
 
 ## Archivos clave
 

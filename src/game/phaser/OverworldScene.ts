@@ -330,7 +330,7 @@ export class OverworldScene extends WorldScene {
       street(eastX + sidewalk + 1.4 * m, bb.y + bb.height * 0.22, map.labels.streetEast, 90)
       street(eastX + sidewalk + 1.4 * m, bb.y + bb.height * 0.78, map.labels.streetEast, 90)
     }
-    if (map.labels.neighborNorth) street(bb.x + bb.width * 0.6, bb.y + 150, map.labels.neighborNorth)
+    // (el rótulo del vecino al norte se omite: el árbol lo tapaba y no aporta)
 
     // puertas: umbral en el muro + tapete en el piso
     map.doors.forEach((d) => {
@@ -347,20 +347,15 @@ export class OverworldScene extends WorldScene {
       g.setDepth(-1)
     })
 
-    // POIs: anillo sutil en el piso; dentro de un interior, una placa "INFO" en la losa
+    // POIs de interiores: una placa "INFO" en la losa (los del patio no llevan marca en el piso)
     map.pois.forEach((p) => {
+      if (!p.spaceId) return
       const g = this.add.graphics()
-      if (p.spaceId) {
-        g.fillStyle(INK, 0.85)
-        g.fillRoundedRect(p.x - 26, p.y - 12, 52, 24, 5)
-        g.setDepth(-1)
-        const t = this.add.text(p.x, p.y, "INFO", { ...TEXT_STYLE, fontSize: "10px", color: "#ecebe9", letterSpacing: 3 })
-        t.setOrigin(0.5).setDepth(-0.5).setResolution(2)
-        return
-      }
-      g.lineStyle(2, INK, 0.22)
-      g.strokeCircle(p.x, p.y, Math.min(p.radius, 60))
+      g.fillStyle(INK, 0.85)
+      g.fillRoundedRect(p.x - 26, p.y - 12, 52, 24, 5)
       g.setDepth(-1)
+      const t = this.add.text(p.x, p.y, "INFO", { ...TEXT_STYLE, fontSize: "10px", color: "#ecebe9", letterSpacing: 3 })
+      t.setOrigin(0.5).setDepth(-0.5).setResolution(2)
     })
 
     // props (sprites desde datos del mapa)
