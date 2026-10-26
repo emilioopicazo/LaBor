@@ -89,7 +89,8 @@ function wallsOf(id) {
       return []
   }
 }
-// la nave es una sola: perímetro con tres puertas al patio (sin muros internos: la subdivisión es visual)
+// la nave es una sola y está ABIERTA al patio: sin barda ni puertas en el frente norte
+// (se entra por cualquier punto); muros solo al sur, este y oeste. Sin muros internos.
 const NAVE_RECT = [7.5, 29.9, 34.9, 42.09]
 function naveWalls() {
   const [x1, y1, x2, y2] = NAVE_RECT
@@ -106,7 +107,6 @@ function naveWalls() {
     if (cursor < b) pieces.push([cursor, b])
     pieces.forEach(([p, q]) => out.push({ id: `nave-wall-${name}-${i++}`, rect: horizontal ? [p, fixed - WALL_T / 2, q, fixed + WALL_T / 2] : [fixed - WALL_T / 2, p, fixed + WALL_T / 2, q] }))
   }
-  push("n", x1, x2, true, y1, [9.9, 17.9, 27.5])
   push("s", x1, x2, true, y2)
   push("w", y1, y2, false, x1)
   push("e", y1, y2, false, x2)
@@ -138,9 +138,6 @@ const DOORS = [
   ["pabellon-01", 22.5, 8.1, "w", "VER"],
   ["pabellon-02", 22.5, 14.8, "w", "VER"],
   ["pabellon-03", 27.5, 21.5, "w", "VER"],
-  ["nave-03", 9.9, 29.5, "n", "VER"],
-  ["nave-02", 17.9, 29.5, "n", "VER"],
-  ["nave-01", 27.5, 29.5, "n", "VER"],
 ]
 const NORMAL = { e: [1, 0], w: [-1, 0], n: [0, -1], s: [0, 1] }
 const FACING = { e: "left", w: "right", n: "down", s: "up" } // hacia dónde mira el visitante al salir

@@ -148,8 +148,10 @@ puerta es un hueco. Al pisar la huella (`pointInPolygon` en cada frame), el
 contenedor del techo —relleno, lámina, nombre y estado— baja a alfa 0.08 en
 420 ms y se ve el interior: una losa lisa con juntas (a propósito ambigua: sin
 subdivisiones dibujadas) y una placa `INFO` en el piso que abre la ficha. No hay
-botón en la puerta ni balizas: se entra caminando. En la nave, el techo es uno
-solo (lámina a dos aguas) con la subdivisión en 3 módulos marcada en el piso, y
+botón en la puerta ni balizas: se entra caminando. La nave está abierta al
+patio: no hay barda ni puertas en el frente, se entra por cualquier punto bajo
+la lámina. El techo es uno solo (a dos aguas) con la subdivisión en 3 módulos
+marcada en el piso, y
 la **carpa beduina** de la Nave 02 es un segundo techo (contenedor propio con
 postes que bloquean): se ve desde los otros módulos y se vuelve transparente solo
 cuando estás debajo. Al entrar se emite `space` y React muestra un aviso corto

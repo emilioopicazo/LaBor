@@ -518,8 +518,16 @@ export class OverworldScene extends WorldScene {
     g.lineBetween(x1, (y1 + y2) / 2, x2, (y1 + y2) / 2)
     g.lineStyle(1, 0xa9a6a1, 0.7)
     for (let x = x1 + 24; x < x2; x += 24) g.lineBetween(x, y1 + 4, x, y2 - 4)
+    // muros al sur, este y oeste; el frente norte está abierto al patio: solo el canto de la lámina
     g.lineStyle(6, WALL, 1)
-    g.strokeRect(x1, y1, x2 - x1, y2 - y1)
+    g.beginPath()
+    g.moveTo(x1, y1)
+    g.lineTo(x1, y2)
+    g.lineTo(x2, y2)
+    g.lineTo(x2, y1)
+    g.strokePath()
+    g.lineStyle(3, 0x8f8c87, 1)
+    g.lineBetween(x1, y1, x2, y1)
     this.roofContainer("nave").addAt(g, 0)
   }
 
